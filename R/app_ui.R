@@ -9,9 +9,9 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    shinydashboard::dashboardPage(
-      shinydashboard::dashboardHeader(),
-      shinydashboard::dashboardSidebar(),
+    shinydashboardPlus::dashboardPage(
+      shinydashboardPlus::dashboardHeader(),
+      shinydashboardPlus::dashboardSidebar(),
       shinydashboard::dashboardBody()
     )
   )
