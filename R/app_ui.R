@@ -10,9 +10,29 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     shinydashboardPlus::dashboardPage(
-      shinydashboardPlus::dashboardHeader(),
-      shinydashboardPlus::dashboardSidebar(),
-      shinydashboard::dashboardBody()
+      skin = "green",
+      header = shinydashboardPlus::dashboardHeader(
+        title = "R INVICO"
+      ),
+      sidebar = shinydashboardPlus::dashboardSidebar(
+        shinydashboard::menuItem(
+          text = "Actualizar",
+          tabName = "boxes",
+          icon = icon("briefcase")
+        ),
+        shinydashboard::menuItem(
+          text = "Actualizar",
+          tabName = "boxes2",
+          icon = icon("amazon")
+        ),
+        id = "sidebar"
+      ),
+      body = shinydashboard::dashboardBody(),
+      footer = shinydashboardPlus::dashboardFooter(
+        left = "By Fernando S. Corrales",
+        right = base::paste0("Version ", get_package_version())
+      ),
+      controlbar = shinydashboardPlus::dashboardControlbar(shinydashboardPlus::skinSelector())
     )
   )
 }
