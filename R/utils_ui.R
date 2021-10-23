@@ -18,10 +18,10 @@ set_header <- function() {
     skin = "light",
     status = "white",
     border = TRUE,
-    sidebarIcon = icon("bars"),
-    controlbarIcon = icon("th"),
+    sidebarIcon = shiny::icon("bars"),
+    controlbarIcon = shiny::icon("th"),
     fixed = FALSE,
-    leftUi = tagList(
+    leftUi = htmltools::tagList(
       bs4Dash::dropdownMenu(
         badgeStatus = "info",
         type = "notifications",
@@ -73,7 +73,7 @@ set_sidebar <- function() {
       bs4Dash::menuItem(
         "Base de Datos",
         tabName = "base_de_datos",
-        icon = icon("database"),
+        icon = shiny::icon("database"),
         bs4Dash::menuSubItem(
           "SIIF Recursos",
           tabName = "siif_recursos",
@@ -103,17 +103,17 @@ set_sidebar <- function() {
       bs4Dash::menuItem(
         "Control",
         tabName = "control",
-        icon = icon("check-square-o")
+        icon = shiny::icon("check-square-o")
       ),
       bs4Dash::menuItem(
-        "Tabla Dinámica",
+        "Tabla Din\u00e1mica",
         tabName = "tabla_dinamica",
-        icon = icon("table")
+        icon = shiny::icon("table")
       ),
       bs4Dash::menuItem(
-        "Gráfico",
+        "Gr\u00e1fico",
         tabName = "grafico",
-        icon = icon("pie-chart")
+        icon = shiny::icon("pie-chart")
       )
     )
   )
@@ -130,7 +130,7 @@ set_body <- function() {
           lapply(1:3, FUN = function(i) {
             bs4Dash::sortable(
               width = 4,
-              p(class = "text-center", paste("Column", i)),
+              htmltools::p(class = "text-center", paste("Column", i)),
               lapply(1:2, FUN = function(j) {
                 bs4Dash::box(
                   title = paste0("I am the ", j, "-th card of the ", i, "-th column"),
