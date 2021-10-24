@@ -6,6 +6,20 @@ get_package_version <- function(pkg = "invicoctrlr"){
 
 }
 
+tab_id <- as.list(c(
+  bd = "01_00_base_de_datos",
+  bd_presupuesto = "01_01_siif_presupuesto",
+  bd_tesoreria = "01_02_siif_tesoreria",
+  bd_gastos_fondos = "01_03_siif_gastos_fondos",
+  bd_contabilidad = "01_04_siif_contabilidad",
+  bd_clasificadores = "01_05_siif_clasificadores",
+  bd_sgf = "01_06_sgf",
+  bd_sscc = "01_07_sscc",
+  bd_sgo = "01_08_sgo",
+  bd_icaro = "01_09_icaro"
+))
+
+
 set_header <- function() {
 
   bs4Dash::dashboardHeader(
@@ -64,40 +78,60 @@ set_sidebar <- function() {
     skin = "light",
     status = "teal",
     elevation = 3,
-    bs4Dash::sidebarUserPanel(
-      image = "https://image.flaticon.com/icons/svg/1149/1149168.svg",
-      name = "Welcome Onboard!"
-    ),
+    # bs4Dash::sidebarUserPanel(
+    #   image = "https://image.flaticon.com/icons/svg/1149/1149168.svg",
+    #   name = "Welcome Onboard!"
+    # ),
     bs4Dash::sidebarMenu(
-      bs4Dash::sidebarHeader("Header 1"),
+      # bs4Dash::sidebarHeader("Header 1"),
       bs4Dash::menuItem(
         "Base de Datos",
         tabName = "base_de_datos",
         icon = shiny::icon("database"),
         bs4Dash::menuSubItem(
-          "SIIF Recursos",
-          tabName = "siif_recursos",
-          icon = shiny::icon("bank"),
-        ),
-        bs4Dash::menuSubItem(
-          "SIIF Gastos",
-          tabName = "siif_gastos",
-          icon = shiny::icon("industry"),
-        ),
-        bs4Dash::menuSubItem(
           "SIIF Presupuesto",
-          tabName = "siif_presupuesto",
+          tabName = tab_id$bd_presupuesto,
           icon = shiny::icon("balance-scale"),
         ),
         bs4Dash::menuSubItem(
+          "SIIF Tesorer\u00eda",
+          tabName = tab_id$bd_tesoreria,
+          icon = shiny::icon("money"),
+        ),
+        bs4Dash::menuSubItem(
+          "SIIF Gastos y Fondos",
+          tabName = tab_id$bd_gastos_fondos,
+          icon = shiny::icon("credit-card"),
+        ),
+        bs4Dash::menuSubItem(
           "SIIF Contabilidad",
-          tabName = "siif_contabilidad",
+          tabName = tab_id$bd_contabilidad,
+          icon = shiny::icon("columns"),
+        ),
+        bs4Dash::menuSubItem(
+          "SIIF Clasificadores",
+          tabName = tab_id$bd_clasificadores,
           icon = shiny::icon("book"),
         ),
         bs4Dash::menuSubItem(
-          "R Icaro",
-          tabName = "r_icaro",
-          icon = shiny::icon("building"),
+          "Sist. Gesti\u00f3n Fciera.",
+          tabName = tab_id$bd_sgf,
+          icon = shiny::icon("file-text-o"),
+        ),
+        bs4Dash::menuSubItem(
+          "Sist. Seg. Ctas. Ctes.",
+          tabName = tab_id$bd_sscc,
+          icon = shiny::icon("bank"),
+        ),
+        bs4Dash::menuSubItem(
+          "Sist. Gesti\u00f3n Obras",
+          tabName = tab_id$bd_sgo,
+          icon = shiny::icon("industry"),
+        ),
+        bs4Dash::menuSubItem(
+          "Icaro",
+          tabName = tab_id$bd_icaro,
+          icon = shiny::icon("link"),
         )
       ),
       bs4Dash::menuItem(
@@ -125,47 +159,23 @@ set_body <- function() {
   bs4Dash::dashboardBody(
     bs4Dash::tabItems(
       bs4Dash::tabItem(
-        tabName = "item1",
-        shiny::fluidRow(
-          lapply(1:3, FUN = function(i) {
-            bs4Dash::sortable(
-              width = 4,
-              htmltools::p(class = "text-center", paste("Column", i)),
-              lapply(1:2, FUN = function(j) {
-                bs4Dash::box(
-                  title = paste0("I am the ", j, "-th card of the ", i, "-th column"),
-                  width = 12,
-                  "Click on my header"
-                )
-              })
-            )
-          })
-        )
+        tabName = tab_id$bd_presupuesto,
+        (paste0("mod_", tab_id$bd_presupuesto, "_ui")) %>%
+          do.call(list(tab_id$bd_presupuesto))
       ),
       bs4Dash::tabItem(
-        tabName = "item2",
-        bs4Dash::box(
-          title = "Card with messages",
-          width = 9,
-          bs4Dash::userMessages(
-            width = 12,
-            status = "success",
-            bs4Dash::userMessage(
-              author = "Alexander Pierce",
-              date = "20 Jan 2:00 pm",
-              image = "https://adminlte.io/themes/AdminLTE/dist/img/user1-128x128.jpg",
-              type = "received",
-              "Is this template really for free? That's unbelievable!"
-            ),
-            bs4Dash::userMessage(
-              author = "Dana Pierce",
-              date = "21 Jan 4:00 pm",
-              image = "https://adminlte.io/themes/AdminLTE/dist/img/user5-128x128.jpg",
-              type = "sent",
-              "Indeed, that's unbelievable!"
-            )
-          )
-        )
+        tabName = tab_id$bd_tesoreria,
+        (paste0("mod_", tab_id$bd_tesoreria, "_ui")) %>%
+          do.call(list(tab_id$bd_tesoreria))
+      ),
+      bs4Dash::tabItem(
+        tabName = tab_id$bd_gastos
+        # bs4Dash::bs4Table(
+        #   cardWrap = TRUE,
+        #   bordered = TRUE,
+        #   striped = TRUE,
+        #   iris
+        # )
       )
     )
   )
@@ -179,6 +189,10 @@ set_controlbar <- function(){
     pinned = FALSE,
     collapsed = TRUE,
     overlay = FALSE,
+    # htmltools::div(
+    #   class = "p-3",
+    #   bs4Dash::skinSelector()
+    #   )
     bs4Dash::controlbarMenu(
       id = "controlbarmenu",
       bs4Dash::controlbarItem(
