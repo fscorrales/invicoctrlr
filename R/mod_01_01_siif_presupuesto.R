@@ -12,13 +12,24 @@ mod_01_01_siif_presupuesto_ui <- function(id){
   tagList(
     bs4Dash::tabBox(
       id = ns(tab_id$bd_presupuesto),
-      type = "pills",
+      type = "tabs",
+      status = "olive",
+      solidHeader = TRUE,
       width = 12,
-      status = "primary",
       collapsible = FALSE,
+      maximizable = TRUE,
+      elevation = 2,
+      boxToolSize = "lg",
+      dropdownMenu =  bs4Dash::boxDropdown(
+        icon = shiny::icon("save"),
+        bs4Dash::boxDropdownItem("Link to google", href = "http://www.google.com"),
+        bs4Dash::boxDropdownItem("Item with inputId", id = "dropdown_item2"),
+        bs4Dash::dropdownDivider(),
+        bs4Dash::boxDropdownItem("item 3", href = "#", icon = icon("th"))
+      ),
       shiny::tabPanel(
         title = "Presupuesto con Fuente",
-        mod_01_00_base_de_datos_ui(ns("pres_fte"))
+        mod_data_table_ui(ns("pres_fte"))
       ),
       shiny::tabPanel(
         title = "Presupuesto con Descripcion",
@@ -34,7 +45,7 @@ mod_01_01_siif_presupuesto_ui <- function(id){
 mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    mod_01_00_base_de_datos_server("pres_fte", reactive(iris))
+    mod_data_table_server("pres_fte", reactive(iris))
 
   })
 }
