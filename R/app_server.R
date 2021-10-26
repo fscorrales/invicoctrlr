@@ -1,3 +1,7 @@
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
+NULL
+
 #' The application server-side
 #'
 #' @param input,output,session Internal parameters for {shiny}.

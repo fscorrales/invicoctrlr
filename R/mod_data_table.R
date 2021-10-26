@@ -38,7 +38,7 @@ mod_data_table_server <- function(id, data, selection = "single",
                                      text = 'Download 100 primeras filas')
                                      ),
                                    language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                                   dom = 'Brtip',
+                                   dom = 'Brtip'
                                    ),
                     selection = selection
                     )
