@@ -22,11 +22,9 @@ mod_01_01_siif_presupuesto_ui <- function(id){
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
         icon = shiny::icon("save"),
-        bs4Dash::boxDropdownItem("Actualizar", icon = shiny::icon("sync")),
-        bs4Dash::dropdownDivider(),
-        bs4Dash::boxDropdownItem(mod_download_link_ui("download_xls", "Exportar XLS"),
-                                 icon = shiny::icon("file-excel")),
-        bs4Dash::boxDropdownItem("Exportar csv", icon = shiny::icon("file-csv"))
+        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_xls"), "Exportar xls")),
+        bs4Dash::boxDropdownItem(mod_download_button_ui(ns("download_csv"),
+                                                        "Exportar csv", "file-csv"))
       ),
       shiny::tabPanel(
         title = "Presupuesto con Fuente",
@@ -46,6 +44,8 @@ mod_01_01_siif_presupuesto_ui <- function(id){
 mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+    mod_save_button_server("download_xls", siif_ppto_gtos_fte())
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 
