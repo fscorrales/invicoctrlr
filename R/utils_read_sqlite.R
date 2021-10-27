@@ -13,9 +13,14 @@ make_reactive_trigger <- function() {
 }
 
 siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
-siif_ppto_gtos_fte_df <- shiny::reactive({
+siif_ppto_gtos_fte <- shiny::reactive({
   siif_ppto_gtos_fte_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF", "EjecPresPorFteSIIF")
+  Ans <- invicodatr::read_table_sqlite("SIIF", "ppto_gtos_fte_rf602")
+  Ans <- Ans %>%
+    dplyr::mutate(estructura = paste(programa, subprograma,
+                                     proyecto, actividad, sep = "-")) %>%
+    dplyr::select(ejercicio, estructura, dplyr::everything())
+
 })
 
 # EjecPresConDescSIIFTrigger <- makereactivetrigger()
