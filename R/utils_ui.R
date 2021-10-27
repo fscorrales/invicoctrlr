@@ -78,6 +78,7 @@ set_sidebar <- function() {
     skin = "light",
     status = "teal",
     elevation = 3,
+    collapsed = TRUE,
     # bs4Dash::sidebarUserPanel(
     #   image = "https://image.flaticon.com/icons/svg/1149/1149168.svg",
     #   name = "Welcome Onboard!"
