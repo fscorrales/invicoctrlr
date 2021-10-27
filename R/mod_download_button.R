@@ -7,20 +7,20 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_export_button_ui <- function(id, label_button = "",
+mod_download_button_ui <- function(id, label_button = "",
                                  icon = "download"){
   ns <- NS(id)
   tagList(
     downloadButton(ns("download"), label = label_button,
                    icon = shiny::icon(icon),
-                   width = "125px")
+                   width = "125px", class = "btn-primary")
   )
 }
 
 #' export_button Server Functions
 #'
 #' @noRd
-mod_export_button_server <- function(id, df, file_name = "R INVICO",
+mod_download_button_server <- function(id, df, file_name = "R INVICO",
                                      extension = "xlsx"){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
@@ -40,7 +40,7 @@ mod_export_button_server <- function(id, df, file_name = "R INVICO",
 }
 
 ## To be copied in the UI
-# mod_export_button_ui("export_button_ui_1")
+# mod_download_button_ui("export_button_ui_1")
 
 ## To be copied in the server
-# mod_export_button_server("export_button_ui_1")
+# mod_download_button_server("export_button_ui_1")
