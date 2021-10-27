@@ -7,12 +7,13 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_save_button_ui <- function(id, label_button = "", title = "Guardar como..." ,
-                                 icon = "file-excel", filetype=list(xlsx="xlsx")){
+mod_save_button_ui <- function(id, label_button = "",
+                               title = "Guardar como..." ,
+                               ...){
   ns <- NS(id)
   tagList(
     shinyFiles::shinySaveButton(ns("download"), label = label_button,
-                                title = title, icon = shiny::icon(icon))
+                                title = title, ...)
   )
 }
 
@@ -32,7 +33,16 @@ mod_save_button_server <- function(id, df) {
       fileinfo <- parseSavePath(volumes, input$download)
 
       if (nrow(fileinfo) > 0) {
-        openxlsx::write.xlsx(df, as.character(fileinfo$datapath))
+        file_ext <- tools::file_ext(fileinfo$datapath)
+
+        if (file_ext == "xlsx") {
+          openxlsx::write.xlsx(df, as.character(fileinfo$datapath))
+        }
+
+        if (file_ext == "csv") {
+          vroom::vroom_write(df, as.character(fileinfo$datapath), delim = ",")
+        }
+
       }
 
     })
@@ -41,7 +51,7 @@ mod_save_button_server <- function(id, df) {
     #   filename = function() {
     #     paste(file_name,"-", Sys.Date(), ".", extension, sep="")
     #   },
-    #   content = function(file) {
+    #   content = function(filename) {
     #     if (extension == "xlsx") {
     #       openxlsx::write.xlsx(df(), file)
     #     }
