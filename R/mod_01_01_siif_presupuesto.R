@@ -45,7 +45,23 @@ mod_01_01_siif_presupuesto_ui <- function(id){
 mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    mod_data_table_server("pres_fte", reactive(iris))
+    hide_columns <- c(3:6, 8, 10, 16)
+
+    mod_data_table_server("pres_fte", siif_ppto_gtos_fte,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns)
+                            ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns)
+                            )
+                          )
 
   })
 }

@@ -18,7 +18,7 @@ mod_data_table_ui <- function(id){
 #'
 #' @noRd
 mod_data_table_server <- function(id, data, selection = "single",
-                                  DTServer = TRUE){
+                                  DTServer = TRUE, ...){
 
   moduleServer( id, function(input, output, session){
     ns <- session$ns
@@ -26,19 +26,17 @@ mod_data_table_server <- function(id, data, selection = "single",
     #ColReorder not working. What does ColReorder = list(realtime = FALSE)?
 
     output$data_table <- DT::renderDT({
-      DT::datatable(data(),
+      DT::datatable(data(), class = "display compact",
                     extensions = c("Scroller", "Buttons", 'ColReorder'),
                     filter = list(position = 'top', clear = FALSE, plain=T),
-                    options = list(pageLength = 100, deferRender = T, ColReorder = TRUE,
-                                   scroller = T, stateSave=F, filter = "top",
-                                   searching = T, scrollY = '400px', scrollX = T,
-                                   buttons = list(list(
-                                     extend = 'collection',
-                                     buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                                     text = 'Download 100 primeras filas')
-                                     ),
+                    options = list(pageLength = 10, lengthMenu =
+                                     list(c(10, 25, 50, -1), c(10, 25, 50, "todos los")),
+                                   filter = "top", searching = T, ColReorder = TRUE,
+                                   deferRender = T, stateSave=F,
+                                   scrollX = T, scrollY = '400px',
+                                   # scroller = T,
                                    language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                                   dom = 'Brtip'
+                                   dom = 'Brtlip', ...
                                    ),
                     selection = selection
                     )
