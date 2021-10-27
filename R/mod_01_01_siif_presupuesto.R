@@ -22,10 +22,10 @@ mod_01_01_siif_presupuesto_ui <- function(id){
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
         icon = shiny::icon("save"),
-        bs4Dash::boxDropdownItem("Link to google", href = "http://www.google.com"),
-        bs4Dash::boxDropdownItem("Item with inputId", id = "dropdown_item2"),
+        bs4Dash::boxDropdownItem("Actualizar", icon = shiny::icon("sync")),
         bs4Dash::dropdownDivider(),
-        bs4Dash::boxDropdownItem("item 3", href = "#", icon = icon("th"))
+        bs4Dash::boxDropdownItem("Exportar xls", icon = shiny::icon("file-excel")),
+        bs4Dash::boxDropdownItem("Exportar csv", icon = shiny::icon("file-csv"))
       ),
       shiny::tabPanel(
         title = "Presupuesto con Fuente",
@@ -33,7 +33,7 @@ mod_01_01_siif_presupuesto_ui <- function(id){
       ),
       shiny::tabPanel(
         title = "Presupuesto con Descripcion",
-        "Content 2"
+        mod_data_table_ui(ns("pres_desc"))
       )
     )
   )
@@ -45,11 +45,12 @@ mod_01_01_siif_presupuesto_ui <- function(id){
 mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    hide_columns <- c(3:6, 8, 10, 16)
+
+    hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 
     mod_data_table_server("pres_fte", siif_ppto_gtos_fte,
                           columnDefs = list(
-                            list(visible=FALSE, targets = hide_columns)
+                            list(visible=FALSE, targets = hide_columns_pres_fte)
                             ),
                           buttons = list(
                             list(
@@ -59,9 +60,27 @@ mod_01_01_siif_presupuesto_server <- function(id){
                             list(
                               extend='colvis',
                               text="Mostrar / Ocultar columnas",
-                              columns = hide_columns)
+                              columns = hide_columns_pres_fte)
                             )
                           )
+
+    hide_columns_pres_desc <- c(2, 4, 5, 6, 8, 10, 11, 13)
+
+    mod_data_table_server("pres_desc", siif_ppto_gtos_desc,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_pres_desc)
+                          ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_pres_desc)
+                          )
+    )
 
   })
 }
