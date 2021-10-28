@@ -24,23 +24,25 @@ mod_save_button_server <- function(id, df) {
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    observe({
+    observeEvent(input$download, {
 
-      volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), getVolumes()())
+      volumes <- c(Home = fs::path_home(), "R Installation" = R.home(), shinyFiles::getVolumes()())
 
-      shinyFileSave(input, "download", roots = volumes, session = session, restrictions = system.file(package = "base"))
+      shinyFiles::shinyFileSave(input, "download", roots = volumes, session = session,
+                                restrictions = system.file(package = "base"),
+                                allowDirCreate = TRUE)
 
-      fileinfo <- parseSavePath(volumes, input$download)
+      fileinfo <- shinyFiles::parseSavePath(volumes, input$download)
 
       if (nrow(fileinfo) > 0) {
         file_ext <- tools::file_ext(fileinfo$datapath)
 
         if (file_ext == "xlsx") {
-          openxlsx::write.xlsx(df, as.character(fileinfo$datapath))
+          openxlsx::write.xlsx(df(), as.character(fileinfo$datapath))
         }
 
         if (file_ext == "csv") {
-          vroom::vroom_write(df, as.character(fileinfo$datapath), delim = ",")
+          vroom::vroom_write(df(), as.character(fileinfo$datapath), delim = ",")
         }
 
       }

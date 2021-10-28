@@ -42,7 +42,8 @@ set_header <- function() {
         bs4Dash::notificationItem(
           inputId = "triggerAction2",
           text = "Error!",
-          status = "danger"
+          status = "danger",
+          icon = shiny::icon("exclamation-triangle")
         )
       ),
       bs4Dash::dropdownMenu(
@@ -97,7 +98,7 @@ set_sidebar <- function() {
         bs4Dash::menuSubItem(
           "SIIF Tesorer\u00eda",
           tabName = tab_id$bd_tesoreria,
-          icon = shiny::icon("money"),
+          icon = shiny::icon("money-bill-alt"),
         ),
         bs4Dash::menuSubItem(
           "SIIF Gastos y Fondos",
@@ -117,12 +118,12 @@ set_sidebar <- function() {
         bs4Dash::menuSubItem(
           "Sist. Gesti\u00f3n Fciera.",
           tabName = tab_id$bd_sgf,
-          icon = shiny::icon("file-text-o"),
+          icon = shiny::icon("file-alt"),
         ),
         bs4Dash::menuSubItem(
           "Sist. Seg. Ctas. Ctes.",
           tabName = tab_id$bd_sscc,
-          icon = shiny::icon("bank"),
+          icon = shiny::icon("university"),
         ),
         bs4Dash::menuSubItem(
           "Sist. Gesti\u00f3n Obras",
@@ -138,7 +139,7 @@ set_sidebar <- function() {
       bs4Dash::menuItem(
         "Control",
         tabName = "control",
-        icon = shiny::icon("check-square-o")
+        icon = shiny::icon("check-square")
       ),
       bs4Dash::menuItem(
         "Tabla Din\u00e1mica",
@@ -148,7 +149,7 @@ set_sidebar <- function() {
       bs4Dash::menuItem(
         "Gr\u00e1fico",
         tabName = "grafico",
-        icon = shiny::icon("pie-chart")
+        icon = shiny::icon("chart-pie")
       )
     )
   )

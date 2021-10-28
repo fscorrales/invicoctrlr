@@ -11,7 +11,7 @@ mod_01_01_siif_presupuesto_ui <- function(id){
   ns <- NS(id)
   tagList(
     bs4Dash::tabBox(
-      id = ns(tab_id$bd_presupuesto),
+      id = ns("siif_presupuesto"),
       type = "tabs",
       status = "olive",
       solidHeader = TRUE,
@@ -31,10 +31,12 @@ mod_01_01_siif_presupuesto_ui <- function(id){
       ),
       shiny::tabPanel(
         title = "Presupuesto con Fuente",
+        value = "pres_fte",
         mod_data_table_ui(ns("pres_fte"))
       ),
       shiny::tabPanel(
         title = "Presupuesto con Descripcion",
+        value = "pres_desc",
         mod_data_table_ui(ns("pres_desc"))
       )
     )
@@ -48,9 +50,23 @@ mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    mod_save_button_server("download_xls", siif_ppto_gtos_fte())
+    df <- reactiveVal()
 
-    mod_save_button_server("download_csv", siif_ppto_gtos_fte())
+    observeEvent(input$siif_presupuesto, {
+
+      data <- switch(input$siif_presupuesto,
+               "pres_fte" = siif_ppto_gtos_fte(),
+               "pres_desc" = siif_ppto_gtos_desc(),
+               stop("Invalid `x` value")
+               )
+
+      df(data)
+
+    })
+
+    mod_save_button_server("download_xls", df)
+
+    mod_save_button_server("download_csv", df)
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 
