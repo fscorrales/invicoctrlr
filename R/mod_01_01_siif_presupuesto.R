@@ -18,7 +18,7 @@ mod_01_01_siif_presupuesto_ui <- function(id){
       width = 12,
       collapsible = FALSE,
       maximizable = TRUE,
-      elevation = 2,
+      elevation = NULL,
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
         icon = shiny::icon("save"),
@@ -38,6 +38,25 @@ mod_01_01_siif_presupuesto_ui <- function(id){
         title = "Presupuesto con Descripcion",
         value = "pres_desc",
         mod_data_table_ui(ns("pres_desc"))
+      ),
+      sidebar = bs4Dash::boxSidebar(
+        id = ns("prueba"),
+        startOpen = FALSE,
+        icon = shiny::icon("sync-alt"),
+        sliderInput(
+          ns("obs"),
+          "Number of observations:",
+          min = 0,
+          max = 1000,
+          value = 500
+        ),
+        sliderInput(
+          ns("obs2"),
+          "Number of observations:",
+          min = 0,
+          max = 1000,
+          value = 500
+        )
       )
     )
   )
