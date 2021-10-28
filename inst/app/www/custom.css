@@ -1,0 +1,4 @@
+/* Change boxSidebar's z-index to take it to the front layer  */
+.direct-chat-contacts[style] {
+  z-index:2 !important;
+}

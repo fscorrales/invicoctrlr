@@ -47,10 +47,6 @@ mod_01_01_siif_presupuesto_ui <- function(id){
         mod_data_table_ui(ns("pres_desc"))
       ),
       sidebar = bs4Dash::boxSidebar(
-        tags$head(tags$style(
-          paste0("#" , ns("prueba"),
-          ".direct-chat-contacts {
-          z-index: 2002;}"))),
         id = ns("prueba"),
         startOpen = FALSE,
         icon = shiny::icon("sync-alt"),
@@ -61,6 +57,11 @@ mod_01_01_siif_presupuesto_ui <- function(id){
           max = 1000,
           value = 500
         ),
+        # tags$style(
+        #   ".direct-chat-contacts{
+        #   z-index:2;
+        #   }"
+        # ),
         sliderInput(
           ns("obs2"),
           "Number of observations:",

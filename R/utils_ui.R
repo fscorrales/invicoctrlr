@@ -159,6 +159,7 @@ set_sidebar <- function() {
 set_body <- function() {
 
   bs4Dash::dashboardBody(
+    # tags$head(htmltools::includeCSS("inst/app/www/custom.css")),
     bs4Dash::tabItems(
       bs4Dash::tabItem(
         tabName = tab_id$bd_presupuesto,
