@@ -9,6 +9,13 @@
 #' @importFrom shiny NS tagList
 mod_01_01_siif_presupuesto_ui <- function(id){
   ns <- NS(id)
+
+#   css = HTML("
+#   .direct-chat-contacts {
+#     z-index: 2002;
+#   }
+# ")
+
   tagList(
     bs4Dash::tabBox(
       id = ns("siif_presupuesto"),
@@ -40,6 +47,10 @@ mod_01_01_siif_presupuesto_ui <- function(id){
         mod_data_table_ui(ns("pres_desc"))
       ),
       sidebar = bs4Dash::boxSidebar(
+        tags$head(tags$style(
+          paste0("#" , ns("prueba"),
+          ".direct-chat-contacts {
+          z-index: 2002;}"))),
         id = ns("prueba"),
         startOpen = FALSE,
         icon = shiny::icon("sync-alt"),
