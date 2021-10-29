@@ -63,7 +63,7 @@ mod_file_input_server <- function(id, import_function,
 
       shinyFeedback::hideFeedback(inputId = "file")
 
-      if (ext() != require_extension) {
+      if (ext() != require_extension()) {
         shinyFeedback::showFeedbackDanger(inputId = "file",
                            text = paste0("Archivo inválido;",
                                          "por favor cargar un archivo .",

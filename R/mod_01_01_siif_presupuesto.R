@@ -100,7 +100,7 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
       if (input$siif_presupuesto == "pres_fte") {
         data <- siif_ppto_gtos_fte()
-        import_function <- "rpw_siif_ppto_gtos_fte"
+        import_function <- invicodatr::rpw_siif_ppto_gtos_fte
         require_extension <- "csv"
         steps$reporte <- paste0(
           strong("Busque e ingrese"), " al reporte ",
@@ -110,7 +110,7 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
       if (input$siif_presupuesto == "pres_desc") {
         data <- siif_ppto_gtos_desc()
-        import_function <- "rpw_siif_ppto_gtos_desc"
+        import_function <- invicodatr::rpw_siif_ppto_gtos_desc
         require_extension <- "csv"
         steps$reporte <- paste0(
           strong("Busque e ingrese"), " al reporte ",
