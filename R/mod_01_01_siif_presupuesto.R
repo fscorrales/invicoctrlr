@@ -28,7 +28,10 @@ mod_01_01_siif_presupuesto_ui <- function(id){
                                                     filetype=list(xlsx="xlsx"))),
         bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
                                                     icon = shiny::icon("file-csv"),
-                                                    filetype=list(csv="csv")))
+                                                    filetype=list(csv="csv"))),
+        bs4Dash::boxDropdownItem(mod_download_button_ui(ns("download_dh"),
+                                                        "Download Handler")),
+        bs4Dash::boxDropdownItem(bs4Dash::actionButton(ns("bs4Dash_button"), "bs4Dash"))
       ),
       shiny::tabPanel(
         title = "Presupuesto con Fuente",
