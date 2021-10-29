@@ -10,12 +10,6 @@
 mod_01_01_siif_presupuesto_ui <- function(id){
   ns <- NS(id)
 
-#   css = HTML("
-#   .direct-chat-contacts {
-#     z-index: 2002;
-#   }
-# ")
-
   tagList(
     bs4Dash::tabBox(
       id = ns("siif_presupuesto"),
@@ -47,28 +41,14 @@ mod_01_01_siif_presupuesto_ui <- function(id){
         mod_data_table_ui(ns("pres_desc"))
       ),
       sidebar = bs4Dash::boxSidebar(
-        id = ns("prueba"),
+        id = ns("sidebar"),
         startOpen = FALSE,
         icon = shiny::icon("sync-alt"),
-        sliderInput(
-          ns("obs"),
-          "Number of observations:",
-          min = 0,
-          max = 1000,
-          value = 500
-        ),
-        # tags$style(
-        #   ".direct-chat-contacts{
-        #   z-index:2;
-        #   }"
-        # ),
-        sliderInput(
-          ns("obs2"),
-          "Number of observations:",
-          min = 0,
-          max = 1000,
-          value = 500
-        )
+        htmltools::h4("Actualizar Base de Datos", style="text-align: center;"),
+        rep_br(),
+        mod_file_input_ui(ns("update"), multiple = TRUE),
+        htmltools::h5("Pasos a seguir para importar:"),
+        htmltools::tags$ol(shiny::htmlOutput(ns("steps")))
       )
     )
   )
@@ -81,23 +61,89 @@ mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    df <- reactiveVal()
+    df <- shiny::reactiveVal()
+
+    fct <- shiny::reactiveVal()
+
+    ext <- shiny::reactiveVal()
+
+    steps <- rv(
+      ingreso = paste0(
+        "Ingrese al ", htmltools::strong("SIIF"),
+        " y seleccione el menú ",
+        htmltools::strong("Reportes / Generación de Reportes / SUB - SISTEMA DE CONTROL DE GASTOS")
+        ),
+      reporte = paste0(
+        strong("Busque e ingrese"), " al reporte ",
+        strong("rf602"), " o el codigo ", strong("38")
+      ),
+      ejercicio = paste0(
+        "Ingrese el ", strong("Ejercicio"),
+        " para el cual desea obtener el reporte y seleccione el formato a exportar como ",
+        strong("XLS")
+      ),
+      exportar = paste0(
+        "Presione el botón ", strong("Ver Reporte")
+      ),
+      guardar = paste0(
+        strong("Guardar"), " el archivo generado en una ubicación que recuerde"
+      ),
+      importar = paste0(
+        strong("Importar"), " el archivo descargado previamente"
+      )
+    )
 
     observeEvent(input$siif_presupuesto, {
 
-      data <- switch(input$siif_presupuesto,
-               "pres_fte" = siif_ppto_gtos_fte(),
-               "pres_desc" = siif_ppto_gtos_desc(),
-               stop("Invalid `x` value")
-               )
+      if (input$siif_presupuesto == "pres_fte") {
+        data <- siif_ppto_gtos_fte()
+        import_function <- "rpw_siif_ppto_gtos_fte"
+        require_extension <- "csv"
+        steps$reporte <- paste0(
+          strong("Busque e ingrese"), " al reporte ",
+          strong("rf602"), " o el codigo ", strong("38")
+        )
+      }
+
+      if (input$siif_presupuesto == "pres_desc") {
+        data <- siif_ppto_gtos_desc()
+        import_function <- "rpw_siif_ppto_gtos_desc"
+        require_extension <- "csv"
+        steps$reporte <- paste0(
+          strong("Busque e ingrese"), " al reporte ",
+          strong("rf610"), " o el codigo ", strong("7")
+        )
+      }
 
       df(data)
+      fct(import_function)
+      ext(require_extension)
 
     })
 
     mod_save_button_server("download_xls", df)
 
     mod_save_button_server("download_csv", df)
+
+    mod_file_input_server("update",
+                          import_function = fct,
+                          require_extension = ext)
+
+    output$steps <- shiny::renderUI(
+      list_to_li(
+        list(
+          steps$ingreso,
+          steps$reporte,
+          steps$ejercicio,
+          steps$exportar,
+          steps$guardar,
+          steps$importar
+          )
+        )
+      )
+
+    # shiny::renderUI("steps", list_to_li(list("Primero", "Segundo")))
+
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 

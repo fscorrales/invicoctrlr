@@ -26,7 +26,7 @@ mod_data_table_server <- function(id, data, selection = "single",
     #ColReorder not working. What does ColReorder = list(realtime = FALSE)?
 
     output$data_table <- DT::renderDT({
-      DT::datatable(data(), rownames = FALSE, class = "display compact", style="bootstrap4",
+      DT::datatable(data(), rownames = FALSE, class = "display compact", style="default",
                     extensions = c("Scroller", "Buttons", 'ColReorder'),
                     filter = list(position = 'top', clear = FALSE, plain=T),
                     options = list(pageLength = 100,
@@ -44,6 +44,9 @@ mod_data_table_server <- function(id, data, selection = "single",
 
     })
 }
+
+## Style should be one of “default”, “bootstrap”, “bootstrap4”, “foundation”,
+## “jqueryui”, “semanticui”
 
 ## The position of column filters may be off when scrolling is enabled
 ## in the table, e.g. via the options scrollX and/or scrollY. The appearance
