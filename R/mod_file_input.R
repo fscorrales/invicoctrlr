@@ -32,16 +32,27 @@ mod_file_input_server <- function(id, import_function,
 
       shinyFeedback::hideFeedback(inputId = "file")
 
-      do.call(import_function(),
-              list(path = input$file$datapath,
-                   write_sqlite = TRUE, ...))
+      tryCatch({
+        do.call(import_function(),
+                list(path = input$file$datapath,
+                     write_sqlite = TRUE, ...))
 
-      df_trigger()$trigger()
+        df_trigger()$trigger()
 
-      shiny::showNotification("Importación con éxito", type = "message")
+        shiny::showNotification("Importación con éxito", type = "message")
 
-      shinyFeedback::showFeedbackSuccess(inputId = "file",
-                                         text = "Carga COMPLETA")
+        shinyFeedback::showFeedbackSuccess(inputId = "file",
+                                           text = "Importación COMPLETA")
+
+      },
+      error = function(cnd) {
+        shinyFeedback::showFeedbackDanger(inputId = "file",
+                                           text = "ERROR en la Importación")
+        showNotification(paste0("Error: ",
+                                conditionMessage(cnd)),
+                         type = "error")
+      }
+      )
 
     })
 
