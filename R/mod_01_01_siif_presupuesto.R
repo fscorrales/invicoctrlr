@@ -43,8 +43,6 @@ mod_01_01_siif_presupuesto_ui <- function(id){
     strong("rf610"), " o el codigo ", strong("7")
   )
 
-
-
   tagList(
     bs4Dash::tabBox(
       id = ns("controller"),
@@ -63,10 +61,7 @@ mod_01_01_siif_presupuesto_ui <- function(id){
                                                     filetype=list(xlsx="xlsx"))),
         bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
                                                     icon = shiny::icon("file-csv"),
-                                                    filetype=list(csv="csv"))),
-        bs4Dash::boxDropdownItem(mod_download_button_ui(ns("download_dh"),
-                                                        "Download Handler")),
-        bs4Dash::boxDropdownItem(bs4Dash::actionButton(ns("bs4Dash_button"), "bs4Dash"))
+                                                    filetype=list(csv="csv")))
       ),
       shiny::tabPanel(
         title = "Presupuesto con Fuente",
@@ -98,7 +93,6 @@ mod_01_01_siif_presupuesto_ui <- function(id){
                              )
                     )
         )
-        # htmltools::tags$ol(shiny::htmlOutput(ns("steps")))
       )
     )
   )
@@ -111,42 +105,41 @@ mod_01_01_siif_presupuesto_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    df <- shiny::reactiveVal()
+    shinyjs::reset("update-file")
+    shinyFeedback::hideFeedback("update-file")
 
-    fct <- shiny::reactiveVal()
-
-    ext <- shiny::reactiveVal()
-
+    rpw_controller <- rv()
 
     observeEvent(input$controller, {
 
-      if (input$controller == "pres_fte") {
-        data <- siif_ppto_gtos_fte()
-        import_function <- invicodatr::rpw_siif_ppto_gtos_fte
-        require_extension <- "csv"
-      }
+      Ans <- switch(input$controller,
+                    pres_fte = list(data = siif_ppto_gtos_fte(),
+                                    import_function = invicodatr::rpw_siif_ppto_gtos_fte,
+                                    df_trigger = siif_ppto_gtos_fte_trigger),
+                    pres_desc = list(data = siif_ppto_gtos_desc(),
+                                     import_function = invicodatr::rpw_siif_ppto_gtos_desc,
+                                     df_trigger = siif_ppto_gtos_desc_trigger),
+                    stop("Invalid `x` value")
+                    )
 
-      if (input$controller == "pres_desc") {
-        data <- siif_ppto_gtos_desc()
-        import_function <- invicodatr::rpw_siif_ppto_gtos_desc
-        require_extension <- "csv"
-      }
-
-      df(data)
-      fct(import_function)
-      ext(require_extension)
+      rpw_controller$df <- Ans$data
+      rpw_controller$fct <- Ans$import_function
+      rpw_controller$trigger <- Ans$df_trigger
 
       updateTabsetPanel(inputId = "switcher", selected = input$controller)
 
+      shinyjs::reset("update-file")
+      shinyFeedback::hideFeedback("update-file")
+
     })
 
-    mod_save_button_server("download_xls", df)
+    mod_save_button_server("download_xls", reactive(rpw_controller$df))
 
-    mod_save_button_server("download_csv", df)
+    mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
     mod_file_input_server("update",
-                          import_function = fct,
-                          require_extension = ext)
+                          import_function = reactive(rpw_controller$fct),
+                          df_trigger = reactive(rpw_controller$trigger))
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 

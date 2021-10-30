@@ -14,10 +14,6 @@ mod_file_input_ui <- function(id, ...){
     # useShinyFeedback(),
     shiny::fileInput(ns("file"),
                      label = "Importar archivo",
-                     # tagList(
-                     #   tags$span("Importar archivo"),
-                     #   tags$span(icon("info-circle"), id = ns("icon"), style = "color: blue;")
-                     # ),
                      placeholder = "Archivo no seleccionado",
                      buttonLabel = "Importar", ...)
 
@@ -28,57 +24,46 @@ mod_file_input_ui <- function(id, ...){
 #'
 #' @noRd
 mod_file_input_server <- function(id, import_function,
-                                  require_extension = "csv", ...){
+                                  df_trigger, ...){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    # shinyBS::addPopover(session, ns("icon"), "Ayuda Importación:",
-    #                     ContenidoAyuda, placement = "right")
-
-    user_file <- shiny::reactive(req(input$file))
-
-    ext <- reactive({
-
-      tools::file_ext(user_file()$name)
-
-    })
-
-    data <- reactive({
-
-      df <- do.call(import_function(),
-                    list(path = user_file()$datapath,
-                         write_sqlite = TRUE, ...))
-
-      # ext <- tools::file_ext(userFile()$name)
-      # switch(ext(),
-      #        csv = ImportarCSV(user_file()$datapath, ArchivoImportar),
-      #        xls = ImportarXLS(user_file()$datapath, ArchivoImportar),
-      #        FALSE
-      #        # tsv = vroom::vroom(input$file$datapath, delim = "\t"),
-      #        # validate("Invalid file; Please upload a .csv or .tsv file")
-      # )
-    })
-
-    observeEvent(data(), {
+    observeEvent(input$file, {
 
       shinyFeedback::hideFeedback(inputId = "file")
 
-      if (ext() != require_extension()) {
-        shinyFeedback::showFeedbackDanger(inputId = "file",
-                           text = paste0("Archivo inválido;",
-                                         "por favor cargar un archivo .",
-                                         require_extension))
-      } else {
-        if (data() == FALSE) {
-          shinyFeedback::showFeedbackDanger(inputId = "file",
-                                            text = "Archivo incorrecto, VERIFICAR")
-        } else {
-          shinyFeedback::showFeedbackSuccess(inputId = "file",
-                                             text = "Carga COMPLETA")
-        }
-      }
+      do.call(import_function(),
+              list(path = input$file$datapath,
+                   write_sqlite = TRUE, ...))
+
+      df_trigger()$trigger()
+
+      shinyFeedback::showFeedbackSuccess(inputId = "file",
+                                         text = "Carga COMPLETA")
 
     })
+
+    # observeEvent(data(), {
+    #
+    #   shinyFeedback::hideFeedback(inputId = "file")
+    #
+    #   # if (ext() != require_extension()) {
+    #   #   shinyFeedback::showFeedbackDanger(inputId = "file",
+    #   #                      text = paste0("Archivo inválido;",
+    #   #                                    "por favor cargar un archivo .",
+    #   #                                    require_extension))
+    #   # } else {
+    #     if (data() == FALSE) {
+    #       shinyFeedback::showFeedbackDanger(inputId = "file",
+    #                                         text = "Archivo incorrecto, VERIFICAR")
+    #     } else {
+    #       shinyFeedback::showFeedbackSuccess(inputId = "file",
+    #                                          text = "Carga COMPLETA")
+    #       df_trigger()$trigger()
+    #     }
+    #   # }
+    #
+    # })
 
   })
 }
