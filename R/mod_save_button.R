@@ -45,6 +45,12 @@ mod_save_button_server <- function(id, df) {
           vroom::vroom_write(df(), as.character(fileinfo$datapath), delim = ",")
         }
 
+        shiny::showNotification("Exportación con éxito",
+                                type = "message")
+        Sys.sleep(1)
+        shiny::showNotification(paste0("Destino: ",
+                                       as.character(fileinfo$datapath)))
+
       }
 
     })

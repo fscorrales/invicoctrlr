@@ -38,6 +38,8 @@ mod_file_input_server <- function(id, import_function,
 
       df_trigger()$trigger()
 
+      shiny::showNotification("Importación con éxito", type = "message")
+
       shinyFeedback::showFeedbackSuccess(inputId = "file",
                                          text = "Carga COMPLETA")
 
