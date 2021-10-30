@@ -7,12 +7,47 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+
 mod_01_01_siif_presupuesto_ui <- function(id){
   ns <- NS(id)
 
+  steps_pres_fte <- list(
+    ingreso = paste0(
+      "Ingrese al ", htmltools::strong("SIIF"),
+      " y seleccione el menú ",
+      htmltools::strong("Reportes / Generación de Reportes / SUB - SISTEMA DE CONTROL DE GASTOS")
+    ),
+    reporte = paste0(
+      strong("Busque e ingrese"), " al reporte ",
+      strong("rf602"), " o el codigo ", strong("38")
+    ),
+    ejercicio = paste0(
+      "Ingrese el ", strong("Ejercicio"),
+      " para el cual desea obtener el reporte y seleccione el formato a exportar como ",
+      strong("XLS")
+    ),
+    exportar = paste0(
+      "Presione el botón ", strong("Ver Reporte")
+    ),
+    guardar = paste0(
+      strong("Guardar"), " el archivo generado en una ubicación que recuerde"
+    ),
+    importar = paste0(
+      strong("Importar"), " el archivo descargado previamente"
+    )
+  )
+
+  steps_pres_desc <- steps_pres_fte
+  steps_pres_desc$reporte <- paste0(
+    strong("Busque e ingrese"), " al reporte ",
+    strong("rf610"), " o el codigo ", strong("7")
+  )
+
+
+
   tagList(
     bs4Dash::tabBox(
-      id = ns("siif_presupuesto"),
+      id = ns("controller"),
       type = "tabs",
       status = "olive",
       solidHeader = TRUE,
@@ -51,7 +86,19 @@ mod_01_01_siif_presupuesto_ui <- function(id){
         rep_br(),
         mod_file_input_ui(ns("update"), multiple = TRUE),
         htmltools::h5("Pasos a seguir para importar:"),
-        htmltools::tags$ol(shiny::htmlOutput(ns("steps")))
+        tabsetPanel(id = ns("switcher"), type = "hidden",
+                    tabPanel("pres_fte",
+                             htmltools::tags$ol(
+                               list_to_li(steps_pres_fte)
+                             )
+                    ),
+                    tabPanel("pres_desc",
+                             htmltools::tags$ol(
+                               list_to_li(steps_pres_desc)
+                             )
+                    )
+        )
+        # htmltools::tags$ol(shiny::htmlOutput(ns("steps")))
       )
     )
   )
@@ -70,57 +117,26 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
     ext <- shiny::reactiveVal()
 
-    steps <- rv(
-      ingreso = paste0(
-        "Ingrese al ", htmltools::strong("SIIF"),
-        " y seleccione el menú ",
-        htmltools::strong("Reportes / Generación de Reportes / SUB - SISTEMA DE CONTROL DE GASTOS")
-        ),
-      reporte = paste0(
-        strong("Busque e ingrese"), " al reporte ",
-        strong("rf602"), " o el codigo ", strong("38")
-      ),
-      ejercicio = paste0(
-        "Ingrese el ", strong("Ejercicio"),
-        " para el cual desea obtener el reporte y seleccione el formato a exportar como ",
-        strong("XLS")
-      ),
-      exportar = paste0(
-        "Presione el botón ", strong("Ver Reporte")
-      ),
-      guardar = paste0(
-        strong("Guardar"), " el archivo generado en una ubicación que recuerde"
-      ),
-      importar = paste0(
-        strong("Importar"), " el archivo descargado previamente"
-      )
-    )
 
-    observeEvent(input$siif_presupuesto, {
+    observeEvent(input$controller, {
 
-      if (input$siif_presupuesto == "pres_fte") {
+      if (input$controller == "pres_fte") {
         data <- siif_ppto_gtos_fte()
         import_function <- invicodatr::rpw_siif_ppto_gtos_fte
         require_extension <- "csv"
-        steps$reporte <- paste0(
-          strong("Busque e ingrese"), " al reporte ",
-          strong("rf602"), " o el codigo ", strong("38")
-        )
       }
 
-      if (input$siif_presupuesto == "pres_desc") {
+      if (input$controller == "pres_desc") {
         data <- siif_ppto_gtos_desc()
         import_function <- invicodatr::rpw_siif_ppto_gtos_desc
         require_extension <- "csv"
-        steps$reporte <- paste0(
-          strong("Busque e ingrese"), " al reporte ",
-          strong("rf610"), " o el codigo ", strong("7")
-        )
       }
 
       df(data)
       fct(import_function)
       ext(require_extension)
+
+      updateTabsetPanel(inputId = "switcher", selected = input$controller)
 
     })
 
@@ -131,22 +147,6 @@ mod_01_01_siif_presupuesto_server <- function(id){
     mod_file_input_server("update",
                           import_function = fct,
                           require_extension = ext)
-
-    output$steps <- shiny::renderUI(
-      list_to_li(
-        list(
-          steps$ingreso,
-          steps$reporte,
-          steps$ejercicio,
-          steps$exportar,
-          steps$guardar,
-          steps$importar
-          )
-        )
-      )
-
-    # shiny::renderUI("steps", list_to_li(list("Primero", "Segundo")))
-
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 
