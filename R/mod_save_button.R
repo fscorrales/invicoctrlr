@@ -48,8 +48,10 @@ mod_save_button_server <- function(id, df) {
         shiny::showNotification("Exportación con éxito",
                                 type = "message")
         Sys.sleep(1)
-        shiny::showNotification(paste0("Destino: ",
-                                       as.character(fileinfo$datapath)))
+
+        file_path <- paste0("Destino: ", as.character(fileinfo$datapath))
+
+        shiny::showNotification(file_path)
 
       }
 
