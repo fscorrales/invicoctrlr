@@ -32,51 +32,43 @@ mod_file_input_server <- function(id, import_function,
 
       shinyFeedback::hideFeedback(inputId = "file")
 
-      tryCatch({
+      value_mess <- catchr::catch_expr(
         do.call(import_function(),
                 list(path = input$file$datapath,
-                     write_sqlite = TRUE, ...))
-
-        df_trigger()$trigger()
-
-        shiny::showNotification("Importación con éxito", type = "message")
-
-        shinyFeedback::showFeedbackSuccess(inputId = "file",
-                                           text = "Importación COMPLETA")
-
-      },
-      error = function(cnd) {
-        shinyFeedback::showFeedbackDanger(inputId = "file",
-                                           text = "ERROR en la Importación")
-        showNotification(paste0("Error: ",
-                                conditionMessage(cnd)),
-                         type = "error")
-      }
+                     write_sqlite = TRUE, ...)),
+        error = c("collect", "muffle"),
+        warning = c("collect", "muffle"),
+        message = c("collect", "muffle")
       )
 
-    })
+      mess_errs <- lapply(value_mess$error, `[[`, 1)
 
-    # observeEvent(data(), {
-    #
-    #   shinyFeedback::hideFeedback(inputId = "file")
-    #
-    #   # if (ext() != require_extension()) {
-    #   #   shinyFeedback::showFeedbackDanger(inputId = "file",
-    #   #                      text = paste0("Archivo inválido;",
-    #   #                                    "por favor cargar un archivo .",
-    #   #                                    require_extension))
-    #   # } else {
-    #     if (data() == FALSE) {
-    #       shinyFeedback::showFeedbackDanger(inputId = "file",
-    #                                         text = "Archivo incorrecto, VERIFICAR")
-    #     } else {
-    #       shinyFeedback::showFeedbackSuccess(inputId = "file",
-    #                                          text = "Carga COMPLETA")
-    #       df_trigger()$trigger()
-    #     }
-    #   # }
-    #
-    # })
+      mess_warns <- lapply(value_mess$warning, `[[`, 1)
+
+      if (length(mess_errs) == 0) {
+        df_trigger()$trigger()
+        if (length(mess_warns) == 0) {
+          shiny::showNotification("Importaci\u00f3n con \u00e9xito", type = "message")
+          shinyFeedback::showFeedbackSuccess(inputId = "file",
+                                             text = "Importaci\u00f3n COMPLETA")
+        } else {
+          shinyFeedback::showFeedbackWarning(inputId = "file",
+                                             text = paste0("Importaci\u00f3n INCOMPLETA - ",
+                                                           "no se pudieron importar ",
+                                                           length(mess_warns), " archivos"))
+          lapply(mess_warns,
+                 function(x) shiny::showNotification(x, type = "warning",
+                                                     duration = 10))
+        }
+      } else {
+        shinyFeedback::showFeedbackDanger(inputId = "file",
+                                          text = paste0("ERROR en la Importaci\u00f3n",
+                                                        " - ning\u00fan archivo fue importado"))
+        lapply(mess_warns,
+               function(x) shiny::showNotification(x, type = "warning",
+                                                   duration = 10))
+      }
+    })
 
   })
 }
