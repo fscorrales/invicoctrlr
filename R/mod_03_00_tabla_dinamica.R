@@ -43,6 +43,7 @@ mod_03_00_tabla_dinamica_ui <- function(id){
     bs4Dash::box(
       id = ns("controller"),
       status = "olive",
+      title = "Tabla Dinámica",
       solidHeader = TRUE,
       width = 12,
       collapsible = FALSE,
@@ -67,7 +68,12 @@ mod_03_00_tabla_dinamica_ui <- function(id){
         rep_br(),
         selectizeInput(ns("tabla"), "Selección de Tabla",
                        choices = tablas, selected = "", multiple = F,
-                       options = list(placeholder = "Elegir una opción"))
+                       options = list(placeholder = "Elegir una opción")),
+        shiny::column(12, align = "center",
+                      bs4Dash::actionButton(ns("update_td"),
+                                            "Insertar Tabla Dinámica",
+                                            status = "primary"))
+
         )
       )
   )
