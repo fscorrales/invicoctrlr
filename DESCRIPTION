@@ -1,6 +1,6 @@
 Package: invicoctrlr
 Title: R INVICO
-Version: 0.0.0.9010
+Version: 0.0.0.9011
 Authors@R: person('Fernando', 'Corrales', email = 'fscorrales@gmail.com', role = c('cre', 'aut'))
 Description: Shiny App develop to control INVICO’s
   (Instituto de Vivienda de Corrientes) budget execution.
@@ -9,6 +9,7 @@ License: MIT + file LICENSE
 Imports: 
     attempt,
     bs4Dash,
+    catchr,
     config (>= 0.3.1),
     DT,
     fs,
@@ -21,7 +22,9 @@ Imports:
     processx,
     rlang,
     shiny (>= 1.6.0),
+    shinyFeedback,
     shinyFiles (>= 0.9.0.9000),
+    shinyjs,
     vroom
 Encoding: UTF-8
 LazyData: true
@@ -33,6 +36,6 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Language: en-US
-Remotes:  
+Remotes: 
     github::fscorrales/invicodatr,
     gitlab::thomasp85/shinyFiles

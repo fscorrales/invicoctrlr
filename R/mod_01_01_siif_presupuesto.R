@@ -13,34 +13,33 @@ mod_01_01_siif_presupuesto_ui <- function(id){
 
   steps_pres_fte <- list(
     ingreso = paste0(
-      "Ingrese al ", htmltools::strong("SIIF"),
-      " y seleccione el menú ",
-      htmltools::strong("Reportes / Generación de Reportes / SUB - SISTEMA DE CONTROL DE GASTOS")
+      "Ingrese al <strong>SIIF</strong> y seleccione el men\u00fa ",
+      "<strong>Reportes / Generaci\u00f3n de Reportes / SUB - SISTEMA ",
+      "DE CONTROL DE GASTOS</strong>"
     ),
     reporte = paste0(
-      strong("Busque e ingrese"), " al reporte ",
-      strong("rf602"), " o el codigo ", strong("38")
+      "<strong>Busque e ingrese</strong> al reporte ",
+      "<strong>rf602</strong> o el c\u00f3digo <strong>38</strong>"
     ),
     ejercicio = paste0(
-      "Ingrese el ", strong("Ejercicio"),
-      " para el cual desea obtener el reporte y seleccione el formato a exportar como ",
-      strong("XLS")
+      "Ingrese el <strong>Ejercicio</strong> para el cual desea obtener ",
+      "el reporte y seleccione el formato a exportar como <strong>XLS</strong>"
     ),
     exportar = paste0(
-      "Presione el botón ", strong("Ver Reporte")
+      "Presione el bot\u00f3n <strong>Ver Reporte</strong>"
     ),
     guardar = paste0(
-      strong("Guardar"), " el archivo generado en una ubicación que recuerde"
+      "<strong>Guardar</strong> el archivo generado en una ubicaci\u00f3n que recuerde"
     ),
     importar = paste0(
-      strong("Importar"), " el archivo descargado previamente"
+      "<strong>Importar</strong> el archivo descargado previamente"
     )
   )
 
   steps_pres_desc <- steps_pres_fte
   steps_pres_desc$reporte <- paste0(
-    strong("Busque e ingrese"), " al reporte ",
-    strong("rf610"), " o el codigo ", strong("7")
+    "<strong>Busque e ingrese</strong> al reporte <strong>rf610</strong> ",
+    "o el c\u00f3digo <strong>7</strong>"
   )
 
   tagList(
