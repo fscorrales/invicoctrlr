@@ -1,6 +1,6 @@
 Package: invicoctrlr
 Title: R INVICO
-Version: 0.0.0.9011
+Version: 0.0.0.9012
 Authors@R: person('Fernando', 'Corrales', email = 'fscorrales@gmail.com', role = c('cre', 'aut'))
 Description: Shiny App develop to control INVICO’s
   (Instituto de Vivienda de Corrientes) budget execution.
@@ -21,6 +21,7 @@ Imports:
     openxlsx,
     processx,
     rlang,
+    rpivotTable,
     shiny (>= 1.6.0),
     shinyFeedback,
     shinyFiles (>= 0.9.0.9000),

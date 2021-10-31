@@ -20,7 +20,8 @@ tab_id <- as.list(c(
   ctr = "02_00_control",
   ctrl_recursos = "02_01_recursos",
   ctrl_gastos = "02_02_gastos",
-  ctrl_remamente = "02_03_remamente"
+  ctrl_remamente = "02_03_remamente",
+  td = "03_00_tabla_dinamica"
 ))
 
 
@@ -162,7 +163,7 @@ set_sidebar <- function() {
       ),
       bs4Dash::menuItem(
         "Tabla Din\u00e1mica",
-        tabName = "tabla_dinamica",
+        tabName = tab_id$td,
         icon = shiny::icon("table")
       ),
       bs4Dash::menuItem(
@@ -189,6 +190,11 @@ set_body <- function() {
         tabName = tab_id$bd_tesoreria,
         (paste0("mod_", tab_id$bd_tesoreria, "_ui")) %>%
           do.call(list(tab_id$bd_tesoreria))
+      ),
+      bs4Dash::tabItem(
+        tabName = tab_id$td,
+        (paste0("mod_", tab_id$td, "_ui")) %>%
+          do.call(list(tab_id$td))
       ),
       bs4Dash::tabItem(
         tabName = tab_id$bd_gastos
