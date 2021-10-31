@@ -13,7 +13,7 @@ make_reactive_trigger <- function() {
 }
 
 siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
-siif_ppto_gtos_fte <- shiny::reactive({
+siif_ppto_gtos_fte_rf602 <- shiny::reactive({
   siif_ppto_gtos_fte_trigger$depend()
   Ans <- invicodatr::read_table_sqlite("SIIF", "ppto_gtos_fte_rf602")
   Ans <- Ans %>%
@@ -24,7 +24,7 @@ siif_ppto_gtos_fte <- shiny::reactive({
 })
 
 siif_ppto_gtos_desc_trigger <- make_reactive_trigger()
-siif_ppto_gtos_desc <- shiny::reactive({
+siif_ppto_gtos_desc_rf610 <- shiny::reactive({
   siif_ppto_gtos_fte_trigger$depend()
   Ans <- invicodatr::read_table_sqlite("SIIF", "ppto_gtos_desc_rf610")
   Ans <- Ans %>%

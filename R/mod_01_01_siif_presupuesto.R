@@ -112,10 +112,10 @@ mod_01_01_siif_presupuesto_server <- function(id){
     observeEvent(input$controller, {
 
       Ans <- switch(input$controller,
-                    pres_fte = list(data = siif_ppto_gtos_fte(),
+                    pres_fte = list(data = siif_ppto_gtos_fte_rf602(),
                                     import_function = invicodatr::rpw_siif_ppto_gtos_fte,
                                     df_trigger = siif_ppto_gtos_fte_trigger),
-                    pres_desc = list(data = siif_ppto_gtos_desc(),
+                    pres_desc = list(data = siif_ppto_gtos_desc_rf610(),
                                      import_function = invicodatr::rpw_siif_ppto_gtos_desc,
                                      df_trigger = siif_ppto_gtos_desc_trigger),
                     stop("Invalid `x` value")
@@ -142,7 +142,7 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 
-    mod_data_table_server("pres_fte", siif_ppto_gtos_fte,
+    mod_data_table_server("pres_fte", siif_ppto_gtos_fte_rf602,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_pres_fte)
                             ),
@@ -160,7 +160,7 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
     hide_columns_pres_desc <- c(2, 4, 5, 6, 8, 10, 11, 13)
 
-    mod_data_table_server("pres_desc", siif_ppto_gtos_desc,
+    mod_data_table_server("pres_desc", siif_ppto_gtos_desc_rf610,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_pres_desc)
                           ),
