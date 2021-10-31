@@ -16,7 +16,11 @@ tab_id <- as.list(c(
   bd_sgf = "01_06_sgf",
   bd_sscc = "01_07_sscc",
   bd_sgo = "01_08_sgo",
-  bd_icaro = "01_09_icaro"
+  bd_icaro = "01_09_icaro",
+  ctr = "02_00_control",
+  ctrl_recursos = "02_01_recursos",
+  ctrl_gastos = "02_02_gastos",
+  ctrl_remamente = "02_03_remamente"
 ))
 
 
@@ -139,7 +143,22 @@ set_sidebar <- function() {
       bs4Dash::menuItem(
         "Control",
         tabName = "control",
-        icon = shiny::icon("check-square")
+        icon = shiny::icon("check-square"),
+        bs4Dash::menuSubItem(
+          "Recursos - Ingresos",
+          tabName = tab_id$ctrl_recursos,
+          icon = shiny::icon("hand-holding-usd"),
+        ),
+        bs4Dash::menuSubItem(
+          "Gastos - Pagos",
+          tabName = tab_id$ctrl_gastos,
+          icon = shiny::icon("shopping-cart"),
+        ),
+        bs4Dash::menuSubItem(
+          "Remanente",
+          tabName = tab_id$ctrl_remamente,
+          icon = shiny::icon("wallet"),
+        )
       ),
       bs4Dash::menuItem(
         "Tabla Din\u00e1mica",
