@@ -157,3 +157,16 @@ siif_mayor_contable_rcocc31 <- shiny::reactive({
     dplyr::arrange(desc(ejercicio), cta_contable, nro_entrada)
 
 })
+
+sgf_resumen_rend_prov_trigger <- make_reactive_trigger()
+sgf_resumen_rend_prov <- shiny::reactive({
+  sgf_resumen_rend_prov_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SGF",
+                                       "resumen_rend_prov")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
+    dplyr::select(origen, fecha,
+                  dplyr::everything()) %>%
+    dplyr::arrange(origen, fecha)
+
+})
