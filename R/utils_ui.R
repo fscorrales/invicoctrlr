@@ -197,6 +197,11 @@ set_body <- function() {
           do.call(list(tab_id$bd_gastos_fondos))
       ),
       bs4Dash::tabItem(
+        tabName = tab_id$bd_contabilidad,
+        (paste0("mod_", tab_id$bd_contabilidad, "_ui")) %>%
+          do.call(list(tab_id$bd_contabilidad))
+      ),
+      bs4Dash::tabItem(
         tabName = tab_id$td,
         (paste0("mod_", tab_id$td, "_ui")) %>%
           do.call(list(tab_id$td))

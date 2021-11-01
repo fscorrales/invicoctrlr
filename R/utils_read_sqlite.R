@@ -143,3 +143,17 @@ siif_resumen_fdos_rfondo07tp <- shiny::reactive({
     dplyr::arrange(desc(ejercicio), nro_fondo)
 
 })
+
+siif_mayor_contable_trigger <- make_reactive_trigger()
+siif_mayor_contable_rcocc31 <- shiny::reactive({
+  siif_mayor_contable_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SIIF",
+                                       "mayor_contable_rcocc31")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
+                  fecha_aprobado = as.Date(fecha_aprobado, origin = "1970-01-01")) %>%
+    dplyr::select(ejercicio, cta_contable, fecha_aprobado, fecha,
+                  dplyr::everything()) %>%
+    dplyr::arrange(desc(ejercicio), cta_contable, nro_entrada)
+
+})
