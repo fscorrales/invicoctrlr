@@ -192,18 +192,14 @@ set_body <- function() {
           do.call(list(tab_id$bd_tesoreria))
       ),
       bs4Dash::tabItem(
+        tabName = tab_id$bd_gastos_fondos,
+        (paste0("mod_", tab_id$bd_gastos_fondos, "_ui")) %>%
+          do.call(list(tab_id$bd_gastos_fondos))
+      ),
+      bs4Dash::tabItem(
         tabName = tab_id$td,
         (paste0("mod_", tab_id$td, "_ui")) %>%
           do.call(list(tab_id$td))
-      ),
-      bs4Dash::tabItem(
-        tabName = tab_id$bd_gastos
-        # bs4Dash::bs4Table(
-        #   cardWrap = TRUE,
-        #   bordered = TRUE,
-        #   striped = TRUE,
-        #   iris
-        # )
       )
     )
   )
