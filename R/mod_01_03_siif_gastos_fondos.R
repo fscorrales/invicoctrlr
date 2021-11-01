@@ -20,12 +20,14 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
       "<strong>Busque e ingrese</strong> al reporte ",
       "<strong>rcg01_uejp</strong> o el c\u00f3digo <strong>839</strong>"
     ),
-    ejercicio = paste0(
-      "Ingrese el <strong>Ejercicio</strong> para el cual desea obtener ",
-      "el reporte y seleccione el formato a exportar como <strong>XLS</strong>"
+    filtro = paste0(
+      "Ingrese el <strong>Ejercicio</strong> y el <strong>rango fecha</strong> ",
+      "para el cual desea obtener el reporte. La <strong>unidad ejecutora</strong> ",
+      "debe quedar con valor 0"
     ),
     exportar = paste0(
-      "Presione el bot\u00f3n <strong>Ver Reporte</strong>"
+      "Seleccione el formato a exportar como <strong>XLS</strong> y presione ",
+      "el bot\u00f3n <strong>Ver Reporte</strong>"
     ),
     guardar = paste0(
       "<strong>Guardar</strong> el archivo generado en una ubicaci\u00f3n que recuerde"
@@ -45,6 +47,11 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
   steps_comp_gtos_gpo_part$reporte <- paste0(
     "<strong>Busque e ingrese</strong> al reporte <strong>gto_rpa03g</strong> ",
     "o el c\u00f3digo <strong>1175</strong>"
+  )
+  steps_comp_gtos_gpo_part$filtro <- paste0(
+    "Ingrese el <strong>Ejercicio</strong> y el <strong>rango de meses</strong> ",
+    "para el cual desea obtener el reporte. Deberá exportar un archivo por cada ",
+    "<strong>grupo partida</strong> (1, 2, 3, 4, etc.)"
   )
 
   tagList(
