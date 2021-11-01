@@ -50,8 +50,16 @@ siif_comprobantes_rec_rci02 <- shiny::reactive({
 
 })
 
+siif_pagos_trigger <- make_reactive_trigger()
+siif_pagos_rtr03 <- shiny::reactive({
+  siif_pagos_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SIIF", "pagos_rtr03")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha_pago = as.Date(fecha_pago, origin = "1970-01-01")) %>%
+    dplyr::select(ejercicio, fecha_pago, nro_entrada, dplyr::everything()) %>%
+    dplyr::arrange(desc(ejercicio), fecha_pago, nro_entrada)
 
-
+})
 
 siif_comprobantes_gtos_trigger <- make_reactive_trigger()
 siif_comprobantes_gtos_rcg01_uejp <- shiny::reactive({

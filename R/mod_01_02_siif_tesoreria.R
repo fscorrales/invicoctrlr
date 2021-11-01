@@ -14,15 +14,16 @@ mod_01_02_siif_tesoreria_ui <- function(id){
     ingreso = paste0(
       "Ingrese al <strong>SIIF</strong> y seleccione el men\u00fa ",
       "<strong>Reportes / Generaci\u00f3n de Reportes / SUB - SISTEMA ",
-      "DE CONTROL DE GASTOS</strong>"
+      "DE CONTROL DE RECURSOS</strong>"
     ),
     reporte = paste0(
       "<strong>Busque e ingrese</strong> al reporte ",
-      "<strong>rf602</strong> o el c\u00f3digo <strong>38</strong>"
+      "<strong>rci02</strong> o el c\u00f3digo <strong>33</strong>"
     ),
-    ejercicio = paste0(
-      "Ingrese el <strong>Ejercicio</strong> para el cual desea obtener ",
-      "el reporte y seleccione el formato a exportar como <strong>XLS</strong>"
+    filtro = paste0(
+      "Ingrese el <strong>Ejercicio</strong> y el <strong>rango fecha</strong> ",
+      "para el cual desea obtener el reporte y seleccione ",
+      "el formato a exportar como <strong>XLS</strong>"
     ),
     exportar = paste0(
       "Presione el bot\u00f3n <strong>Ver Reporte</strong>"
@@ -33,6 +34,22 @@ mod_01_02_siif_tesoreria_ui <- function(id){
     importar = paste0(
       "<strong>Importar</strong> el archivo descargado previamente"
     )
+  )
+
+  steps_pagos <- steps_comp_rec
+  steps_pagos$ingreso <- paste0(
+    "Ingrese al <strong>SIIF</strong> y seleccione el men\u00fa ",
+    "<strong>Reportes / Generaci\u00f3n de Reportes / SUB - SISTEMA ",
+    "DE CONTROL DE TESORERIA</strong>"
+  )
+  steps_pagos$reporte <- paste0(
+    "<strong>Busque e ingrese</strong> al reporte ",
+    "<strong>rtr03</strong> o el c\u00f3digo <strong>2146</strong>"
+  )
+  steps_pagos$filtro <- paste0(
+    "Ingrese el <strong>rango fecha</strong> para el cual desea obtener el reporte, ",
+    "dejando la <strong>cta. cte.</strong> en blanco, y seleccione ",
+    "el formato a exportar como <strong>XLS</strong>"
   )
 
   tagList(
@@ -60,11 +77,11 @@ mod_01_02_siif_tesoreria_ui <- function(id){
         value = "comp_rec",
         mod_data_table_ui(ns("comp_rec"))
       ),
-      # shiny::tabPanel(
-      #   title = "Ejecucion Presupuesto Recursos",
-      #   value = "",
-      #   # mod_data_table_ui(ns("pres_desc"))
-      # ),
+      shiny::tabPanel(
+        title = "Pagos",
+        value = "pagos",
+        mod_data_table_ui(ns("pagos"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -78,12 +95,12 @@ mod_01_02_siif_tesoreria_ui <- function(id){
                              htmltools::tags$ol(
                                list_to_li(steps_comp_rec)
                              )
+                    ),
+                    tabPanel("pagos",
+                             htmltools::tags$ol(
+                               list_to_li(steps_pagos)
+                             )
                     )
-                    # tabPanel(ns_id$presupuesto_recursos,
-                    #          htmltools::tags$ol(
-                    #            list_to_li(steps_comp_rec)
-                    #          )
-                    # )
         )
       )
     )
@@ -109,9 +126,9 @@ mod_01_02_siif_tesoreria_server <- function(id){
                     comp_rec = list(data = siif_comprobantes_rec_rci02(),
                                     import_function = invicodatr::rpw_siif_comprobantes_rec(),
                                     df_trigger = siif_comprobantes_rec_trigger),
-                    # pres_rec = list(data = siif_ppto_gtos_desc_rf610(),
-                    #                  import_function = invicodatr::rpw_siif_ppto_gtos_desc,
-                    #                  df_trigger = siif_ppto_gtos_desc_trigger),
+                    pagos = list(data = siif_pagos_rtr03(),
+                                 import_function = invicodatr::rpw_siif_pagos,
+                                 df_trigger = siif_pagos_trigger),
                     stop("Invalid `x` value")
       )
 
@@ -149,6 +166,24 @@ mod_01_02_siif_tesoreria_server <- function(id){
                               extend='colvis',
                               text="Mostrar / Ocultar columnas",
                               columns = hide_columns_comp_rec)
+                          )
+    )
+
+    hide_columns_pagos <- c(11) #begins in 0
+
+    mod_data_table_server("pagos", siif_pagos_rtr03,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_pagos)
+                          ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_pagos)
                           )
     )
 
