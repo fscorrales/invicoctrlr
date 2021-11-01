@@ -28,15 +28,15 @@ mod_data_table_server <- function(id, data, selection = "single",
     output$data_table <- DT::renderDT({
       DT::datatable(data(), rownames = FALSE, class = "display compact", style="default",
                     extensions = c("Scroller", "Buttons", 'ColReorder'),
-                    filter = list(position = 'top', clear = FALSE, plain=T),
+                    filter = list(position = 'bottom', clear = FALSE, plain=T),
                     options = list(pageLength = 100,
                                    # lengthMenu = list(c(10, 25, 50, -1), c(10, 25, 50, "todos los")),
-                                   filter = "top", searching = T, ColReorder = TRUE,
+                                   filter = "top", searching = TRUE, ColReorder = TRUE,
                                    deferRender = T, stateSave=F,
                                    scrollX = T, scrollY = '400px',
                                    scroller = T,
                                    language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
-                                   dom = 'Brtlip', ...
+                                   dom = 'BRtlip', ...
                                    ),
                     selection = selection
                     )
