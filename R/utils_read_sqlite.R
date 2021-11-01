@@ -61,6 +61,17 @@ siif_pagos_rtr03 <- shiny::reactive({
 
 })
 
+siif_retenciones_por_codigo_trigger <- make_reactive_trigger()
+siif_retenciones_por_codigo_rao01 <- shiny::reactive({
+  siif_retenciones_por_codigo_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SIIF", "retenciones_por_codigo_rao01")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
+    dplyr::select(ejercicio, fecha, nro_entrada, dplyr::everything()) %>%
+    dplyr::arrange(desc(ejercicio), fecha, nro_entrada)
+
+})
+
 siif_comprobantes_gtos_trigger <- make_reactive_trigger()
 siif_comprobantes_gtos_rcg01_uejp <- shiny::reactive({
   siif_comprobantes_gtos_trigger$depend()
@@ -103,5 +114,32 @@ siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- shiny::reactive({
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
     dplyr::select(ejercicio, mes, fecha, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), fecha, nro_entrada)
+
+})
+
+siif_deuda_flotante_trigger <- make_reactive_trigger()
+siif_deuda_flotante_rdeu012 <- shiny::reactive({
+  siif_deuda_flotante_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SIIF",
+                                       "deuda_flotante_rdeu012")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha_desde = as.Date(fecha_desde, origin = "1970-01-01"),
+                  fecha_hasta = as.Date(fecha_hasta, origin = "1970-01-01"),
+                  fecha_aprobado = as.Date(fecha_aprobado, origin = "1970-01-01")) %>%
+    dplyr::select(fecha_desde, fecha_hasta, mes_hasta, fecha_aprobado,
+                  dplyr::everything()) %>%
+    dplyr::arrange(desc(fecha_hasta), fuente, nro_entrada)
+
+})
+
+siif_resumen_fdos_trigger <- make_reactive_trigger()
+siif_resumen_fdos_rfondo07tp <- shiny::reactive({
+  siif_resumen_fdos_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SIIF",
+                                       "resumen_fdos_rfondo07tp")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
+    dplyr::select(ejercicio, dplyr::everything()) %>%
+    dplyr::arrange(desc(ejercicio), nro_fondo)
 
 })

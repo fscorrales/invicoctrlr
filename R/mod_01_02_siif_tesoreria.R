@@ -52,6 +52,8 @@ mod_01_02_siif_tesoreria_ui <- function(id){
     "el formato a exportar como <strong>XLS</strong>"
   )
 
+  steps_ret_cod <- steps_comp_rec
+
   tagList(
     bs4Dash::tabBox(
       id = ns("controller"),
@@ -82,6 +84,11 @@ mod_01_02_siif_tesoreria_ui <- function(id){
         value = "pagos",
         mod_data_table_ui(ns("pagos"))
       ),
+      shiny::tabPanel(
+        title = "Retenciones x C\u00f3digo",
+        value = "ret_cod",
+        mod_data_table_ui(ns("ret_cod"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -99,6 +106,11 @@ mod_01_02_siif_tesoreria_ui <- function(id){
                     tabPanel("pagos",
                              htmltools::tags$ol(
                                list_to_li(steps_pagos)
+                             )
+                    ),
+                    tabPanel("ret_cod",
+                             htmltools::tags$ol(
+                               list_to_li(steps_ret_cod)
                              )
                     )
         )
@@ -129,6 +141,9 @@ mod_01_02_siif_tesoreria_server <- function(id){
                     pagos = list(data = siif_pagos_rtr03(),
                                  import_function = invicodatr::rpw_siif_pagos,
                                  df_trigger = siif_pagos_trigger),
+                    ret_cod = list(data = siif_retenciones_por_codigo_rao01(),
+                                 import_function = invicodatr::rpw_siif_retenciones_por_codigo,
+                                 df_trigger = siif_retenciones_por_codigo_trigger),
                     stop("Invalid `x` value")
       )
 
@@ -184,6 +199,24 @@ mod_01_02_siif_tesoreria_server <- function(id){
                               extend='colvis',
                               text="Mostrar / Ocultar columnas",
                               columns = hide_columns_pagos)
+                          )
+    )
+
+    hide_columns_ret_cod <- c(4) #begins in 0
+
+    mod_data_table_server("ret_cod", siif_retenciones_por_codigo_rao01,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_ret_cod)
+                          ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_ret_cod)
                           )
     )
 

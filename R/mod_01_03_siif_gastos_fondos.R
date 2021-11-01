@@ -54,6 +54,10 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
     "<strong>grupo partida</strong> (1, 2, 3, 4, etc.)"
   )
 
+  steps_deuda <- steps_comp_gtos
+
+  steps_comp_fdos <- steps_comp_gtos
+
   tagList(
     bs4Dash::tabBox(
       id = ns("controller"),
@@ -75,19 +79,29 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
                                                     filetype=list(csv="csv")))
       ),
       shiny::tabPanel(
-        title = "Comprobantes Gtos",
+        title = "Comp. Gtos",
         value = "comp_gtos",
         mod_data_table_ui(ns("comp_gtos"))
       ),
       shiny::tabPanel(
-        title = "Comprobantes Gtos + Partida",
+        title = "Comp. Gtos + Partida",
         value = "comp_gtos_part",
         mod_data_table_ui(ns("comp_gtos_part"))
       ),
       shiny::tabPanel(
-        title = "Comprobantes Gtos + Gpo Partida",
+        title = "Comp. Gtos + Gpo Partida",
         value = "comp_gtos_gpo_part",
         mod_data_table_ui(ns("comp_gtos_gpo_part"))
+      ),
+      shiny::tabPanel(
+        title = "Deuda Flotante",
+        value = "deuda",
+        mod_data_table_ui(ns("deuda"))
+      ),
+      shiny::tabPanel(
+        title = "Comp. Fdos.",
+        value = "comp_fdos",
+        mod_data_table_ui(ns("comp_fdos"))
       ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
@@ -111,6 +125,16 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
                     tabPanel("comp_gtos_gpo_part",
                              htmltools::tags$ol(
                                list_to_li(steps_comp_gtos_gpo_part)
+                             )
+                    ),
+                    tabPanel("deuda",
+                             htmltools::tags$ol(
+                               list_to_li(steps_deuda)
+                             )
+                    ),
+                    tabPanel("comp_fdos",
+                             htmltools::tags$ol(
+                               list_to_li(steps_comp_fdos)
                              )
                     )
         )
@@ -144,6 +168,12 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
                     comp_gtos_gpo_part = list(data = siif_comprobantes_gtos_gpo_partida_gto_rpa03g(),
                                           import_function = invicodatr::rpw_siif_comprobantes_gtos_gpo_partida,
                                           df_trigger = siif_comprobantes_gtos_gpo_partida_trigger),
+                    deuda = list(data = siif_deuda_flotante_rdeu012(),
+                                 import_function = invicodatr::rpw_siif_deuda_flotante,
+                                 df_trigger = siif_deuda_flotante_trigger),
+                    comp_fdos = list(data = siif_resumen_fdos_rfondo07tp(),
+                                     import_function = invicodatr::rpw_siif_resumen_fdos,
+                                     df_trigger = siif_resumen_fdos_trigger),
                     stop("Invalid `x` value")
       )
 
@@ -217,6 +247,42 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
                               extend='colvis',
                               text="Mostrar / Ocultar columnas",
                               columns = hide_columns_comp_gtos_gpo_part )
+                          )
+    )
+
+    hide_columns_deuda <- c(0, 7) #begins in 0
+
+    mod_data_table_server("deuda", siif_deuda_flotante_rdeu012,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_deuda )
+                          ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_deuda)
+                          )
+    )
+
+    hide_columns_comp_fdos <- c(7) #begins in 0
+
+    mod_data_table_server("comp_fdos", siif_resumen_fdos_rfondo07tp,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_comp_fdos )
+                          ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_comp_fdos)
                           )
     )
 
