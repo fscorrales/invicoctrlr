@@ -25,16 +25,16 @@ mod_03_00_tabla_dinamica_ui <- function(id){
 
   steps_td <- list(
     choose = paste0(
-      "Deberá elegir una de las tablas del siguiente listado"
+      "Deber\u00e1 elegir una de las tablas del siguiente listado"
     ),
     custom = paste0(
-      "Personalice la tabla en función de la información que ",
+      "Personalice la tabla en funci\u00f3n de la informaci\u00f3n que ",
       "desea obtener. Puede ubicar los campos en filas o columnas ",
-      "(arrastrándolos), filtrar los mismos y elegir una función ",
-      "de agregación (suma, cuenta, etc.)"
+      "(arrastr\u00e1ndolos), filtrar los mismos y elegir una funci\u00f3n ",
+      "de agregaci\u00f3n (suma, cuenta, etc.)"
     ),
     output = paste0(
-      "Puede seleccionar distintos tipos de salida (tablas o gráficos)"
+      "Puede seleccionar distintos tipos de salida (tablas o gr\u00e1ficos)"
     )
   )
 
@@ -43,7 +43,7 @@ mod_03_00_tabla_dinamica_ui <- function(id){
     bs4Dash::box(
       id = ns("controller"),
       status = "olive",
-      title = "Tabla Dinámica",
+      title = "Tabla Din\u00e1mica",
       solidHeader = TRUE,
       width = 12,
       collapsible = FALSE,
@@ -59,19 +59,19 @@ mod_03_00_tabla_dinamica_ui <- function(id){
         id = ns("sidebar"),
         startOpen = TRUE,
         icon = shiny::icon("cogs"),
-        htmltools::h4("Selección de Tabla base", style="text-align: center;"),
+        htmltools::h4("Selecci\u00f3n de Tabla base", style="text-align: center;"),
         rep_br(),
-        htmltools::h5("¿Cómo usar la tabla dinámica?:"),
+        htmltools::h5("\u00bfC\u00f3mo usar la tabla din\u00e1mica?:"),
         htmltools::tags$ol(
           list_to_li(steps_td)
         ),
         rep_br(),
-        selectizeInput(ns("tabla"), "Selección de Tabla",
+        selectizeInput(ns("tabla"), "Selecci\u00f3n de Tabla",
                        choices = tablas, selected = "", multiple = F,
-                       options = list(placeholder = "Elegir una opción")),
+                       options = list(placeholder = "Elegir una opci\u00f3n")),
         shiny::column(12, align = "center",
                       bs4Dash::actionButton(ns("update_td"),
-                                            "Insertar Tabla Dinámica",
+                                            "Insertar Tabla Din\u00e1mica",
                                             status = "primary"))
 
         )
