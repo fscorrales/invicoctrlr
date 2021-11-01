@@ -33,3 +33,16 @@ siif_ppto_gtos_desc_rf610 <- shiny::reactive({
     dplyr::select(ejercicio, estructura, dplyr::everything())
 
 })
+
+siif_comprobantes_rec_trigger <- make_reactive_trigger()
+siif_comprobantes_rec_rci02 <- shiny::reactive({
+  siif_comprobantes_rec_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SIIF", "comprobantes_rec_rci02")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
+                  verificado = ifelse(verificado == "S", TRUE, FALSE),
+                  remanente = as.logical(remanente),
+                  invico = as.logical(invico)) %>%
+    dplyr::select(ejercicio, fecha, nro_entrada, dplyr::everything())
+
+})
