@@ -170,3 +170,17 @@ sgf_resumen_rend_prov <- shiny::reactive({
     dplyr::arrange(origen, fecha)
 
 })
+
+sscc_banco_invico_trigger <- make_reactive_trigger()
+sscc_banco_invico <- shiny::reactive({
+  sscc_banco_invico_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("SSCC",
+                                       "banco_invico")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
+                  es_cheque = as.logical(es_cheque)) %>%
+    dplyr::select(fecha, mes, movimiento, cta_cte, monto,
+                  dplyr::everything()) %>%
+    dplyr::arrange(desc(fecha))
+
+})

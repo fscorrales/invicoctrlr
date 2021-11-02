@@ -20,6 +20,8 @@ app_server <- function( input, output, session ) {
     do.call(list(tab_id$bd_contabilidad))
   (paste0("mod_", tab_id$bd_sgf, "_server")) %>%
     do.call(list(tab_id$bd_sgf))
+  (paste0("mod_", tab_id$bd_sscc, "_server")) %>%
+    do.call(list(tab_id$bd_sscc))
   (paste0("mod_", tab_id$td, "_server")) %>%
     do.call(list(tab_id$td))
 
