@@ -15,7 +15,7 @@ make_reactive_trigger <- function() {
 siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
 siif_ppto_gtos_fte_rf602 <- shiny::reactive({
   siif_ppto_gtos_fte_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF", "ppto_gtos_fte_rf602")
+  Ans <- invicodatr::read_table_sqlite("siif", "ppto_gtos_fte_rf602")
   Ans <- Ans %>%
     dplyr::mutate(estructura = paste(programa, subprograma,
                                      proyecto, actividad, sep = "-")) %>%
@@ -27,7 +27,7 @@ siif_ppto_gtos_fte_rf602 <- shiny::reactive({
 siif_ppto_gtos_desc_trigger <- make_reactive_trigger()
 siif_ppto_gtos_desc_rf610 <- shiny::reactive({
   siif_ppto_gtos_fte_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF", "ppto_gtos_desc_rf610")
+  Ans <- invicodatr::read_table_sqlite("siif", "ppto_gtos_desc_rf610")
   Ans <- Ans %>%
     dplyr::mutate(estructura = paste(programa, subprograma,
                                      proyecto, actividad, sep = "-")) %>%
@@ -39,7 +39,7 @@ siif_ppto_gtos_desc_rf610 <- shiny::reactive({
 siif_comprobantes_rec_trigger <- make_reactive_trigger()
 siif_comprobantes_rec_rci02 <- shiny::reactive({
   siif_comprobantes_rec_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF", "comprobantes_rec_rci02")
+  Ans <- invicodatr::read_table_sqlite("siif", "comprobantes_rec_rci02")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
                   verificado = ifelse(verificado == "S", TRUE, FALSE),
@@ -53,7 +53,7 @@ siif_comprobantes_rec_rci02 <- shiny::reactive({
 siif_pagos_trigger <- make_reactive_trigger()
 siif_pagos_rtr03 <- shiny::reactive({
   siif_pagos_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF", "pagos_rtr03")
+  Ans <- invicodatr::read_table_sqlite("siif", "pagos_rtr03")
   Ans <- Ans %>%
     dplyr::mutate(fecha_pago = as.Date(fecha_pago, origin = "1970-01-01")) %>%
     dplyr::select(ejercicio, fecha_pago, nro_entrada, dplyr::everything()) %>%
@@ -64,7 +64,7 @@ siif_pagos_rtr03 <- shiny::reactive({
 siif_retenciones_por_codigo_trigger <- make_reactive_trigger()
 siif_retenciones_por_codigo_rao01 <- shiny::reactive({
   siif_retenciones_por_codigo_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF", "retenciones_por_codigo_rao01")
+  Ans <- invicodatr::read_table_sqlite("siif", "retenciones_por_codigo_rao01")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
     dplyr::select(ejercicio, fecha, nro_entrada, dplyr::everything()) %>%
@@ -75,7 +75,7 @@ siif_retenciones_por_codigo_rao01 <- shiny::reactive({
 siif_comprobantes_gtos_trigger <- make_reactive_trigger()
 siif_comprobantes_gtos_rcg01_uejp <- shiny::reactive({
   siif_comprobantes_gtos_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF",
+  Ans <- invicodatr::read_table_sqlite("siif",
                                        "comprobantes_gtos_rcg01_uejp")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
@@ -92,7 +92,7 @@ siif_comprobantes_gtos_rcg01_uejp <- shiny::reactive({
 siif_comprobantes_gtos_partida_trigger <- make_reactive_trigger()
 siif_comprobantes_gtos_partida_rcg01_par <- shiny::reactive({
   siif_comprobantes_gtos_partida_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF",
+  Ans <- invicodatr::read_table_sqlite("siif",
                                        "comprobantes_gtos_partida_rcg01_par")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
@@ -108,7 +108,7 @@ siif_comprobantes_gtos_partida_rcg01_par <- shiny::reactive({
 siif_comprobantes_gtos_gpo_partida_trigger <- make_reactive_trigger()
 siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- shiny::reactive({
   siif_comprobantes_gtos_gpo_partida_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF",
+  Ans <- invicodatr::read_table_sqlite("siif",
                                        "comprobantes_gtos_gpo_partida_gto_rpa03g")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
@@ -120,7 +120,7 @@ siif_comprobantes_gtos_gpo_partida_gto_rpa03g <- shiny::reactive({
 siif_deuda_flotante_trigger <- make_reactive_trigger()
 siif_deuda_flotante_rdeu012 <- shiny::reactive({
   siif_deuda_flotante_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF",
+  Ans <- invicodatr::read_table_sqlite("siif",
                                        "deuda_flotante_rdeu012")
   Ans <- Ans %>%
     dplyr::mutate(fecha_desde = as.Date(fecha_desde, origin = "1970-01-01"),
@@ -135,7 +135,7 @@ siif_deuda_flotante_rdeu012 <- shiny::reactive({
 siif_resumen_fdos_trigger <- make_reactive_trigger()
 siif_resumen_fdos_rfondo07tp <- shiny::reactive({
   siif_resumen_fdos_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF",
+  Ans <- invicodatr::read_table_sqlite("siif",
                                        "resumen_fdos_rfondo07tp")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
@@ -147,7 +147,7 @@ siif_resumen_fdos_rfondo07tp <- shiny::reactive({
 siif_mayor_contable_trigger <- make_reactive_trigger()
 siif_mayor_contable_rcocc31 <- shiny::reactive({
   siif_mayor_contable_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SIIF",
+  Ans <- invicodatr::read_table_sqlite("siif",
                                        "mayor_contable_rcocc31")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
@@ -161,7 +161,7 @@ siif_mayor_contable_rcocc31 <- shiny::reactive({
 sgf_resumen_rend_prov_trigger <- make_reactive_trigger()
 sgf_resumen_rend_prov <- shiny::reactive({
   sgf_resumen_rend_prov_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SGF",
+  Ans <- invicodatr::read_table_sqlite("sgf",
                                        "resumen_rend_prov")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
@@ -174,7 +174,7 @@ sgf_resumen_rend_prov <- shiny::reactive({
 sscc_banco_invico_trigger <- make_reactive_trigger()
 sscc_banco_invico <- shiny::reactive({
   sscc_banco_invico_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("SSCC",
+  Ans <- invicodatr::read_table_sqlite("sscc",
                                        "banco_invico")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),

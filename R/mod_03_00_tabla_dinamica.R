@@ -12,11 +12,11 @@ mod_03_00_tabla_dinamica_ui <- function(id){
   ns <- NS(id)
   tablas_anexas <- c()
   tablas <- c(tablas_anexas,
-              sapply(invicodatr::list_tables_sqlite("SIIF"),
+              sapply(invicodatr::list_tables_sqlite("siif"),
                      function(x) paste0("siif_", x), USE.NAMES = FALSE),
-              sapply(invicodatr::list_tables_sqlite("SSCC"),
+              sapply(invicodatr::list_tables_sqlite("sscc"),
                      function(x) paste0("sscc_", x), USE.NAMES = FALSE),
-              sapply(invicodatr::list_tables_sqlite("SGF"),
+              sapply(invicodatr::list_tables_sqlite("sgf"),
                      function(x) paste0("sgf_", x), USE.NAMES = FALSE))
               # sapply(invicodatr::list_tables_sqlite("SGO"),
               #        function(x) paste0("sgo_", x), USE.NAMES = FALSE),
