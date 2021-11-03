@@ -14,15 +14,18 @@ mod_01_04_siif_contabilidad_ui <- function(id){
     ingreso = paste0(
       "Ingrese al <strong>SIIF</strong> y seleccione el men\u00fa ",
       "<strong>Reportes / Generaci\u00f3n de Reportes / SUB - SISTEMA ",
-      "DE CONTROL DE GASTOS</strong>"
+      "DE CONTROL DE CONTABILIDAD PATRIMONIAL</strong>"
     ),
     reporte = paste0(
       "<strong>Busque e ingrese</strong> al reporte ",
-      "<strong>rf602</strong> o el c\u00f3digo <strong>38</strong>"
+      "<strong>rcocc31</strong> o el c\u00f3digo <strong>387</strong>"
     ),
     filtro = paste0(
-      "Ingrese el <strong>Ejercicio</strong> para el cual desea obtener ",
-      "el reporte"
+      "Ingrese el <strong>Ejercicio</strong>, el c\u00f3digo de cuenta " ,
+      "(<strong>nivel, mayor, subcuenta</strong>) para el cual desea obtener ",
+      "el reporte. En cuanto al <strong>rango fecha</strong>, puede seleccionar ",
+      "per\u00edodos que superen al a\u00f1o calendario dado que los asientos ",
+      "de ajuste se registran por fuera del mismo"
     ),
     exportar = paste0(
       "Seleccione el formato a exportar como <strong>XLS</strong> y ",
