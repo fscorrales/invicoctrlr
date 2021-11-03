@@ -22,11 +22,11 @@ mod_01_02_siif_tesoreria_ui <- function(id){
     ),
     filtro = paste0(
       "Ingrese el <strong>Ejercicio</strong> y el <strong>rango fecha</strong> ",
-      "para el cual desea obtener el reporte y seleccione ",
-      "el formato a exportar como <strong>XLS</strong>"
+      "(preferentemente a\u00f1o calendario) para el cual desea obtener el reporte. "
     ),
     exportar = paste0(
-      "Presione el bot\u00f3n <strong>Ver Reporte</strong>"
+      "Seleccione el formato a exportar como <strong>XLS</strong> y ",
+      "presione el bot\u00f3n <strong>Ver Reporte</strong>"
     ),
     guardar = paste0(
       "<strong>Guardar</strong> el archivo generado en una ubicaci\u00f3n que recuerde"
@@ -47,12 +47,20 @@ mod_01_02_siif_tesoreria_ui <- function(id){
     "<strong>rtr03</strong> o el c\u00f3digo <strong>2146</strong>"
   )
   steps_pagos$filtro <- paste0(
-    "Ingrese el <strong>rango fecha</strong> para el cual desea obtener el reporte, ",
-    "dejando la <strong>cta. cte.</strong> en blanco, y seleccione ",
-    "el formato a exportar como <strong>XLS</strong>"
+    "Ingrese el <strong>rango fecha</strong> (preferentemente a\u00f1o calendario) ",
+    "para el cual desea obtener el reporte, ",
+    "dejando la <strong>cta. cte.</strong> en blanco"
   )
 
-  steps_ret_cod <- steps_comp_rec
+  steps_ret_cod <- steps_pagos
+  steps_ret_cod$reporte <- paste0(
+    "<strong>Busque e ingrese</strong> al reporte ",
+    "<strong>rao01</strong> o el c\u00f3digo <strong>525</strong>"
+  )
+  steps_ret_cod$filtro <- paste0(
+    "Ingrese el <strong>rango fecha</strong> (preferentemente a\u00f1o calendario) ",
+    "para el cual desea obtener el reporte y el <strong>c\u00f3digo de retenci\u00f3n</strong>"
+  )
 
   tagList(
     bs4Dash::tabBox(
