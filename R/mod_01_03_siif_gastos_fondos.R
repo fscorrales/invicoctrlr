@@ -22,8 +22,8 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
     ),
     filtro = paste0(
       "Ingrese el <strong>Ejercicio</strong> y el <strong>rango fecha</strong> ",
-      "para el cual desea obtener el reporte. La <strong>unidad ejecutora</strong> ",
-      "debe quedar con valor 0"
+      "(preferentemente a\u00f1o calendario) para el cual desea obtener el reporte. ",
+      "La <strong>unidad ejecutora</strong> debe quedar con valor 0"
     ),
     exportar = paste0(
       "Seleccione el formato a exportar como <strong>XLS</strong> y presione ",
@@ -50,13 +50,35 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
   )
   steps_comp_gtos_gpo_part$filtro <- paste0(
     "Ingrese el <strong>Ejercicio</strong> y el <strong>rango de meses</strong> ",
-    "para el cual desea obtener el reporte. Deberá exportar un archivo por cada ",
+    "(preferentemente a\u00f1o calendario) para el cual desea obtener el reporte. ",
+    "Deber\u00e1 exportar un archivo por cada ",
     "<strong>grupo partida</strong> (1, 2, 3, 4, etc.)"
   )
 
   steps_deuda <- steps_comp_gtos
+  steps_deuda$reporte <- paste0(
+    "<strong>Busque e ingrese</strong> al reporte <strong>rdeu012</strong> ",
+    "o el c\u00f3digo <strong>267</strong>"
+  )
+  steps_deuda$filtro <- paste0(
+    "Ingrese el valor 0 como <strong>c\u00f3digo fuente</strong>, 01-01-2010 ",
+    "como <strong>fecha desde</strong> y dejar en blanco el campo ",
+    "<strong>clase del gasto</strong>. Por \u00faltimo, deber\u00e1 ingresar ",
+    "la <strong>fecha hasta</strong> de acuerdo a su preferencia teniendo en ",
+    "cuenta de elegir el \u00faltimo d\u00eda del mes"
+  )
 
   steps_comp_fdos <- steps_comp_gtos
+  steps_comp_fdos$reporte <- paste0(
+    "<strong>Busque e ingrese</strong> al reporte <strong>rfondo07tp</strong> ",
+    "o el c\u00f3digo <strong>2070</strong>"
+  )
+  steps_comp_fdos$filtro = paste0(
+    "Ingrese el <strong>Ejercicio</strong>, el <strong>rango fecha</strong> ",
+    "(preferentemente a\u00f1o calendario) y el <strong>tipo de comprobante",
+    "</strong> para el cual desea obtener el reporte"
+  )
+
 
   tagList(
     bs4Dash::tabBox(
