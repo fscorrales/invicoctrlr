@@ -17,11 +17,11 @@ mod_03_00_tabla_dinamica_ui <- function(id){
               sapply(invicodatr::list_tables_sqlite("SSCC"),
                      function(x) paste0("sscc_", x), USE.NAMES = FALSE),
               sapply(invicodatr::list_tables_sqlite("SGF"),
-                     function(x) paste0("sgf_", x), USE.NAMES = FALSE),
-              sapply(invicodatr::list_tables_sqlite("SGO"),
-                     function(x) paste0("sgo_", x), USE.NAMES = FALSE),
-              sapply(invicodatr::list_tables_sqlite("ICARO"),
-                     function(x) paste0("icaro_", x), USE.NAMES = FALSE))
+                     function(x) paste0("sgf_", x), USE.NAMES = FALSE))
+              # sapply(invicodatr::list_tables_sqlite("SGO"),
+              #        function(x) paste0("sgo_", x), USE.NAMES = FALSE),
+              # sapply(invicodatr::list_tables_sqlite("ICARO"),
+              #        function(x) paste0("icaro_", x), USE.NAMES = FALSE))
 
   steps_td <- list(
     choose = paste0(
@@ -86,14 +86,26 @@ mod_03_00_tabla_dinamica_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    output$td = rpivotTable::renderRpivotTable({
-      rpivotTable::rpivotTable(siif_ppto_gtos_fte_rf602(),
-                  rendererName="Tabla Dinamica R INVICO"
-  #                 onRefresh = htmlwidgets::JS(paste0("function(config) {Shiny.onInputChange('", ns("myData"), "',
-  #                                           document.getElementById('", ns("table"),"').innerHTML);
-  # }"))
-                  )
+    td <- shiny::reactiveVal()
+
+    observeEvent(input$update_td, {
+
+      req(input$tabla)
+
+      td(eval(call(input$tabla)))
+
+      output$td = rpivotTable::renderRpivotTable({
+        rpivotTable::rpivotTable(td(),
+                                 rendererName="Tabla Dinamica R INVICO"
+                                 #                 onRefresh = htmlwidgets::JS(paste0("function(config) {Shiny.onInputChange('", ns("myData"), "',
+                                 #                                           document.getElementById('", ns("table"),"').innerHTML);
+                                 # }"))
+        )
+      })
+
     })
+
+
 
   })
 }
