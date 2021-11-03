@@ -12,24 +12,24 @@ mod_01_06_sgf_ui <- function(id){
 
   steps_rend_prov <- list(
     ingreso = paste0(
-      "Ingrese al <strong>SIIF</strong> y seleccione el men\u00fa ",
-      "<strong>Reportes / Generaci\u00f3n de Reportes / SUB - SISTEMA ",
-      "DE CONTROL DE GASTOS</strong>"
-    ),
-    reporte = paste0(
-      "<strong>Busque e ingrese</strong> al reporte ",
-      "<strong>rf602</strong> o el c\u00f3digo <strong>38</strong>"
+      "Ingrese al <strong>Sistema de Gesti\u00f3n Financiera</strong> ",
+      "y seleccione el men\u00fa <strong>Informes / Resumen de ",
+      "Rendiciones</strong>"
     ),
     filtro = paste0(
-      "Ingrese el <strong>Ejercicio</strong> para el cual desea obtener ",
-      "el reporte"
+      "Seleccione <strong>Agrupamiento = Por proveedor</strong> y ",
+      "el <strong>Origen</strong> que desee. En cuanto al ",
+      "<strong>rango de fechas</strong>, elija preferentemente a\u00f1os ",
+      "calendarios completos."
     ),
     exportar = paste0(
-      "Seleccione el formato a exportar como <strong>XLS</strong> y ",
-      "presione el bot\u00f3n <strong>Ver Reporte</strong>"
+      "Presione el bot\u00f3n <strong>Exportar</strong>. ",
+      "En la ventana emergente, mantenga la opci\u00f3n ",
+      "<strong>Archivo...</strong> antes de presionar aceptar"
     ),
     guardar = paste0(
-      "<strong>Guardar</strong> el archivo generado en una ubicaci\u00f3n que recuerde"
+      "Elija el destino del archivo a descargar y preste atenci\u00f3n ",
+      "a que el tipo sea <strong>.csv</strong>"
     ),
     importar = paste0(
       "<strong>Importar</strong> el archivo descargado previamente"
