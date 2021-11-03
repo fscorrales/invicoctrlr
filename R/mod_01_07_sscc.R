@@ -12,24 +12,23 @@ mod_01_07_sscc_ui <- function(id){
 
   steps_banco <- list(
     ingreso = paste0(
-      "Ingrese al <strong>SIIF</strong> y seleccione el men\u00fa ",
-      "<strong>Reportes / Generaci\u00f3n de Reportes / SUB - SISTEMA ",
-      "DE CONTROL DE GASTOS</strong>"
-    ),
-    reporte = paste0(
-      "<strong>Busque e ingrese</strong> al reporte ",
-      "<strong>rf602</strong> o el c\u00f3digo <strong>38</strong>"
+      "Ingrese al <strong>Sistema de Seguimiento de Cuentas Corrientes</strong> ",
+      "y seleccione el men\u00fa <strong>Informes / Consulta General de ",
+      "Movimientos</strong>"
     ),
     filtro = paste0(
-      "Ingrese el <strong>Ejercicio</strong> para el cual desea obtener ",
-      "el reporte"
+      "Seleccione el <strong>rango de fechas</strong>, elijiendo ",
+      "preferentemente a\u00f1os calendarios completos. Luego presione ",
+      "<strong>actualizar</strong>"
     ),
     exportar = paste0(
-      "Seleccione el formato a exportar como <strong>XLS</strong> y ",
-      "presione el bot\u00f3n <strong>Ver Reporte</strong>"
+      "Presione el bot\u00f3n <strong>Exportar</strong>. ",
+      "En la ventana emergente, mantenga la opci\u00f3n ",
+      "<strong>Archivo...</strong> antes de presionar aceptar"
     ),
     guardar = paste0(
-      "<strong>Guardar</strong> el archivo generado en una ubicaci\u00f3n que recuerde"
+      "Elija el destino del archivo a descargar y preste atenci\u00f3n ",
+      "a que el tipo sea <strong>.csv</strong>"
     ),
     importar = paste0(
       "<strong>Importar</strong> el archivo descargado previamente"
