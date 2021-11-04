@@ -48,16 +48,29 @@ mod_02_01_recursos_ui <- function(id){
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
-        icon = shiny::icon("sync-alt"),
-        htmltools::h4("Actualizar Base de Datos", style="text-align: center;"),
+        icon = shiny::icon("filter"),
+        htmltools::h4("Filtros de la Tabla", style="text-align: center;"),
         rep_br(),
-        mod_file_input_ui(ns("update"), multiple = TRUE),
-        htmltools::h5("Pasos a seguir para importar:"),
-        tabsetPanel(id = ns("switcher"), type = "hidden",
-                    tabPanel("rec_vs_sscc",
-                             # htmltools::tags$ol(
-                             #   list_to_li(steps_comp_rec)
-                             # )
+        # mod_file_input_ui(ns("update"), multiple = TRUE),
+        # htmltools::h5("Pasos a seguir para importar:"),
+        tabsetPanel(
+          id = ns("switcher"), type = "hidden",
+          tabPanel("rec_vs_sscc",
+                   fluidRow(
+                     column(6,
+                            selectizeInput(ns("rec_vs_sscc_ejercicio"), "Ejercicio",
+                                      choices = "", selected = "", multiple = TRUE,
+                                      options = list(placeholder = "Todo seleccionado"))
+                            ),
+                     column(6,
+                            dateRangeInput(ns("rec_vs_sscc_fecha"), "Seleccionar Fecha", start = NULL,
+                                           end = NULL, format = "dd-mm-yyyy",
+                                           startview = "month", language = "es", separator = " a ")
+                            )
+                     ),
+                   selectizeInput(ns("rec_vs_sscc_cta_cte"), "Seleccionar Cuentas",
+                                  choices = "", selected = "", multiple = TRUE,
+                                  options = list(placeholder = "Todo seleccionado"))
                     ),
                     tabPanel("rec_vs_sgf",
                              # htmltools::tags$ol(
@@ -118,15 +131,31 @@ mod_02_01_recursos_server <- function(id){
 
     mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
-    mod_file_input_server("update",
-                          import_function = reactive(rpw_controller$fct),
-                          df_trigger = reactive(rpw_controller$trigger))
+    # mod_file_input_server("update",
+    #                       import_function = reactive(rpw_controller$fct),
+    #                       df_trigger = reactive(rpw_controller$trigger))
 
-    hide_columns_comp_rec <- c(4:5, 8:10) #begins in 0
 
-    mod_data_table_server("rec_vs_sscc", siif_comprobantes_rec_rci02,
+    ## ---RECURSOS INVICO vs SSCC--- ##
+    rec_vs_sscc <- reactive({
+
+      db_cta_cte <- primary_key_cta_cte()
+
+      db <- siif_comprobantes_rec_rci02() %>%
+        dplyr::filter(ejercicio == "2021") %>%
+        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte, from = db_cta_cte$siif_recursos_cta_cte,
+          to = db_cta_cte$map_to)) %>%
+        dplyr::group_by(cta_cte) %>%
+        dplyr::summarise(Total = sum(monto))
+
+    })
+
+
+    hide_columns_rec_vs_sscc <- c(0) #begins in 0
+
+    mod_data_table_server("rec_vs_sscc", rec_vs_sscc,
                           columnDefs = list(
-                            list(visible=FALSE, targets = hide_columns_comp_rec)
+                            list(visible=FALSE, targets = hide_columns_rec_vs_sscc)
                           ),
                           buttons = list(
                             list(
@@ -136,45 +165,45 @@ mod_02_01_recursos_server <- function(id){
                             list(
                               extend='colvis',
                               text="Mostrar / Ocultar columnas",
-                              columns = hide_columns_comp_rec)
+                              columns = hide_columns_rec_vs_sscc)
                           )
     )
 
-    hide_columns_pagos <- c(11) #begins in 0
-
-    mod_data_table_server("rec_vs_sgf", siif_pagos_rtr03,
-                          columnDefs = list(
-                            list(visible=FALSE, targets = hide_columns_pagos)
-                          ),
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas'),
-                            list(
-                              extend='colvis',
-                              text="Mostrar / Ocultar columnas",
-                              columns = hide_columns_pagos)
-                          )
-    )
-
-    hide_columns_ret_cod <- c(4) #begins in 0
-
-    mod_data_table_server("rec_vs_invico", siif_retenciones_por_codigo_rao01,
-                          columnDefs = list(
-                            list(visible=FALSE, targets = hide_columns_ret_cod)
-                          ),
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas'),
-                            list(
-                              extend='colvis',
-                              text="Mostrar / Ocultar columnas",
-                              columns = hide_columns_ret_cod)
-                          )
-    )
+    # hide_columns_pagos <- c(11) #begins in 0
+    #
+    # mod_data_table_server("rec_vs_sgf", siif_pagos_rtr03,
+    #                       columnDefs = list(
+    #                         list(visible=FALSE, targets = hide_columns_pagos)
+    #                       ),
+    #                       buttons = list(
+    #                         list(
+    #                           extend = 'collection',
+    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                           text = 'Download 100 primeras filas'),
+    #                         list(
+    #                           extend='colvis',
+    #                           text="Mostrar / Ocultar columnas",
+    #                           columns = hide_columns_pagos)
+    #                       )
+    # )
+    #
+    # hide_columns_ret_cod <- c(4) #begins in 0
+    #
+    # mod_data_table_server("rec_vs_invico", siif_retenciones_por_codigo_rao01,
+    #                       columnDefs = list(
+    #                         list(visible=FALSE, targets = hide_columns_ret_cod)
+    #                       ),
+    #                       buttons = list(
+    #                         list(
+    #                           extend = 'collection',
+    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                           text = 'Download 100 primeras filas'),
+    #                         list(
+    #                           extend='colvis',
+    #                           text="Mostrar / Ocultar columnas",
+    #                           columns = hide_columns_ret_cod)
+    #                       )
+    # )
 
   })
 }
