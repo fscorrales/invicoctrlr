@@ -56,23 +56,9 @@ mod_02_01_recursos_ui <- function(id){
         tabsetPanel(
           id = ns("switcher"), type = "hidden",
           tabPanel("rec_vs_sscc",
-                   fluidRow(
-                     column(6,
-                            selectizeInput(ns("rec_vs_sscc_ejercicio"), "Ejercicio",
-                                      choices = "", selected = "", multiple = TRUE,
-                                      options = list(placeholder = "Todo seleccionado"))
-                            ),
-                     column(6,
-                            dateRangeInput(ns("rec_vs_sscc_fecha"), "Seleccionar Fecha", start = NULL,
-                                           end = NULL, format = "dd-mm-yyyy",
-                                           startview = "month", language = "es", separator = " a ")
-                            )
-                     ),
-                   selectizeInput(ns("rec_vs_sscc_cta_cte"), "Seleccionar Cuentas",
-                                  choices = "", selected = "", multiple = TRUE,
-                                  options = list(placeholder = "Todo seleccionado"))
-                    ),
-                    tabPanel("rec_vs_sgf",
+                   mod_02_01_01_rec_vs_sscc_ui(ns("input_rec_vs_sscc"))
+                   ),
+          tabPanel("rec_vs_sgf",
                              # htmltools::tags$ol(
                              #   list_to_li(steps_pagos)
                              # )
@@ -136,24 +122,11 @@ mod_02_01_recursos_server <- function(id){
     #                       df_trigger = reactive(rpw_controller$trigger))
 
 
-    ## ---RECURSOS INVICO vs SSCC--- ##
-    rec_vs_sscc <- reactive({
-
-      db_cta_cte <- primary_key_cta_cte()
-
-      db <- siif_comprobantes_rec_rci02() %>%
-        dplyr::filter(ejercicio == "2021") %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte, from = db_cta_cte$siif_recursos_cta_cte,
-          to = db_cta_cte$map_to)) %>%
-        dplyr::group_by(cta_cte) %>%
-        dplyr::summarise(Total = sum(monto))
-
-    })
-
+    mod_02_01_01_rec_vs_sscc_server("input_rec_vs_sscc")
 
     hide_columns_rec_vs_sscc <- c(0) #begins in 0
 
-    mod_data_table_server("rec_vs_sscc", rec_vs_sscc,
+    mod_data_table_server("rec_vs_sscc", siif_pagos_rtr03,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_rec_vs_sscc)
                           ),
