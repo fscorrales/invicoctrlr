@@ -185,6 +185,14 @@ sscc_banco_invico <- shiny::reactive({
 
 })
 
+primary_key_cta_cte_trigger <- make_reactive_trigger()
+primary_key_cta_cte <- shiny::reactive({
+  primary_key_cta_cte_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("primary_key",
+                                       "cta_cte")
+
+})
+
 #Unique trigger to whole icaro DB
 icaro_trigger <- make_reactive_trigger()
 icaro_obras <- shiny::reactive({
