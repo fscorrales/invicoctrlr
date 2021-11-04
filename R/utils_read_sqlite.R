@@ -184,3 +184,27 @@ sscc_banco_invico <- shiny::reactive({
     dplyr::arrange(desc(fecha))
 
 })
+
+#Unique trigger to whole icaro DB
+icaro_trigger <- make_reactive_trigger()
+icaro_obras <- shiny::reactive({
+  icaro_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("icaro",
+                                       "obras")
+  Ans <- Ans %>%
+    dplyr::select(obra, imputacion, partida,
+                  dplyr::everything()) %>%
+    dplyr::arrange(obra)
+
+})
+icaro_carga <- shiny::reactive({
+  icaro_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("icaro",
+                                       "carga")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
+    dplyr::select(fecha, nro_entrada, tipo, obra,
+                  dplyr::everything()) %>%
+    dplyr::arrange(desc(fecha), desc(nro_entrada))
+
+})

@@ -212,6 +212,11 @@ set_body <- function() {
           do.call(list(tab_id$bd_sscc))
       ),
       bs4Dash::tabItem(
+        tabName = tab_id$bd_icaro,
+        (paste0("mod_", tab_id$bd_icaro, "_ui")) %>%
+          do.call(list(tab_id$bd_icaro))
+      ),
+      bs4Dash::tabItem(
         tabName = tab_id$ctrl_recursos,
         (paste0("mod_", tab_id$ctrl_recursos, "_ui")) %>%
           do.call(list(tab_id$ctrl_recursos))
