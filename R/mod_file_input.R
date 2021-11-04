@@ -26,6 +26,9 @@ mod_file_input_ui <- function(id, ...){
 mod_file_input_server <- function(id, import_function,
                                   df_trigger, ...){
   moduleServer( id, function(input, output, session){
+
+    options(shiny.maxRequestSize=30*1024^2)
+
     ns <- session$ns
 
     observeEvent(input$file, {
