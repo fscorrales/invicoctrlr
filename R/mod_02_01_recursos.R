@@ -119,7 +119,10 @@ mod_02_01_recursos_server <- function(id){
 
     # hide_columns_rec_vs_sscc <- c(0) #begins in 0
 
-    mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc,
+    format_rec_vs_sscc <- rlang::expr(
+      DT::formatCurrency(columns = "recursos_siif"))
+
+    mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc, format_curr = format_rec_vs_sscc,
                           # columnDefs = list(
                           #   list(visible=FALSE, targets = hide_columns_rec_vs_sscc)
                           # ),

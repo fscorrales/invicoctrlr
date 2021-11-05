@@ -18,13 +18,25 @@ mod_data_table_ui <- function(id){
 #'
 #' @noRd
 mod_data_table_server <- function(id, data, selection = "single",
-                                  DTServer = TRUE, ...){
+                                  DTServer = TRUE, format_curr = NULL, ...){
 
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    # data_formatted <-  reactive({
+    #
+    #   if (is.null(formatting)) {
+    #     ans <- data()
+    #   } else {
+    #     formatting$table <- DT::datatable(data())
+    #     ans <- eval(formatting)
+    #   }
+    #
+    # })
+
+
     output$data_table <- DT::renderDT({
-      DT::datatable(data(), rownames = FALSE, class = "display compact", style="default",
+      ans <- DT::datatable(data(), rownames = FALSE, class = "display compact", style="default",
                     extensions = c("Scroller", "Buttons", 'ColReorder'),
                     filter = list(position = 'bottom', clear = FALSE, plain=T),
                     options = list(pageLength = 100,
@@ -38,6 +50,16 @@ mod_data_table_server <- function(id, data, selection = "single",
                                    ),
                     selection = selection
                     )
+
+
+      #try do.call
+      if (not_null(format_curr)) {
+        format_curr$table <- ans
+        ans <- eval(format_curr)
+      }
+
+      return(ans)
+
       }, server = DTServer)
 
     })
