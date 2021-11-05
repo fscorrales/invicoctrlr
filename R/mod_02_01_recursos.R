@@ -33,40 +33,36 @@ mod_02_01_recursos_ui <- function(id){
       shiny::tabPanel(
         title = "Recursos vs Banco SSCC",
         value = "rec_vs_sscc",
-        mod_data_table_ui(ns("rec_vs_sscc"))
+        mod_data_table_ui(ns("dt_rec_vs_sscc"))
       ),
       shiny::tabPanel(
         title = "Recursos vs Banco SGF",
         value = "rec_vs_sgf",
-        mod_data_table_ui(ns("rec_vs_sgf"))
+        mod_data_table_ui(ns("dt_rec_vs_sgf"))
       ),
       shiny::tabPanel(
         title = "Recurso 3% vs Cod. Ret 337",
         value = "rec_vs_invico",
-        mod_data_table_ui(ns("rec_vs_invico"))
+        mod_data_table_ui(ns("dt_rec_vs_invico"))
       ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
         icon = shiny::icon("filter"),
         htmltools::h4("Filtros de la Tabla", style="text-align: center;"),
-        rep_br(),
+        # rep_br(),
         # mod_file_input_ui(ns("update"), multiple = TRUE),
         # htmltools::h5("Pasos a seguir para importar:"),
         tabsetPanel(
           id = ns("switcher"), type = "hidden",
           tabPanel("rec_vs_sscc",
-                   mod_02_01_01_rec_vs_sscc_ui(ns("input_rec_vs_sscc"))
+                   mod_02_01_01_rec_vs_sscc_ui(ns("filter_rec_vs_sscc"))
                    ),
           tabPanel("rec_vs_sgf",
-                             # htmltools::tags$ol(
-                             #   list_to_li(steps_pagos)
-                             # )
+
                     ),
-                    tabPanel("rec_vs_invico",
-                             # htmltools::tags$ol(
-                             #   list_to_li(steps_ret_cod)
-                             # )
+          tabPanel("rec_vs_invico",
+
                     )
         )
       )
@@ -122,23 +118,23 @@ mod_02_01_recursos_server <- function(id){
     #                       df_trigger = reactive(rpw_controller$trigger))
 
 
-    mod_02_01_01_rec_vs_sscc_server("input_rec_vs_sscc")
+    rec_vs_sscc <- mod_02_01_01_rec_vs_sscc_server("filter_rec_vs_sscc")
 
-    hide_columns_rec_vs_sscc <- c(0) #begins in 0
+    # hide_columns_rec_vs_sscc <- c(0) #begins in 0
 
-    mod_data_table_server("rec_vs_sscc", siif_pagos_rtr03,
-                          columnDefs = list(
-                            list(visible=FALSE, targets = hide_columns_rec_vs_sscc)
-                          ),
+    mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc,
+                          # columnDefs = list(
+                          #   list(visible=FALSE, targets = hide_columns_rec_vs_sscc)
+                          # ),
                           buttons = list(
                             list(
                               extend = 'collection',
                               buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas'),
-                            list(
-                              extend='colvis',
-                              text="Mostrar / Ocultar columnas",
-                              columns = hide_columns_rec_vs_sscc)
+                              text = 'Download 100 primeras filas')
+                            # list(
+                            #   extend='colvis',
+                            #   text="Mostrar / Ocultar columnas",
+                            #   columns = hide_columns_rec_vs_sscc)
                           )
     )
 
