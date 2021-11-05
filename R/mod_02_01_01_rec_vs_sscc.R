@@ -12,19 +12,23 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
   ns <- NS(id)
 
   tagList(
+    shiny::column(12, align = "center",
+                  bs4Dash::actionButton(ns("update"),
+                                        "Actualizar Filtros",
+                                        status = "primary")),
     shiny::fluidRow(
       shiny::column(
-        6, shiny::checkboxGroupInput(ns("grouping"), "Agrupamiento del Reporte",
+        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
                                      choices = c("ejercicio",
                                                  "fecha", "mes","cta_cte", "grupo"),
-                                     selected = "Mes" , inline = FALSE)
+                                     selected = "mes" , inline = FALSE)
         ),
       shiny::column(
         6, shiny::selectizeInput(ns("ejercicio"), "Ejercicio",
                                  choices = "", selected = "", multiple = TRUE,
                                  options = list(placeholder = "Todo seleccionado")),
-        shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NULL,
-                              end = NULL, format = "dd-mm-yyyy",
+        shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NA,
+                              end = NA, format = "dd-mm-yyyy",
                               startview = "month", language = "es", separator = " a ")
         )
       ),
@@ -33,32 +37,28 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
                           options = list(placeholder = "Todo seleccionado")),
     shiny::fluidRow(
       shiny::column(
-        6, shiny::radioButtons(ns("DepurarTransfIntRecursoINVICO"),
+        6, shiny::radioButtons(ns("dep_transf_int"),
                                "¿Depurar Transferencias Internas?",
                                choices = c("SI", "NO"), selected = "SI")
         ),
       shiny::column(
-        6, shiny::radioButtons(ns("DepurarPFRecursoINVICO"),
+        6, shiny::radioButtons(ns("dep_pf"),
                                "¿Depurar Inversiones en PF?",
                                choices = c("SI", "NO"), selected = "SI")
         )
       ),
     shiny::fluidRow(
       shiny::column(
-        6, shiny::radioButtons(ns("DepurarOtrosRecursoINVICO"),
+        6, shiny::radioButtons(ns("dep_otros"),
                                "¿Depurar Cheques Remplazados y Reingresos Vs?",
                                choices = c("SI", "NO"), selected = "SI")
              ),
       shiny::column(
-        6, shiny::radioButtons(ns("DepurarCertNegRecursoINVICO"),
+        6, shiny::radioButtons(ns("dep_cert_neg"),
                                "¿Depurar Cheques endosados a favor de INVICO (Certificado Negativo)?",
                                choices = c("SI", "NO"), selected = "SI")
         )
-      ),
-    shiny::column(12, align = "center",
-                  bs4Dash::actionButton(ns("update"),
-                                        "Actualizar Filtros",
-                                        status = "primary"))
+      )
   )
 }
 
@@ -135,24 +135,102 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
     })
 
     #Generate Table
-    table <- reactive({
+    table <- eventReactive(input$update, {
 
-      db <- db_rec() %>%
-        dplyr::group_by(cta_cte, ejercicio) %>%
-        dplyr::summarise(total = sum(monto)) %>%
-        tidyr::pivot_wider(names_from = cta_cte,
-                           values_from = total)
+      #Setting input$ejercicio default value
+      if (is.null(input$ejercicio)) {
+        shiny::updateSelectizeInput(session, "ejercicio",
+                                    selected = max(as.integer(ejercicio_var()$ejercicio)))
+      }
 
-      # warpbreaks %>%
-      #   pivot_wider(
-      #     names_from = wool,
-      #     values_from = breaks, #can use more than one column
-      #     values_fn = mean
-      #   )
+      if (is.null(input$grupo)) {
+        shiny::updateCheckboxGroupInput(session, "grupo",
+                                        selected = "mes")
+      }
+
+      #Filtering comp_rec_siif
+      siif <- db_rec() %>%
+        dplyr::filter(ejercicio %in% (input$ejercicio %||%
+                                        max(as.integer(ejercicio_var()$ejercicio))),
+                      cta_cte %in% (input$cta_cte %||%
+                                      unique(ejercicio_var()$cta_cte)),
+                      invico == FALSE,
+                      remanente == FALSE)
+
+      if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
+        siif <- siif %>%
+          dplyr::filter(dplyr::between(fecha,
+                                       lubridate::ymd(input$fecha[[1]]),
+                                       lubridate::ymd(input$fecha[[2]])))
+      }
+
+      #Grouping and summarising siif
+      siif <- siif %>%
+        dplyr::select(input$grupo %||% "mes", monto) %>%
+        dplyr::group_by(!!! rlang::syms(input$grupo %||% "mes")) %>%
+        dplyr::summarise(recursos_siif = sum(monto, na.rm = TRUE))
+
+      #Filtering sscc_banco_invico
+      sscc <- db_sscc() %>%
+        dplyr::filter(movimiento == "DEPOSITO",
+                      ejercicio %in% (input$ejercicio %||%
+                                 max(as.integer(ejercicio_var()$ejercicio))),
+                      cta_cte %in% (input$cta_cte %||%
+                               unique(ejercicio_var()$cta_cte)))
+
+      if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
+        sscc <- sscc %>%
+          dplyr::filter(dplyr::between(fecha,
+                                       lubridate::ymd(input$fecha[[1]]),
+                                       lubridate::ymd(input$fecha[[2]])))
+      }
+
+      if (input$dep_transf_int == "SI") {
+        sscc <- sscc %>%
+          dplyr::filter(codigo_imputacion != 34 &
+                          codigo_imputacion != 4)
+      }
+
+      if (input$dep_pf == "SI") {
+        sscc <- sscc %>%
+          dplyr::filter(codigo_imputacion != 214 &
+                          codigo_imputacion != 215)
+      }
+
+      if (input$dep_otros == "SI") {
+        sscc <- sscc %>%
+          dplyr::filter(codigo_imputacion != 3 &
+                          codigo_imputacion != 55 &
+                          codigo_imputacion != 5 &
+                          codigo_imputacion != 13)
+      }
+
+      if (input$dep_cert_neg == "SI") {
+        sscc <- sscc %>%
+          dplyr::filter(codigo_imputacion != 18)
+      }
+
+      #Grouping and summarising siif
+      sscc <- sscc %>%
+        dplyr::select(input$grupo %||% "mes", monto) %>%
+        dplyr::group_by(!!! rlang::syms(input$grupo %||% "mes")) %>%
+        dplyr::summarise(depositos_sscc = sum(monto, na.rm = TRUE))
+
+      #Joinning
+      db <- siif %>%
+        dplyr::full_join(sscc) %>%
+        tidyr::replace_na(list(recursos_siif = 0, depositos_sscc = 0)) %>%
+        dplyr::mutate(diferencia = recursos_siif - depositos_sscc,
+                      dif_acum = cumsum(diferencia))
+
+      total_desvio <- sum(abs(db$diferencia))
+
+      db <- db %>%
+        dplyr::mutate(prop_desv = (abs(diferencia) / total_desvio))
 
       return(db)
 
-    })
+    }, ignoreNULL = FALSE)
 
     return(table)
 

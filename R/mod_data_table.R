@@ -23,8 +23,6 @@ mod_data_table_server <- function(id, data, selection = "single",
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    #ColReorder not working. What does ColReorder = list(realtime = FALSE)?
-
     output$data_table <- DT::renderDT({
       DT::datatable(data(), rownames = FALSE, class = "display compact", style="default",
                     extensions = c("Scroller", "Buttons", 'ColReorder'),

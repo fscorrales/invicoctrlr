@@ -20,6 +20,7 @@ mod_02_01_recursos_ui <- function(id){
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,
+      # height = "400px",
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
         icon = shiny::icon("save"),
@@ -49,10 +50,6 @@ mod_02_01_recursos_ui <- function(id){
         id = ns("sidebar"),
         startOpen = FALSE,
         icon = shiny::icon("filter"),
-        htmltools::h4("Filtros de la Tabla", style="text-align: center;"),
-        # rep_br(),
-        # mod_file_input_ui(ns("update"), multiple = TRUE),
-        # htmltools::h5("Pasos a seguir para importar:"),
         tabsetPanel(
           id = ns("switcher"), type = "hidden",
           tabPanel("rec_vs_sscc",
