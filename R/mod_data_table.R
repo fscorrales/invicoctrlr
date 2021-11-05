@@ -18,22 +18,13 @@ mod_data_table_ui <- function(id){
 #'
 #' @noRd
 mod_data_table_server <- function(id, data, selection = "single",
-                                  DTServer = TRUE, format_curr = NULL, ...){
+                                  DTServer = TRUE,
+                                  format_curr = NULL, format_perc = NULL,
+                                  format_round = NULL, format_date = NULL,
+                                  format_style = NULL, ...){
 
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-
-    # data_formatted <-  reactive({
-    #
-    #   if (is.null(formatting)) {
-    #     ans <- data()
-    #   } else {
-    #     formatting$table <- DT::datatable(data())
-    #     ans <- eval(formatting)
-    #   }
-    #
-    # })
-
 
     output$data_table <- DT::renderDT({
       ans <- DT::datatable(data(), rownames = FALSE, class = "display compact", style="default",
@@ -51,11 +42,29 @@ mod_data_table_server <- function(id, data, selection = "single",
                     selection = selection
                     )
 
-
-      #try do.call
       if (not_null(format_curr)) {
         format_curr$table <- ans
-        ans <- eval(format_curr)
+        ans <- do.call(DT::formatCurrency, format_curr)
+      }
+
+      if (not_null(format_perc)) {
+        format_perc$table <- ans
+        ans <- do.call(DT::formatPercentage, format_perc)
+      }
+
+      if (not_null(format_round)) {
+        format_round$table <- ans
+        ans <- do.call(DT::formatRound, format_round)
+      }
+
+      if (not_null(format_date)) {
+        format_date$table <- ans
+        ans <- do.call(DT::formatDate, format_date)
+      }
+
+      if (not_null(format_style)) {
+        format_style$table <- ans
+        ans <- do.call(DT::formatStyle, format_style)
       }
 
       return(ans)
@@ -64,6 +73,19 @@ mod_data_table_server <- function(id, data, selection = "single",
 
     })
 }
+
+## On caller
+# format_rec_vs_sscc <- rlang::expr(
+#   DT::formatCurrency(columns = c("recursos_siif", "depositos_sscc",
+#                                  "diferencia", "dif_acum")))
+
+## On mod_data_table_server
+# if (not_null(format_curr)) {
+#   format_curr$table <- ans
+#   ans <- eval(format_curr)
+# }
+
+
 
 ## Style should be one of “default”, “bootstrap”, “bootstrap4”, “foundation”,
 ## “jqueryui”, “semanticui”

@@ -37,9 +37,9 @@ mod_02_01_recursos_ui <- function(id){
         mod_data_table_ui(ns("dt_rec_vs_sscc"))
       ),
       shiny::tabPanel(
-        title = "Recursos vs Banco SGF",
-        value = "rec_vs_sgf",
-        mod_data_table_ui(ns("dt_rec_vs_sgf"))
+        title = "Recursos vs Banco SIIF",
+        value = "rec_vs_siif",
+        mod_data_table_ui(ns("dt_rec_vs_siif"))
       ),
       shiny::tabPanel(
         title = "Recurso 3% vs Cod. Ret 337",
@@ -55,7 +55,7 @@ mod_02_01_recursos_ui <- function(id){
           tabPanel("rec_vs_sscc",
                    mod_02_01_01_rec_vs_sscc_ui(ns("filter_rec_vs_sscc"))
                    ),
-          tabPanel("rec_vs_sgf",
+          tabPanel("rec_vs_siif",
 
                     ),
           tabPanel("rec_vs_invico",
@@ -73,6 +73,7 @@ mod_02_01_recursos_ui <- function(id){
 #' @noRd
 mod_02_01_recursos_server <- function(id){
   moduleServer( id, function(input, output, session){
+
     ns <- session$ns
 
     shinyjs::reset("update-file")
@@ -86,7 +87,7 @@ mod_02_01_recursos_server <- function(id){
                     rec_vs_sscc = list(data = siif_comprobantes_rec_rci02(),
                                     import_function = invicodatr::rpw_siif_comprobantes_rec(),
                                     df_trigger = siif_comprobantes_rec_trigger),
-                    rec_vs_sgf = list(data = siif_pagos_rtr03(),
+                    rec_vs_siif = list(data = siif_pagos_rtr03(),
                                  import_function = invicodatr::rpw_siif_pagos,
                                  df_trigger = siif_pagos_trigger),
                     rec_vs_invico = list(data = siif_retenciones_por_codigo_rao01(),
@@ -110,37 +111,28 @@ mod_02_01_recursos_server <- function(id){
 
     mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
-    # mod_file_input_server("update",
-    #                       import_function = reactive(rpw_controller$fct),
-    #                       df_trigger = reactive(rpw_controller$trigger))
 
-
+    #Table Recursos SIIF vs SSCC Banco INVICO
     rec_vs_sscc <- mod_02_01_01_rec_vs_sscc_server("filter_rec_vs_sscc")
 
-    # hide_columns_rec_vs_sscc <- c(0) #begins in 0
+    formatr_rec_vs_sscc <- list(columns = c("recursos_siif", "depositos_sscc",
+                                     "diferencia", "dif_acum"))
+    formatp_rec_vs_sscc <- list(columns = "prop_desv")
 
-    format_rec_vs_sscc <- rlang::expr(
-      DT::formatCurrency(columns = "recursos_siif"))
-
-    mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc, format_curr = format_rec_vs_sscc,
-                          # columnDefs = list(
-                          #   list(visible=FALSE, targets = hide_columns_rec_vs_sscc)
-                          # ),
+    mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc,
+                          format_round = formatr_rec_vs_sscc,
+                          format_perc = formatp_rec_vs_sscc,
                           buttons = list(
                             list(
                               extend = 'collection',
                               buttons = c('copy', 'print','csv', 'excel', 'pdf'),
                               text = 'Download 100 primeras filas')
-                            # list(
-                            #   extend='colvis',
-                            #   text="Mostrar / Ocultar columnas",
-                            #   columns = hide_columns_rec_vs_sscc)
                           )
     )
 
     # hide_columns_pagos <- c(11) #begins in 0
     #
-    # mod_data_table_server("rec_vs_sgf", siif_pagos_rtr03,
+    # mod_data_table_server("rec_vs_siif", siif_pagos_rtr03,
     #                       columnDefs = list(
     #                         list(visible=FALSE, targets = hide_columns_pagos)
     #                       ),

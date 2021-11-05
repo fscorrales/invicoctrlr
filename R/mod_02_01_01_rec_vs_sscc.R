@@ -27,9 +27,11 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
         6, shiny::selectizeInput(ns("ejercicio"), "Ejercicio",
                                  choices = "", selected = "", multiple = TRUE,
                                  options = list(placeholder = "Todo seleccionado")),
-        shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NA,
-                              end = NA, format = "dd-mm-yyyy",
-                              startview = "month", language = "es", separator = " a ")
+        suppressWarnings(
+          shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NA,
+                                end = NA, format = "dd-mm-yyyy",
+                                startview = "month", language = "es", separator = " a ")
+          )
         )
       ),
     shiny::selectizeInput(ns("cta_cte"), "Seleccionar Cuentas",
@@ -216,9 +218,9 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
         dplyr::group_by(!!! rlang::syms(input$grupo %||% "mes")) %>%
         dplyr::summarise(depositos_sscc = sum(monto, na.rm = TRUE))
 
-      #Joinning
+      #Joinning and calulating
       db <- siif %>%
-        dplyr::full_join(sscc) %>%
+        dplyr::full_join(sscc, by = input$grupo %||% "mes") %>%
         tidyr::replace_na(list(recursos_siif = 0, depositos_sscc = 0)) %>%
         dplyr::mutate(diferencia = recursos_siif - depositos_sscc,
                       dif_acum = cumsum(diferencia))
