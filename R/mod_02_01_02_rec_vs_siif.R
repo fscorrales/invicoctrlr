@@ -139,6 +139,11 @@ mod_02_01_02_rec_vs_siif_server <- function(id){
                                     selected = max(as.integer(ejercicio_var()$ejercicio)))
       }
 
+      if (is.null(input$grupo)) {
+        shiny::updateCheckboxGroupInput(session, "grupo",
+                                        selected = "mes")
+      }
+
       #Filtering comp_rec_siif
       siif_rec <- db_rec() %>%
         dplyr::filter(ejercicio %in% (input$ejercicio %||%
