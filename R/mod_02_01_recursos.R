@@ -20,7 +20,21 @@ mod_02_01_recursos_ui <- function(id){
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,
-      # height = "400px",
+      footer = tabsetPanel(
+        id = ns("switcher_footer"), type = "hidden",
+        tabPanel("rec_vs_sscc",
+                 htmltools::HTML("<strong>Requerimientos: Recursos SIIF (rci02) ",
+                                 "y Resumen Gral. de Mov. SSCC</strong>")
+                 ),
+        tabPanel("rec_vs_siif",
+                 htmltools::HTML("<strong>Requerimientos: Recursos SIIF (rci02) ",
+                                 "y Mayor SIIF (rcocc31 - 1112-2-6)</strong>")
+                 ),
+        tabPanel("rec_vs_invico",
+                 htmltools::HTML("<strong>Requerimientos: Recursos SIIF (rci02) ",
+                                 "y Mayor SIIF (rcocc31 - 1112-2-6 y 2122-1-2)</strong>")
+                 )
+        ),
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
         icon = shiny::icon("save"),
@@ -59,7 +73,7 @@ mod_02_01_recursos_ui <- function(id){
                    mod_02_01_02_rec_vs_siif_ui(ns("filter_rec_vs_siif"))
                     ),
           tabPanel("rec_vs_invico",
-
+                   mod_02_01_03_rec_vs_invico_ui(ns("filter_rec_vs_invico"))
                     )
         )
       )
@@ -101,6 +115,7 @@ mod_02_01_recursos_server <- function(id){
       rpw_controller$trigger <- Ans$df_trigger
 
       updateTabsetPanel(inputId = "switcher", selected = input$controller)
+      updateTabsetPanel(inputId = "switcher_footer", selected = input$controller)
 
       shinyjs::reset("update-file")
       shinyFeedback::hideFeedback("update-file")
@@ -148,24 +163,25 @@ mod_02_01_recursos_server <- function(id){
                               text = 'Download 100 primeras filas')
                           )
     )
-    #
-    # hide_columns_ret_cod <- c(4) #begins in 0
-    #
-    # mod_data_table_server("rec_vs_invico", siif_retenciones_por_codigo_rao01,
-    #                       columnDefs = list(
-    #                         list(visible=FALSE, targets = hide_columns_ret_cod)
-    #                       ),
-    #                       buttons = list(
-    #                         list(
-    #                           extend = 'collection',
-    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                           text = 'Download 100 primeras filas'),
-    #                         list(
-    #                           extend='colvis',
-    #                           text="Mostrar / Ocultar columnas",
-    #                           columns = hide_columns_ret_cod)
-    #                       )
-    # )
+
+    #Table Recursos 337 vs Codigo Retencion 337
+    rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
+
+    formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
+                                            "pagos_337_siif", "dif_pagado_337",
+                                            "dif_ingresado", "dif_acum"))
+    formatp_rec_vs_invico <- list(columns = "prop_desv")
+
+    mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
+                          format_round = formatr_rec_vs_invico,
+                          format_perc = formatp_rec_vs_invico,
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas')
+                          )
+    )
 
   })
 }
