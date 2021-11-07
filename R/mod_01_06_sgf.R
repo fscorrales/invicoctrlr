@@ -32,7 +32,8 @@ mod_01_06_sgf_ui <- function(id){
       "a que el tipo sea <strong>.csv</strong>"
     ),
     importar = paste0(
-      "<strong>Importar</strong> el archivo descargado previamente"
+      "<strong>Importar</strong> el/los archivo/s descargado/s previamente. ",
+      "Es posible importar m\u00e1s de un archivo a la vez del mismo reporte."
     )
   )
 

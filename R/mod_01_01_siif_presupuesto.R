@@ -32,7 +32,8 @@ mod_01_01_siif_presupuesto_ui <- function(id){
       "<strong>Guardar</strong> el archivo generado en una ubicaci\u00f3n que recuerde"
     ),
     importar = paste0(
-      "<strong>Importar</strong> el archivo descargado previamente"
+      "<strong>Importar</strong> el/los archivo/s descargado/s previamente. ",
+      "Es posible importar m\u00e1s de un archivo a la vez del mismo reporte."
     )
   )
 
