@@ -142,7 +142,12 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
     hide_columns_pres_fte <- c(2:5, 7, 9, 15)
 
+    formatr_rf602 <- list(columns = c("credito_original", "credito_vigente",
+                                      "comprometido", "ordenado",
+                                      "saldo", "pendiente"))
+
     mod_data_table_server("pres_fte", siif_ppto_gtos_fte_rf602,
+                          format_round = formatr_rf602,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_pres_fte)
                             ),
@@ -160,7 +165,12 @@ mod_01_01_siif_presupuesto_server <- function(id){
 
     hide_columns_pres_desc <- c(2, 4, 5, 6, 8, 10, 11, 13)
 
+    formatr_rf610 <- list(columns = c("credito_original", "credito_vigente",
+                                      "comprometido", "ordenado",
+                                      "saldo"))
+
     mod_data_table_server("pres_desc", siif_ppto_gtos_desc_rf610,
+                          format_round = formatr_rf610,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_pres_desc)
                           ),
