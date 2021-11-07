@@ -32,7 +32,7 @@ set_header <- function() {
       title = "R INVICO",
       color = "olive",
       href = "https://github.com/fscorrales/invicoctrlr",
-      image = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
+      image = "https://i.postimg.cc/bNdqjqv6/hex-invicoctrlr.jpg",
     ),
     skin = "light",
     status = "white",
