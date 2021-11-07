@@ -116,7 +116,10 @@ mod_01_09_icaro_server <- function(id){
 
     hide_columns_obras <- c(8:10)
 
+    formatr_obras <- list(columns = c("monto_contrato", "monto_adicional"))
+
     mod_data_table_server("obras", icaro_obras,
+                          format_round = formatr_obras,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_obras)
                             ),
@@ -134,7 +137,12 @@ mod_01_09_icaro_server <- function(id){
 
     hide_columns_carga <- c(10:13)
 
+    formatr_carga <- list(columns = c("importe", "fondo_reparo"))
+    formatp_carga <- list(columns = "avance")
+
     mod_data_table_server("carga", icaro_carga,
+                          format_round = formatr_carga,
+                          format_perc = formatp_carga,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_carga)
                           ),
