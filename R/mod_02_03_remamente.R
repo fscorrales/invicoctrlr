@@ -74,7 +74,7 @@ mod_02_03_remamente_ui <- function(id){
                    mod_02_03_02_metodo_2_ui(ns("filter_metodo_2"))
                     ),
           tabPanel("diferencia",
-                   # mod_02_01_03_rec_vs_invico_ui(ns("filter_rec_vs_invico"))
+                   mod_02_03_03_diferencia_ui(ns("filter_diferencia"))
                     )
         )
       )
@@ -99,9 +99,9 @@ mod_02_03_remamente_server <- function(id){
     observeEvent(input$controller, {
 
       Ans <- switch(input$controller,
-                    metodo_1 = list(data = siif_comprobantes_rec_rci02()),
-                    metodo_2 = list(data = siif_pagos_rtr03()),
-                    diferencia = list(data = siif_retenciones_por_codigo_rao01()),
+                    metodo_1 = list(data = metodo_1()),
+                    metodo_2 = list(data = metodo_2()),
+                    diferencia = list(data = diferencia()),
                     stop("Invalid `x` value")
       )
 
@@ -155,24 +155,21 @@ mod_02_03_remamente_server <- function(id){
                           )
     )
 
-    # #Table Recursos 337 vs Codigo Retencion 337
-    # rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
-    #
-    # formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
-    #                                         "pagos_337_siif", "dif_pagado_337",
-    #                                         "dif_ingresado", "dif_acum"))
-    # formatp_rec_vs_invico <- list(columns = "prop_desv")
-    #
-    # mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
-    #                       format_round = formatr_rec_vs_invico,
-    #                       format_perc = formatp_rec_vs_invico,
-    #                       buttons = list(
-    #                         list(
-    #                           extend = 'collection',
-    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                           text = 'Download 100 primeras filas')
-    #                       )
-    # )
+    #Table Recursos 337 vs Codigo Retencion 337
+    diferencia <- mod_02_03_03_diferencia_server("filter_diferencia")
+
+    formatr_diferencia <- list(columns = c("remanente_1", "remanente_2",
+                                           "diferencia"))
+
+    mod_data_table_server("dt_diferencia", diferencia,
+                          format_round = formatr_diferencia,
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas')
+                          )
+    )
 
   })
 }
