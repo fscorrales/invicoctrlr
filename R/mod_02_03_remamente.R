@@ -1,0 +1,186 @@
+#' 02_03_remamente UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd
+#'
+#' @importFrom shiny NS tagList
+mod_02_03_remamente_ui <- function(id){
+  ns <- NS(id)
+
+  tagList(
+    bs4Dash::tabBox(
+      id = ns("controller"),
+      type = "tabs",
+      status = "olive",
+      solidHeader = TRUE,
+      width = 12,
+      collapsible = FALSE,
+      maximizable = TRUE,
+      elevation = NULL,
+      footer = tabsetPanel(
+        id = ns("switcher_footer"), type = "hidden",
+        tabPanel("metodo_1",
+                 htmltools::HTML("<strong>Fuente:Resumen Gral. de Mov. SSCC ",
+                                 "y Deuda Flotante SIIF (rdeu012)</strong>")
+                 ),
+        tabPanel("metodo_2",
+                 htmltools::HTML("<strong>Fuente: Recursos SIIF (rci02) ",
+                                 "y Gastos SIIF (rcg01_uejp)</strong>")
+                 ),
+        tabPanel("diferencia",
+                 htmltools::HTML("<strong>Fuente: Resumen Gral. de Mov. SSCC, ",
+                                 "Deuda Flotante SIIF (rdeu012), Recursos SIIF (rci02) ",
+                                 "y Gastos SIIF (rcg01_uejp)</strong>")
+                 )
+        ),
+      boxToolSize = "lg",
+      dropdownMenu =  bs4Dash::boxDropdown(
+        icon = shiny::icon("save"),
+        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_xls"), "Exportar xls",
+                                                    icon = shiny::icon("file-excel"),
+                                                    filetype=list(xlsx="xlsx"))),
+        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
+                                                    icon = shiny::icon("file-csv"),
+                                                    filetype=list(csv="csv")))
+      ),
+      shiny::tabPanel(
+        title = "Método I: Saldo Banco - Deuda Flotante",
+        value = "metodo_1",
+        mod_data_table_ui(ns("dt_metodo_1"))
+      ),
+      shiny::tabPanel(
+        title = "Método II: Recursos - Gastos SIIF",
+        value = "metodo_2",
+        mod_data_table_ui(ns("dt_metodo_2"))
+      ),
+      shiny::tabPanel(
+        title = "Diferencia: Método I - Método II",
+        value = "diferencia",
+        mod_data_table_ui(ns("dt_diferencia"))
+      ),
+      sidebar = bs4Dash::boxSidebar(
+        id = ns("sidebar"),
+        startOpen = FALSE,
+        icon = shiny::icon("filter"),
+        tabsetPanel(
+          id = ns("switcher"), type = "hidden",
+          tabPanel("metodo_1",
+                   mod_02_03_01_metodo_1_ui(ns("filter_metodo_1"))
+                   ),
+          tabPanel("metodo_2",
+                   # mod_02_01_02_rec_vs_siif_ui(ns("filter_rec_vs_siif"))
+                    ),
+          tabPanel("diferencia",
+                   # mod_02_01_03_rec_vs_invico_ui(ns("filter_rec_vs_invico"))
+                    )
+        )
+      )
+    )
+
+  )
+}
+
+#' 01_a_siif_recursos Server Functions
+#'
+#' @noRd
+mod_02_03_remamente_server <- function(id){
+  moduleServer( id, function(input, output, session){
+
+    ns <- session$ns
+
+    shinyjs::reset("update-file")
+    shinyFeedback::hideFeedback("update-file")
+
+    rpw_controller <- rv()
+
+    observeEvent(input$controller, {
+
+      Ans <- switch(input$controller,
+                    metodo_1 = list(data = siif_comprobantes_rec_rci02()),
+                    metodo_2 = list(data = siif_pagos_rtr03()),
+                    diferencia = list(data = siif_retenciones_por_codigo_rao01()),
+                    stop("Invalid `x` value")
+      )
+
+      rpw_controller$df <- Ans$data
+      rpw_controller$fct <- Ans$import_function
+      rpw_controller$trigger <- Ans$df_trigger
+
+      updateTabsetPanel(inputId = "switcher", selected = input$controller)
+      updateTabsetPanel(inputId = "switcher_footer", selected = input$controller)
+
+      shinyjs::reset("update-file")
+      shinyFeedback::hideFeedback("update-file")
+
+    })
+
+    mod_save_button_server("download_xls", reactive(rpw_controller$df))
+
+    mod_save_button_server("download_csv", reactive(rpw_controller$df))
+
+
+    #Table Recursos SIIF vs SSCC Banco INVICO
+    metodo_1 <- mod_02_03_01_metodo_1_server("filter_metodo_1")
+
+    formatr_metodo_1 <- list(columns = c("saldo_banco", "deuda_flotante",
+                                         "remanente"))
+
+    mod_data_table_server("dt_metodo_1", metodo_1,
+                          format_round = formatr_metodo_1,
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas')
+                          )
+    )
+
+
+    # #Table Recursos SIIF vs Banco SIIF
+    # rec_vs_siif <- mod_02_01_02_rec_vs_siif_server("filter_rec_vs_siif")
+    #
+    # formatr_rec_vs_siif <- list(columns = c("recursos_siif", "debitos_banco_siif",
+    #                                         "diferencia", "dif_acum"))
+    # formatp_rec_vs_siif <- list(columns = "prop_desv")
+    #
+    # mod_data_table_server("dt_rec_vs_siif", rec_vs_siif,
+    #                       format_round = formatr_rec_vs_siif,
+    #                       format_perc = formatp_rec_vs_siif,
+    #                       buttons = list(
+    #                         list(
+    #                           extend = 'collection',
+    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                           text = 'Download 100 primeras filas')
+    #                       )
+    # )
+    #
+    # #Table Recursos 337 vs Codigo Retencion 337
+    # rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
+    #
+    # formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
+    #                                         "pagos_337_siif", "dif_pagado_337",
+    #                                         "dif_ingresado", "dif_acum"))
+    # formatp_rec_vs_invico <- list(columns = "prop_desv")
+    #
+    # mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
+    #                       format_round = formatr_rec_vs_invico,
+    #                       format_perc = formatp_rec_vs_invico,
+    #                       buttons = list(
+    #                         list(
+    #                           extend = 'collection',
+    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                           text = 'Download 100 primeras filas')
+    #                       )
+    # )
+
+  })
+}
+
+## To be copied in the UI
+# mod_02_03_remamente_ui("02_03_remamente_1")
+
+## To be copied in the server
+# mod_02_03_remamente_server("02_03_remamente_1")
