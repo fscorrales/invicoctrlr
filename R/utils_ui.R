@@ -31,7 +31,7 @@ set_header <- function() {
     title = bs4Dash::dashboardBrand(
       title = "R INVICO",
       color = "olive",
-      href = "https://www.google.fr",
+      href = "https://github.com/fscorrales/invicoctrlr",
       image = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
     ),
     skin = "light",
@@ -39,41 +39,41 @@ set_header <- function() {
     border = TRUE,
     sidebarIcon = shiny::icon("bars"),
     controlbarIcon = shiny::icon("th"),
-    fixed = FALSE,
-    leftUi = htmltools::tagList(
-      bs4Dash::dropdownMenu(
-        badgeStatus = "info",
-        type = "notifications",
-        bs4Dash::notificationItem(
-          inputId = "triggerAction2",
-          text = "Error!",
-          status = "danger",
-          icon = shiny::icon("exclamation-triangle")
-        )
-      ),
-      bs4Dash::dropdownMenu(
-        badgeStatus = "info",
-        type = "tasks",
-        bs4Dash::taskItem(
-          inputId = "triggerAction3",
-          text = "My progress",
-          color = "orange",
-          value = 10
-        )
-      )
-    ),
-    rightUi = bs4Dash::dropdownMenu(
-      badgeStatus = "danger",
-      type = "messages",
-      bs4Dash::messageItem(
-        inputId = "triggerAction1",
-        message = "message 1",
-        from = "Divad Nojnarg",
-        image = "https://adminlte.io/themes/v3/dist/img/user3-128x128.jpg",
-        time = "today",
-        color = "lime"
-      )
-    )
+    fixed = FALSE
+    # leftUi = htmltools::tagList(
+    #   bs4Dash::dropdownMenu(
+    #     badgeStatus = "info",
+    #     type = "notifications",
+    #     bs4Dash::notificationItem(
+    #       inputId = "triggerAction2",
+    #       text = "Error!",
+    #       status = "danger",
+    #       icon = shiny::icon("exclamation-triangle")
+    #     )
+    #   ),
+    #   bs4Dash::dropdownMenu(
+    #     badgeStatus = "info",
+    #     type = "tasks",
+    #     bs4Dash::taskItem(
+    #       inputId = "triggerAction3",
+    #       text = "My progress",
+    #       color = "orange",
+    #       value = 10
+    #     )
+    #   )
+    # )
+    # rightUi = bs4Dash::dropdownMenu(
+    #   badgeStatus = "danger",
+    #   type = "messages",
+    #   bs4Dash::messageItem(
+    #     inputId = "triggerAction1",
+    #     message = "message 1",
+    #     from = "Divad Nojnarg",
+    #     image = "https://adminlte.io/themes/v3/dist/img/user3-128x128.jpg",
+    #     time = "today",
+    #     color = "lime"
+    #   )
+    # )
   )
 
 }
