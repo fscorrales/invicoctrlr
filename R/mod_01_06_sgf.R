@@ -136,7 +136,13 @@ mod_01_06_sgf_server <- function(id){
 
     hide_columns_rend_prov <- c(7:12, 15:17)
 
+    formatr_rend_prov <- list(columns = c("importe_neto", "gcias", "sellos",
+                                            "iibb", "suss", "invico", "otras",
+                                            "importe_bruto", "seguro", "salud",
+                                            "mutual"))
+
     mod_data_table_server("rend_prov", sgf_resumen_rend_prov,
+                          format_round = formatr_rend_prov,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_rend_prov)
                           ),
