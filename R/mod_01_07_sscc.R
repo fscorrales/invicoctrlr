@@ -135,7 +135,10 @@ mod_01_07_sscc_server <- function(id){
 
     hide_columns_banco <- c(1, 6, 7, 10, 11)
 
+    formatr_sscc <- list(columns = c("monto"))
+
     mod_data_table_server("banco", sscc_banco_invico,
+                          format_round = formatr_sscc,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_banco)
                           ),
