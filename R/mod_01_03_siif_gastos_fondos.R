@@ -220,7 +220,10 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
 
     hide_columns_comp_gtos <- c(14:17) #begins in 0
 
+    formatr_rcg01_uejp <- list(columns = c("monto"))
+
     mod_data_table_server("comp_gtos", siif_comprobantes_gtos_rcg01_uejp,
+                          format_round = formatr_rcg01_uejp,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_comp_gtos)
                           ),
@@ -238,7 +241,10 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
 
     hide_columns_comp_gtos_part <- c(14:17) #begins in 0
 
+    formatr_rcg01_par <- list(columns = c("monto"))
+
     mod_data_table_server("comp_gtos_part", siif_comprobantes_gtos_partida_rcg01_par,
+                          format_round = formatr_rcg01_par,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_comp_gtos_part )
                           ),
@@ -256,7 +262,10 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
 
     hide_columns_comp_gtos_gpo_part <- c(1) #begins in 0
 
+    formatr_gto_rpa03g <- list(columns = c("monto"))
+
     mod_data_table_server("comp_gtos_gpo_part", siif_comprobantes_gtos_gpo_partida_gto_rpa03g,
+                          format_round = formatr_gto_rpa03g,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_comp_gtos_gpo_part )
                           ),
@@ -274,7 +283,10 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
 
     hide_columns_deuda <- c(0, 7) #begins in 0
 
+    formatr_rdeu012 <- list(columns = c("monto", "saldo"))
+
     mod_data_table_server("deuda", siif_deuda_flotante_rdeu012,
+                          format_round = formatr_rdeu012,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_deuda )
                           ),
@@ -292,7 +304,10 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
 
     hide_columns_comp_fdos <- c(7) #begins in 0
 
+    formatr_rfondo07tp <- list(columns = c("ingresos", "egresos", "saldo"))
+
     mod_data_table_server("comp_fdos", siif_resumen_fdos_rfondo07tp,
+                          format_round = formatr_rfondo07tp,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_comp_fdos )
                           ),
