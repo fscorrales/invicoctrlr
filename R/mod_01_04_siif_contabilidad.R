@@ -139,7 +139,11 @@ mod_01_04_siif_contabilidad_server <- function(id){
 
     hide_columns_mayor <- c(2)
 
+    formatr_rcocc31 <- list(columns = c("debitos", "creditos",
+                                        "saldo"))
+
     mod_data_table_server("mayor", siif_mayor_contable_rcocc31,
+                          format_round = formatr_rcocc31,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_mayor)
                           ),
