@@ -71,7 +71,7 @@ mod_02_03_remamente_ui <- function(id){
                    mod_02_03_01_metodo_1_ui(ns("filter_metodo_1"))
                    ),
           tabPanel("metodo_2",
-                   # mod_02_01_02_rec_vs_siif_ui(ns("filter_rec_vs_siif"))
+                   mod_02_03_02_metodo_2_ui(ns("filter_metodo_2"))
                     ),
           tabPanel("diferencia",
                    # mod_02_01_03_rec_vs_invico_ui(ns("filter_rec_vs_invico"))
@@ -122,7 +122,7 @@ mod_02_03_remamente_server <- function(id){
     mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
 
-    #Table Recursos SIIF vs SSCC Banco INVICO
+    #Table Remamente Metodo 1
     metodo_1 <- mod_02_03_01_metodo_1_server("filter_metodo_1")
 
     formatr_metodo_1 <- list(columns = c("saldo_banco", "deuda_flotante",
@@ -139,24 +139,22 @@ mod_02_03_remamente_server <- function(id){
     )
 
 
-    # #Table Recursos SIIF vs Banco SIIF
-    # rec_vs_siif <- mod_02_01_02_rec_vs_siif_server("filter_rec_vs_siif")
-    #
-    # formatr_rec_vs_siif <- list(columns = c("recursos_siif", "debitos_banco_siif",
-    #                                         "diferencia", "dif_acum"))
-    # formatp_rec_vs_siif <- list(columns = "prop_desv")
-    #
-    # mod_data_table_server("dt_rec_vs_siif", rec_vs_siif,
-    #                       format_round = formatr_rec_vs_siif,
-    #                       format_perc = formatp_rec_vs_siif,
-    #                       buttons = list(
-    #                         list(
-    #                           extend = 'collection',
-    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                           text = 'Download 100 primeras filas')
-    #                       )
-    # )
-    #
+    #Table Remanente Metodo 2
+    metodo_2 <- mod_02_03_02_metodo_2_server("filter_metodo_2")
+
+    formatr_metodo_2 <- list(columns = c("recursos", "gastos",
+                                         "remanente"))
+
+    mod_data_table_server("dt_metodo_2", metodo_2,
+                          format_round = formatr_metodo_2,
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas')
+                          )
+    )
+
     # #Table Recursos 337 vs Codigo Retencion 337
     # rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
     #
