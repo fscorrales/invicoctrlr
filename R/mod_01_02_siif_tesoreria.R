@@ -176,7 +176,10 @@ mod_01_02_siif_tesoreria_server <- function(id){
 
     hide_columns_comp_rec <- c(4:5, 8:10) #begins in 0
 
+    formatr_rci02<- list(columns = c("monto"))
+
     mod_data_table_server("comp_rec", siif_comprobantes_rec_rci02,
+                          format_round = formatr_rci02,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_comp_rec)
                           ),
@@ -194,7 +197,10 @@ mod_01_02_siif_tesoreria_server <- function(id){
 
     hide_columns_pagos <- c(11) #begins in 0
 
+    formatr_rtr03 <- list(columns = c("monto"))
+
     mod_data_table_server("pagos", siif_pagos_rtr03,
+                          format_round = formatr_rtr03,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_pagos)
                           ),
@@ -212,7 +218,10 @@ mod_01_02_siif_tesoreria_server <- function(id){
 
     hide_columns_ret_cod <- c(4) #begins in 0
 
+    formatr_rao01 <- list(columns = c("monto"))
+
     mod_data_table_server("ret_cod", siif_retenciones_por_codigo_rao01,
+                          format_round = formatr_rao01,
                           columnDefs = list(
                             list(visible=FALSE, targets = hide_columns_ret_cod)
                           ),
