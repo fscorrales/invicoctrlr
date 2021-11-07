@@ -23,15 +23,15 @@ mod_02_01_recursos_ui <- function(id){
       footer = tabsetPanel(
         id = ns("switcher_footer"), type = "hidden",
         tabPanel("rec_vs_sscc",
-                 htmltools::HTML("<strong>Requerimientos: Recursos SIIF (rci02) ",
+                 htmltools::HTML("<strong>Fuente: Recursos SIIF (rci02) ",
                                  "y Resumen Gral. de Mov. SSCC</strong>")
                  ),
         tabPanel("rec_vs_siif",
-                 htmltools::HTML("<strong>Requerimientos: Recursos SIIF (rci02) ",
+                 htmltools::HTML("<strong>Fuente: Recursos SIIF (rci02) ",
                                  "y Mayor SIIF (rcocc31 - 1112-2-6)</strong>")
                  ),
         tabPanel("rec_vs_invico",
-                 htmltools::HTML("<strong>Requerimientos: Recursos SIIF (rci02) ",
+                 htmltools::HTML("<strong>Fuente: Recursos SIIF (rci02) ",
                                  "y Mayor SIIF (rcocc31 - 1112-2-6 y 2122-1-2)</strong>")
                  )
         ),
@@ -98,21 +98,15 @@ mod_02_01_recursos_server <- function(id){
     observeEvent(input$controller, {
 
       Ans <- switch(input$controller,
-                    rec_vs_sscc = list(data = siif_comprobantes_rec_rci02(),
-                                    import_function = invicodatr::rpw_siif_comprobantes_rec(),
-                                    df_trigger = siif_comprobantes_rec_trigger),
-                    rec_vs_siif = list(data = siif_pagos_rtr03(),
-                                 import_function = invicodatr::rpw_siif_pagos,
-                                 df_trigger = siif_pagos_trigger),
-                    rec_vs_invico = list(data = siif_retenciones_por_codigo_rao01(),
-                                 import_function = invicodatr::rpw_siif_retenciones_por_codigo,
-                                 df_trigger = siif_retenciones_por_codigo_trigger),
+                    rec_vs_sscc = list(data = rec_vs_sscc()),
+                    rec_vs_siif = list(data = rec_vs_siif()),
+                    rec_vs_invico = list(data = rec_vs_invico()),
                     stop("Invalid `x` value")
       )
 
       rpw_controller$df <- Ans$data
-      rpw_controller$fct <- Ans$import_function
-      rpw_controller$trigger <- Ans$df_trigger
+      # rpw_controller$fct <- Ans$import_function
+      # rpw_controller$trigger <- Ans$df_trigger
 
       updateTabsetPanel(inputId = "switcher", selected = input$controller)
       updateTabsetPanel(inputId = "switcher_footer", selected = input$controller)
