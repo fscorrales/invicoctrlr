@@ -51,11 +51,11 @@ mod_02_03_03_diferencia_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- sscc_banco_invico() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte,
+        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
                                                 from = db_cta_cte$sscc_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
-                      ejercicio = as.character(lubridate::year(fecha))
+                      ejercicio = as.character(lubridate::year(.data$fecha))
                       )
       return(db)
 
@@ -65,15 +65,15 @@ mod_02_03_03_diferencia_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_deuda_flotante_rdeu012() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte,
+        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
                                                 from = db_cta_cte$siif_contabilidad_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
-                      fecha = fecha_hasta,
-                      ejercicio = as.character(lubridate::year(fecha)),
-                      mes = stringr::str_c(stringr::str_pad(lubridate::month(fecha),
+                      fecha = .data$fecha_hasta,
+                      ejercicio = as.character(lubridate::year(.data$fecha)),
+                      mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
                                                             2, pad = "0"),
-                                           lubridate::year(fecha), sep = "/")
+                                           lubridate::year(.data$fecha), sep = "/")
         )
         # dplyr::select(-fecha_hasta, mes_hasta)
 
@@ -85,26 +85,27 @@ mod_02_03_03_diferencia_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db_rec <- siif_comprobantes_rec_rci02() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte,
+        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
                                                 from = db_cta_cte$siif_recursos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE)
         )
 
       db_gto <- siif_comprobantes_gtos_rcg01_uejp() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte,
+        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
                                                 from = db_cta_cte$siif_gastos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
-                      mes = stringr::str_c(stringr::str_pad(lubridate::month(fecha),
+                      mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
                                                             2, pad = "0"),
-                                           lubridate::year(fecha), sep = "/")
+                                           lubridate::year(.data$fecha), sep = "/")
         )
 
       db <- db_gto %>%
-        dplyr::select(ejercicio, fecha, mes, cta_cte, gasto = monto) %>%
-        dplyr::bind_rows(dplyr::select(db_rec, ejercicio, fecha, mes,
-                                       cta_cte, recurso = monto))
+        dplyr::select(.data$ejercicio, .data$fecha, .data$mes, .data$cta_cte,
+                      gasto = .data$monto) %>%
+        dplyr::bind_rows(dplyr::select(db_rec, .data$ejercicio, .data$fecha, .data$mes,
+                                       .data$cta_cte, recurso = .data$monto))
 
       return(db)
 
@@ -114,13 +115,13 @@ mod_02_03_03_diferencia_server <- function(id){
     ejercicio_var <- reactive({
 
       ans <- dplyr::select(db_sscc(),
-                           ejercicio, fecha, cta_cte) %>%
+                           .data$ejercicio, .data$fecha, .data$cta_cte) %>%
         dplyr::bind_rows(dplyr::select(db_rdeu(),
-                                       ejercicio, fecha, cta_cte)) %>%
+                                       .data$ejercicio, .data$fecha, .data$cta_cte)) %>%
         dplyr::bind_rows(dplyr::select(db_metodo_2(),
-                                       ejercicio, fecha, cta_cte)) %>%
+                                       .data$ejercicio, .data$fecha, .data$cta_cte)) %>%
         unique() %>%
-        dplyr::arrange(desc(ejercicio), fecha)
+        dplyr::arrange(dplyr::desc(.data$ejercicio), .data$fecha)
 
       return(ans)
 
@@ -154,13 +155,13 @@ mod_02_03_03_diferencia_server <- function(id){
 
       #Filtering sscc
       sscc <- db_sscc() %>%
-        dplyr::filter(cta_cte %in% (input$cta_cte %||%
+        dplyr::filter(.data$cta_cte %in% (input$cta_cte %||%
                                       unique(ejercicio_var()$cta_cte))
                       )
 
       if (length(input$fecha) > 0) {
         sscc <- sscc %>%
-          dplyr::filter(dplyr::between(fecha,
+          dplyr::filter(dplyr::between(.data$fecha,
                                        lubridate::ymd("2017/01/01"),
                                        lubridate::ymd(input$fecha)))
       } else{
@@ -172,7 +173,7 @@ mod_02_03_03_diferencia_server <- function(id){
         }
 
         sscc <- sscc %>%
-          dplyr::filter(dplyr::between(ejercicio, 2017, ejercicio_max))
+          dplyr::filter(dplyr::between(.data$ejercicio, 2017, ejercicio_max))
 
         }
 
@@ -183,61 +184,61 @@ mod_02_03_03_diferencia_server <- function(id){
                                        lubridate::year(mes_hasta_rdeu), sep = "/")
 
       rdeu <- db_rdeu() %>%
-        dplyr::filter(cta_cte %in% (input$cta_cte %||%
+        dplyr::filter(.data$cta_cte %in% (input$cta_cte %||%
                                       unique(ejercicio_var()$cta_cte)),
-                      mes_hasta == mes_hasta_rdeu)
+                      .data$mes_hasta == mes_hasta_rdeu)
 
       #Grouping and summarising sscc
       sscc <- sscc %>%
-        dplyr::select(input$grupo %||% "cta_cte", monto) %>%
+        dplyr::select(input$grupo %||% "cta_cte", .data$monto) %>%
         dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-        dplyr::summarise(saldo_banco = sum(monto, na.rm = TRUE))
+        dplyr::summarise(saldo_banco = sum(.data$monto, na.rm = TRUE))
 
       #Grouping and summarising siif_rdeu
       rdeu <- rdeu %>%
-        dplyr::select(input$grupo %||% "cta_cte", saldo) %>%
+        dplyr::select(input$grupo %||% "cta_cte", .data$saldo) %>%
         dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-        dplyr::summarise(deuda_flotante = sum(saldo, na.rm = TRUE))
+        dplyr::summarise(deuda_flotante = sum(.data$saldo, na.rm = TRUE))
 
       #Joinning and calulating metodo_1
       metodo_1 <- sscc %>%
-        dplyr::full_join(rdeu, by = input$grupo %||% "mes") %>%
+        dplyr::full_join(rdeu, by = input$grupo %||% "cta_cte") %>%
         tidyr::replace_na(list(saldo_banco = 0, deuda_flotante = 0)) %>%
-        dplyr::mutate(remanente_1 = saldo_banco - deuda_flotante) %>%
-        dplyr::select(-saldo_banco, -deuda_flotante)
+        dplyr::mutate(remanente_1 = .data$saldo_banco - .data$deuda_flotante) %>%
+        dplyr::select(-.data$saldo_banco, -.data$deuda_flotante)
 
       #Filtering metodo_2
       metodo_2 <- db_metodo_2() %>%
-        dplyr::filter(ejercicio %in% (input$ejercicio %||%
+        dplyr::filter(.data$ejercicio %in% (input$ejercicio %||%
                                         max(as.integer(ejercicio_var()$ejercicio))),
-                      cta_cte %in% (input$cta_cte %||%
+                      .data$cta_cte %in% (input$cta_cte %||%
                                       unique(ejercicio_var()$cta_cte))
         )
 
       if (length(input$fecha) > 0) {
         metodo_2 <- metodo_2 %>%
           dplyr::filter(
-            ejercicio == lubridate::year(input$fecha),
-            max(fecha) == lubridate::ymd(input$fecha)
+            .data$ejercicio == lubridate::year(input$fecha),
+            max(.data$fecha) == lubridate::ymd(input$fecha)
           )
       }
 
       #Grouping and summarising metodo_2
       metodo_2 <- metodo_2 %>%
-        dplyr::select(input$grupo %||% "cta_cte", recurso, gasto) %>%
+        dplyr::select(input$grupo %||% "cta_cte", .data$recurso, .data$gasto) %>%
         dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-        dplyr::summarise(recursos = sum(recurso, na.rm = TRUE),
-                         gastos = sum(gasto, na.rm = TRUE),
-                         remanente_2 = recursos - gastos) %>%
+        dplyr::summarise(recursos = sum(.data$recurso, na.rm = TRUE),
+                         gastos = sum(.data$gasto, na.rm = TRUE),
+                         remanente_2 = .data$recursos - .data$gastos) %>%
         # tidyr::replace_na(list(recursos = 0, gastos = 0,
         #                        remanente = 0)) %>%
-        dplyr::select(-recursos, -gastos)
+        dplyr::select(-.data$recursos, -.data$gastos)
 
       #Joinning both methods
       db <- metodo_1 %>%
-        dplyr::full_join(metodo_2) %>%
+        dplyr::full_join(metodo_2, by = input$grupo %||% "cta_cte") %>%
         tidyr::replace_na(list(remanente_1 = 0, remanente_2 = 0)) %>%
-        dplyr::mutate(diferencia = remanente_1 - remanente_2)
+        dplyr::mutate(diferencia = .data$remanente_1 - .data$remanente_2)
 
       return(db)
 

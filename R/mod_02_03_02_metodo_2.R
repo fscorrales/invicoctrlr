@@ -61,7 +61,7 @@ mod_02_03_02_metodo_2_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_comprobantes_rec_rci02() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte,
+        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
                                                 from = db_cta_cte$siif_recursos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE)
@@ -74,13 +74,13 @@ mod_02_03_02_metodo_2_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_comprobantes_gtos_rcg01_uejp() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(cta_cte,
+        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
                                                 from = db_cta_cte$siif_gastos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
-                      mes = stringr::str_c(stringr::str_pad(lubridate::month(fecha),
+                      mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
                                                             2, pad = "0"),
-                                           lubridate::year(fecha), sep = "/")
+                                           lubridate::year(.data$fecha), sep = "/")
         )
 
       return(db)
@@ -90,15 +90,17 @@ mod_02_03_02_metodo_2_server <- function(id){
     ejercicio_var <- reactive({
 
       ans <- db_rec() %>%
-        dplyr::select(ejercicio, mes, fecha, cta_cte, fuente)
+        dplyr::select(.data$ejercicio, .data$mes, .data$fecha,
+                      .data$cta_cte, .data$fuente)
 
       ans <- db_gto() %>%
-        dplyr::select(ejercicio, mes, fecha, cta_cte, fuente) %>%
+        dplyr::select(.data$ejercicio, .data$mes, .data$fecha,
+                      .data$cta_cte, .data$fuente) %>%
         dplyr::full_join(ans,
                          by = c("ejercicio", "mes", "fuente",
                                 "fecha", "cta_cte")) %>%
         unique() %>%
-        dplyr::arrange(desc(ejercicio), fecha)
+        dplyr::arrange(dplyr::desc(.data$ejercicio), .data$fecha)
 
       return(ans)
 
@@ -135,33 +137,34 @@ mod_02_03_02_metodo_2_server <- function(id){
 
       #Joining rec y gto
       rec_and_gto <- db_gto() %>%
-        dplyr::select(ejercicio, fecha, mes, fuente, cta_cte, gasto = monto) %>%
-        dplyr::bind_rows(dplyr::select(db_rec(), ejercicio, fecha, mes,
-                                       fuente, cta_cte, recurso = monto))
+        dplyr::select(.data$ejercicio, .data$fecha, .data$mes, .data$fuente,
+                      .data$cta_cte, gasto = .data$monto) %>%
+        dplyr::bind_rows(dplyr::select(db_rec(), .data$ejercicio, .data$fecha, .data$mes,
+                                       .data$fuente, .data$cta_cte, recurso = .data$monto))
 
       rec_and_gto <- rec_and_gto %>%
-        dplyr::filter(ejercicio %in% (input$ejercicio %||%
+        dplyr::filter(.data$ejercicio %in% (input$ejercicio %||%
                                         max(as.integer(ejercicio_var()$ejercicio))),
-                      cta_cte %in% (input$cta_cte %||%
+                      .data$cta_cte %in% (input$cta_cte %||%
                                       unique(ejercicio_var()$cta_cte)),
-                      fuente %in% (input$fuente %||%
+                      .data$fuente %in% (input$fuente %||%
                                       unique(ejercicio_var()$fuente))
                       )
 
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
         rec_and_gto <- rec_and_gto %>%
-          dplyr::filter(dplyr::between(fecha,
+          dplyr::filter(dplyr::between(.data$fecha,
                                        lubridate::ymd(input$fecha[[1]]),
                                        lubridate::ymd(input$fecha[[2]])))
       }
 
       #Grouping and summarising
       db <- rec_and_gto %>%
-        dplyr::select(input$grupo %||% "cta_cte", recurso, gasto) %>%
+        dplyr::select(input$grupo %||% "cta_cte", .data$recurso, .data$gasto) %>%
         dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-        dplyr::summarise(recursos = sum(recurso, na.rm = TRUE),
-                         gastos = sum(gasto, na.rm = TRUE),
-                         remanente = recursos - gastos) %>%
+        dplyr::summarise(recursos = sum(.data$recurso, na.rm = TRUE),
+                         gastos = sum(.data$gasto, na.rm = TRUE),
+                         remanente = .data$recursos - .data$gastos) %>%
         tidyr::replace_na(list(recursos = 0, gastos = 0,
                                remanente = 0))
 
