@@ -47,17 +47,17 @@ mod_02_03_remamente_ui <- function(id){
                                                     filetype=list(csv="csv")))
       ),
       shiny::tabPanel(
-        title = "Método I: Saldo Banco - Deuda Flotante",
+        title = "M\u00e9todo I: Saldo Banco - Deuda Flotante",
         value = "metodo_1",
         mod_data_table_ui(ns("dt_metodo_1"))
       ),
       shiny::tabPanel(
-        title = "Método II: Recursos - Gastos SIIF",
+        title = "M\u00e9todo II: Recursos - Gastos SIIF",
         value = "metodo_2",
         mod_data_table_ui(ns("dt_metodo_2"))
       ),
       shiny::tabPanel(
-        title = "Diferencia: Método I - Método II",
+        title = "Diferencia: M\u00e9todo I - M\u00e9todo II",
         value = "diferencia",
         mod_data_table_ui(ns("dt_diferencia"))
       ),

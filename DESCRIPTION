@@ -11,6 +11,7 @@ Imports:
     bs4Dash,
     catchr,
     config (>= 0.3.1),
+    dplyr,
     DT,
     fs,
     glue,
@@ -28,6 +29,8 @@ Imports:
     shinyFeedback,
     shinyFiles (>= 0.9.0.9000),
     shinyjs,
+    stringr,
+    tidyr,
     vroom
 Encoding: UTF-8
 LazyData: true
