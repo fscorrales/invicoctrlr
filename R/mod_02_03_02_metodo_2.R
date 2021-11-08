@@ -16,12 +16,11 @@ mod_02_03_02_metodo_2_ui <- function(id){
                   bs4Dash::actionButton(ns("update"),
                                         "Actualizar Filtros",
                                         status = "primary")),
+
+    rep_br(),
+
     shiny::fluidRow(
-      shiny::column(
-        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
-                                     choices = c("ejercicio", "mes", "fuente","cta_cte"),
-                                     selected = "cta_cte" , inline = FALSE)
-        ),
+
       shiny::column(
         6, shiny::selectizeInput(ns("ejercicio"), "Ejercicio Remanente",
                                  choices = "", selected = "", multiple = FALSE),
@@ -31,7 +30,14 @@ mod_02_03_02_metodo_2_ui <- function(id){
                                 startview = "month", language = "es", separator = " a ")
         )
 
-        )
+        ),
+
+      shiny::column(
+        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
+                                     choices = c("ejercicio", "mes", "fuente","cta_cte"),
+                                     selected = "cta_cte" , inline = FALSE)
+      )
+
       ),
     shiny::fluidRow(
       shiny::column(

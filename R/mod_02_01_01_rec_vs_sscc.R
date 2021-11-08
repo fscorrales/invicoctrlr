@@ -16,13 +16,10 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
                   bs4Dash::actionButton(ns("update"),
                                         "Actualizar Filtros",
                                         status = "primary")),
+
+    rep_br(),
+
     shiny::fluidRow(
-      shiny::column(
-        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
-                                     choices = c("ejercicio",
-                                                 "fecha", "mes","cta_cte", "grupo"),
-                                     selected = "mes" , inline = FALSE)
-        ),
       shiny::column(
         6, shiny::selectizeInput(ns("ejercicio"), "Ejercicio",
                                  choices = "", selected = "", multiple = TRUE,
@@ -31,16 +28,25 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
           shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NA,
                                 end = NA, format = "dd-mm-yyyy",
                                 startview = "month", language = "es", separator = " a ")
-          )
-        )
+        ),
+
+        shiny::selectizeInput(ns("cta_cte"), "Seleccionar Cuentas",
+                              choices = "", selected = "", multiple = TRUE,
+                              options = list(placeholder = "Todo seleccionado"))
+
       ),
-    shiny::selectizeInput(ns("cta_cte"), "Seleccionar Cuentas",
-                          choices = "", selected = "", multiple = TRUE,
-                          options = list(placeholder = "Todo seleccionado")),
+      shiny::column(
+        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
+                                     choices = c("ejercicio",
+                                                 "fecha", "mes","cta_cte", "grupo"),
+                                     selected = "mes" , inline = FALSE)
+        )
+
+      ),
     shiny::fluidRow(
       shiny::column(
         6, shiny::radioButtons(ns("dep_transf_int"),
-                               "\u00bfDepurar Transferencias Internas?",
+                               "\u00bfDepurar Tranf. Internas?",
                                choices = c("SI", "NO"), selected = "SI")
         ),
       shiny::column(
@@ -57,7 +63,7 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
              ),
       shiny::column(
         6, shiny::radioButtons(ns("dep_cert_neg"),
-                               "\u00bfDepurar Cheques endosados a favor de INVICO (Certificado Negativo)?",
+                               "\u00bfDepurar Cheques endosados a favor de INVICO (Cert. Neg.)?",
                                choices = c("SI", "NO"), selected = "SI")
         )
       )

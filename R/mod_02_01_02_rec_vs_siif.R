@@ -16,13 +16,11 @@ mod_02_01_02_rec_vs_siif_ui <- function(id){
                   bs4Dash::actionButton(ns("update"),
                                         "Actualizar Filtros",
                                         status = "primary")),
+
+    rep_br(),
+
     shiny::fluidRow(
-      shiny::column(
-        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
-                                     choices = c("ejercicio",
-                                                 "fecha", "mes","cta_cte"),
-                                     selected = "mes" , inline = FALSE)
-        ),
+
       shiny::column(
         6, shiny::selectizeInput(ns("ejercicio"), "Ejercicio",
                                  choices = "", selected = "", multiple = TRUE,
@@ -31,13 +29,22 @@ mod_02_01_02_rec_vs_siif_ui <- function(id){
           shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NA,
                                 end = NA, format = "dd-mm-yyyy",
                                 startview = "month", language = "es", separator = " a ")
-        )
+        ),
 
-        )
+        shiny::selectizeInput(ns("cta_cte"), "Seleccionar Cuentas",
+                              choices = "", selected = "", multiple = TRUE,
+                              options = list(placeholder = "Todo seleccionado"))
+
+        ),
+
+      shiny::column(
+        6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
+                                     choices = c("ejercicio",
+                                                 "fecha", "mes","cta_cte"),
+                                     selected = "mes" , inline = FALSE)
       ),
-    shiny::selectizeInput(ns("cta_cte"), "Seleccionar Cuentas",
-                          choices = "", selected = "", multiple = TRUE,
-                          options = list(placeholder = "Todo seleccionado")),
+
+      ),
     shiny::fluidRow(
       shiny::column(
         6, shiny::radioButtons(ns("dep_aju_siif"),
