@@ -145,7 +145,7 @@ mod_01_02_siif_tesoreria_server <- function(id){
 
       Ans <- switch(input$controller,
                     comp_rec = list(data = siif_comprobantes_rec_rci02(),
-                                    import_function = invicodatr::rpw_siif_comprobantes_rec(),
+                                    import_function = invicodatr::rpw_siif_comprobantes_rec,
                                     df_trigger = siif_comprobantes_rec_trigger),
                     pagos = list(data = siif_pagos_rtr03(),
                                  import_function = invicodatr::rpw_siif_pagos,
