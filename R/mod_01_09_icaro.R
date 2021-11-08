@@ -135,7 +135,7 @@ mod_01_09_icaro_server <- function(id){
                             )
                           )
 
-    hide_columns_carga <- c(10:13)
+    hide_columns_carga <- c(11:14)
 
     formatr_carga <- list(columns = c("importe", "fondo_reparo"))
     formatp_carga <- list(columns = "avance")

@@ -210,8 +210,9 @@ icaro_carga <- shiny::reactive({
   Ans <- invicodatr::read_table_sqlite("icaro",
                                        "carga")
   Ans <- Ans %>%
-    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
-    dplyr::select(fecha, nro_entrada, tipo, obra,
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
+                  ejercicio = lubridate::year(fecha)) %>%
+    dplyr::select(ejercicio, fecha, nro_entrada, tipo, obra,
                   dplyr::everything()) %>%
     dplyr::arrange(desc(fecha), desc(nro_entrada))
 
