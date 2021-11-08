@@ -61,7 +61,7 @@ mod_02_03_02_metodo_2_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_comprobantes_rec_rci02() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_recursos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE)
@@ -74,7 +74,7 @@ mod_02_03_02_metodo_2_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_comprobantes_gtos_rcg01_uejp() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_gastos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -165,8 +165,9 @@ mod_02_03_02_metodo_2_server <- function(id){
         dplyr::summarise(recursos = sum(.data$recurso, na.rm = TRUE),
                          gastos = sum(.data$gasto, na.rm = TRUE),
                          remanente = .data$recursos - .data$gastos) %>%
-        tidyr::replace_na(list(recursos = 0, gastos = 0,
-                               remanente = 0))
+        replace(., is.na(.), 0)
+        # tidyr::replace_na(list(recursos = 0, gastos = 0,
+        #                        remanente = 0))
 
       return(db)
 

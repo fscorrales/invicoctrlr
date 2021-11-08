@@ -77,7 +77,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_comprobantes_rec_rci02() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_recursos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -93,7 +93,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- sscc_banco_invico() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$sscc_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -221,7 +221,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
       #Joinning and calulating
       db <- siif %>%
         dplyr::full_join(sscc, by = input$grupo %||% "mes") %>%
-        tidyr::replace_na(list(recursos_siif = 0, depositos_sscc = 0)) %>%
+        replace(., is.na(.), 0) %>%
+        # tidyr::replace_na(list(recursos_siif = 0, depositos_sscc = 0)) %>%
         dplyr::mutate(diferencia = .data$recursos_siif - .data$depositos_sscc,
                       dif_acum = cumsum(.data$diferencia))
 

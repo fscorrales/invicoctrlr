@@ -51,7 +51,7 @@ mod_02_03_03_diferencia_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- sscc_banco_invico() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$sscc_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -65,7 +65,7 @@ mod_02_03_03_diferencia_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_deuda_flotante_rdeu012() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_contabilidad_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -85,14 +85,14 @@ mod_02_03_03_diferencia_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db_rec <- siif_comprobantes_rec_rci02() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_recursos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE)
         )
 
       db_gto <- siif_comprobantes_gtos_rcg01_uejp() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_gastos_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -203,7 +203,8 @@ mod_02_03_03_diferencia_server <- function(id){
       #Joinning and calulating metodo_1
       metodo_1 <- sscc %>%
         dplyr::full_join(rdeu, by = input$grupo %||% "cta_cte") %>%
-        tidyr::replace_na(list(saldo_banco = 0, deuda_flotante = 0)) %>%
+        replace(., is.na(.), 0) %>%
+        # tidyr::replace_na(list(saldo_banco = 0, deuda_flotante = 0)) %>%
         dplyr::mutate(remanente_1 = .data$saldo_banco - .data$deuda_flotante) %>%
         dplyr::select(-.data$saldo_banco, -.data$deuda_flotante)
 
@@ -237,7 +238,8 @@ mod_02_03_03_diferencia_server <- function(id){
       #Joinning both methods
       db <- metodo_1 %>%
         dplyr::full_join(metodo_2, by = input$grupo %||% "cta_cte") %>%
-        tidyr::replace_na(list(remanente_1 = 0, remanente_2 = 0)) %>%
+        replace(., is.na(.), 0) %>%
+        # tidyr::replace_na(list(remanente_1 = 0, remanente_2 = 0)) %>%
         dplyr::mutate(diferencia = .data$remanente_1 - .data$remanente_2)
 
       return(db)

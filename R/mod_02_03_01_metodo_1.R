@@ -51,7 +51,7 @@ mod_02_03_01_metodo_1_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- sscc_banco_invico() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$sscc_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -65,7 +65,7 @@ mod_02_03_01_metodo_1_server <- function(id){
 
       db_cta_cte <- primary_key_cta_cte()
       db <- siif_deuda_flotante_rdeu012() %>%
-        dplyr::mutate(cta_cte = plyr::mapvalues(.data$cta_cte,
+        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_contabilidad_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
@@ -174,7 +174,8 @@ mod_02_03_01_metodo_1_server <- function(id){
       #Joinning and calulating
       db <- sscc %>%
         dplyr::full_join(rdeu, by = input$grupo %||% "mes") %>%
-        tidyr::replace_na(list(saldo_banco = 0, deuda_flotante = 0)) %>%
+        replace(., is.na(.), 0) %>%
+        # tidyr::replace_na(list(saldo_banco = 0, deuda_flotante = 0)) %>%
         dplyr::mutate(remanente = .data$saldo_banco - .data$deuda_flotante)
 
       # total_desvio <- sum(abs(db$dif_ingresado))

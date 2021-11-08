@@ -1,3 +1,30 @@
+utils::globalVariables(".")
+
+map_values <- function (x, from, to, warn_missing = TRUE) {
+
+  ##From plyr::mapvalues to avoid taking dependency
+
+  if (length(from) != length(to)) {
+    stop("`from` and `to` vectors are not the same length.")
+  }
+  if (!is.atomic(x)) {
+    stop("`x` must be an atomic vector.")
+  }
+  if (is.factor(x)) {
+    levels(x) <- map_values(levels(x), from, to, warn_missing)
+    return(x)
+  }
+  mapidx <- match(x, from)
+  mapidxNA <- is.na(mapidx)
+  from_found <- sort(unique(mapidx))
+  if (warn_missing && length(from_found) != length(from)) {
+    message("The following `from` values were not present in `x`: ",
+            paste(from[!(1:length(from) %in% from_found)], collapse = ", "))
+  }
+  x[!mapidxNA] <- to[mapidx[!mapidxNA]]
+  x
+}
+
 get_package_version <- function(pkg = "invicoctrlr"){
 
   base::gsub('\n\\s+', ' ',
