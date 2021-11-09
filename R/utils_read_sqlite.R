@@ -211,7 +211,7 @@ icaro_carga <- shiny::reactive({
                                        "carga")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
-                  ejercicio = lubridate::year(fecha)) %>%
+                  ejercicio = as.character(lubridate::year(fecha))) %>%
     dplyr::select(ejercicio, fecha, nro_entrada, tipo, obra,
                   dplyr::everything()) %>%
     dplyr::arrange(desc(fecha), desc(nro_entrada))

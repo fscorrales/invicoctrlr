@@ -67,7 +67,7 @@ mod_02_04_icaro_ui <- function(id){
         tabsetPanel(
           id = ns("switcher"), type = "hidden",
           tabPanel("anual",
-                   mod_02_03_01_metodo_1_ui(ns("filter_anual"))
+                   mod_02_04_01_anual_ui(ns("filter_anual"))
                    ),
           # tabPanel("mensual",
           #          mod_02_03_02_metodo_2_ui(ns("filter_mensual"))
@@ -121,21 +121,21 @@ mod_02_04_icaro_server <- function(id){
     # mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
 
-    # #Table Remamente Metodo 1
-    # anual <- mod_02_03_01_metodo_1_server("filter_anual")
-    #
+    # Table Control Anual ICARO
+    anual <- mod_02_04_01_anual_server("filter_anual")
+
     # formatr_anual <- list(columns = c("saldo_banco", "deuda_flotante",
     #                                      "remanente"))
-    #
-    # mod_data_table_server("dt_anual", anual,
-    #                       format_round = formatr_anual,
-    #                       buttons = list(
-    #                         list(
-    #                           extend = 'collection',
-    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                           text = 'Download 100 primeras filas')
-    #                       )
-    # )
+
+    mod_data_table_server("dt_anual", icaro_carga,
+                          # format_round = formatr_anual,
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas')
+                          )
+    )
     #
     #
     # #Table Remanente Metodo 2
