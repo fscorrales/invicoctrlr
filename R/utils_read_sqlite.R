@@ -197,7 +197,7 @@ primary_key_cta_cte <- shiny::reactive({
 icaro_trigger <- make_reactive_trigger()
 icaro_obras <- shiny::reactive({
   icaro_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("icaro",
+  Ans <- invicodatr::read_table_sqlite("icaro_new",
                                        "obras")
   Ans <- Ans %>%
     dplyr::select(obra, estructura, partida,
@@ -207,7 +207,7 @@ icaro_obras <- shiny::reactive({
 })
 icaro_carga <- shiny::reactive({
   icaro_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("icaro",
+  Ans <- invicodatr::read_table_sqlite("icaro_new",
                                        "carga")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
