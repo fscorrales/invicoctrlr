@@ -200,7 +200,7 @@ icaro_obras <- shiny::reactive({
   Ans <- invicodatr::read_table_sqlite("icaro",
                                        "obras")
   Ans <- Ans %>%
-    dplyr::select(obra, imputacion, partida,
+    dplyr::select(obra, estructura, partida,
                   dplyr::everything()) %>%
     dplyr::arrange(obra)
 
