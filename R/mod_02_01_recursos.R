@@ -17,6 +17,7 @@ mod_02_01_recursos_ui <- function(id){
       status = "olive",
       solidHeader = TRUE,
       width = 12,
+      height = "600px",
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,
@@ -97,14 +98,14 @@ mod_02_01_recursos_server <- function(id){
 
     observeEvent(input$controller, {
 
-      Ans <- switch(input$controller,
-                    rec_vs_sscc = list(data = rec_vs_sscc()),
-                    rec_vs_siif = list(data = rec_vs_siif()),
-                    rec_vs_invico = list(data = rec_vs_invico()),
-                    stop("Invalid `x` value")
-      )
-
-      rpw_controller$df <- Ans$data
+      # Ans <- switch(input$controller,
+      #               rec_vs_sscc = list(data = rec_vs_sscc()),
+      #               rec_vs_siif = list(data = rec_vs_siif()),
+      #               rec_vs_invico = list(data = rec_vs_invico()),
+      #               stop("Invalid `x` value")
+      # )
+      #
+      # rpw_controller$df <- Ans$data
       # rpw_controller$fct <- Ans$import_function
       # rpw_controller$trigger <- Ans$df_trigger
 
@@ -140,42 +141,42 @@ mod_02_01_recursos_server <- function(id){
     )
 
 
-    #Table Recursos SIIF vs Banco SIIF
-    rec_vs_siif <- mod_02_01_02_rec_vs_siif_server("filter_rec_vs_siif")
-
-    formatr_rec_vs_siif <- list(columns = c("recursos_siif", "debitos_banco_siif",
-                                            "diferencia", "dif_acum"))
-    formatp_rec_vs_siif <- list(columns = "prop_desv")
-
-    mod_data_table_server("dt_rec_vs_siif", rec_vs_siif,
-                          format_round = formatr_rec_vs_siif,
-                          format_perc = formatp_rec_vs_siif,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
-
-    #Table Recursos 337 vs Codigo Retencion 337
-    rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
-
-    formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
-                                            "pagos_337_siif", "dif_pagado_337",
-                                            "dif_ingresado", "dif_acum"))
-    formatp_rec_vs_invico <- list(columns = "prop_desv")
-
-    mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
-                          format_round = formatr_rec_vs_invico,
-                          format_perc = formatp_rec_vs_invico,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
+    # #Table Recursos SIIF vs Banco SIIF
+    # # rec_vs_siif <- mod_02_01_02_rec_vs_siif_server("filter_rec_vs_siif")
+    #
+    # formatr_rec_vs_siif <- list(columns = c("recursos_siif", "debitos_banco_siif",
+    #                                         "diferencia", "dif_acum"))
+    # formatp_rec_vs_siif <- list(columns = "prop_desv")
+    #
+    # mod_data_table_server("dt_rec_vs_siif", rec_vs_siif,
+    #                       format_round = formatr_rec_vs_siif,
+    #                       format_perc = formatp_rec_vs_siif,
+    #                       buttons = list(
+    #                         list(
+    #                           extend = 'collection',
+    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                           text = 'Download 100 primeras filas')
+    #                       )
+    # )
+    #
+    # #Table Recursos 337 vs Codigo Retencion 337
+    # # rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
+    #
+    # formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
+    #                                         "pagos_337_siif", "dif_pagado_337",
+    #                                         "dif_ingresado", "dif_acum"))
+    # formatp_rec_vs_invico <- list(columns = "prop_desv")
+    #
+    # mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
+    #                       format_round = formatr_rec_vs_invico,
+    #                       format_perc = formatp_rec_vs_invico,
+    #                       buttons = list(
+    #                         list(
+    #                           extend = 'collection',
+    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                           text = 'Download 100 primeras filas')
+    #                       )
+    # )
 
   })
 }

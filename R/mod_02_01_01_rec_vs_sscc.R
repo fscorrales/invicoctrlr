@@ -86,12 +86,13 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
         dplyr::mutate(cta_cte = map_values(.data$cta_cte,
                                                 from = db_cta_cte$siif_recursos_cta_cte,
                                                 to = db_cta_cte$map_to,
-                                                warn_missing = FALSE),
-                      grupo = dplyr::case_when(
-                        .data$cta_cte == "10270" ~ "FONAVI",
-                        .data$cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
-                        TRUE ~ "OTROS"
-                      ))
+                                                warn_missing = FALSE)
+                      # grupo = dplyr::case_when(
+                      #   .data$cta_cte == "10270" ~ "FONAVI",
+                      #   .data$cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
+                      #   TRUE ~ "OTROS"
+                      # )
+                      )
       return(db)
     })
 
@@ -103,47 +104,76 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                                                 from = db_cta_cte$sscc_cta_cte,
                                                 to = db_cta_cte$map_to,
                                                 warn_missing = FALSE),
-                      ejercicio = as.character(lubridate::year(.data$fecha)),
-                      grupo = dplyr::case_when(
-                        .data$cta_cte == "10270" ~ "FONAVI",
-                        .data$cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
-                        TRUE ~ "OTROS"
-                      ))
+                      ejercicio = as.character(lubridate::year(.data$fecha))
+                      # grupo = dplyr::case_when(
+                      #   .data$cta_cte == "10270" ~ "FONAVI",
+                      #   .data$cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
+                      #   TRUE ~ "OTROS"
+                      # )
+                      )
       return(db)
 
     })
 
     #Updting shiny input objets
-    ejercicio_var <- reactive({
+    to_listen <- reactive({
+      list(db_rec(),
+           db_sscc())
+    })
+
+    observeEvent(to_listen(), {
+
 
       ans <- db_rec() %>%
-        dplyr::select(.data$ejercicio, .data$fecha, .data$cta_cte)
-
-      ans <- db_sscc() %>%
         dplyr::select(.data$ejercicio, .data$fecha, .data$cta_cte) %>%
-        dplyr::full_join(ans,
-                         by = c("ejercicio", "fecha", "cta_cte")) %>%
-        unique() %>%
-        dplyr::arrange(dplyr::desc(.data$ejercicio), .data$fecha)
+        dplyr::bind_rows(dplyr::select(db_sscc(), .data$ejercicio,
+                                       .data$fecha, .data$cta_cte))
 
-      return(ans)
-
-    })
-
-    observeEvent(ejercicio_var, {
+      shiny::updateSelectizeInput(session, "cta_cte",
+                                  choices = sort(unique(ans$cta_cte)))
 
       shiny::updateSelectizeInput(session, "ejercicio",
-                                  choices = unique(ejercicio_var()$ejercicio))
-      shiny::updateDateRangeInput(session, "fecha",
-                                  min = min(ejercicio_var()$fecha),
-                                  max = max(ejercicio_var()$fecha))
-      shiny::updateSelectizeInput(session, "cta_cte",
-                                  choices = sort(unique(ejercicio_var()$cta_cte)))
+                                  choices = sort(unique(ans$ejercicio),
+                                                 decreasing = TRUE))
 
+      shiny::updateDateRangeInput(session, "fecha",
+                                  min = min(ans$fecha),
+                                  max = max(ans$fecha))
     })
 
+
+    # ejercicio_var <- reactive({
+    #
+    #   ans <- db_rec() %>%
+    #     dplyr::select(.data$ejercicio, .data$fecha, .data$cta_cte)
+    #
+    #   ans <- db_sscc() %>%
+    #     dplyr::select(.data$ejercicio, .data$fecha, .data$cta_cte) %>%
+    #     dplyr::full_join(ans,
+    #                      by = c("ejercicio", "fecha", "cta_cte")) %>%
+    #     unique() %>%
+    #     dplyr::arrange(dplyr::desc(.data$ejercicio), .data$fecha)
+    #
+    #   return(ans)
+    #
+    # })
+    #
+    # observeEvent(ejercicio_var, {
+    #
+    #   shiny::updateSelectizeInput(session, "ejercicio",
+    #                               choices = unique(ejercicio_var()$ejercicio))
+    #   shiny::updateDateRangeInput(session, "fecha",
+    #                               min = min(ejercicio_var()$fecha),
+    #                               max = max(ejercicio_var()$fecha))
+    #   shiny::updateSelectizeInput(session, "cta_cte",
+    #                               choices = sort(unique(ejercicio_var()$cta_cte)))
+    #
+    # })
+
     #Generate Table
-    table <- eventReactive(input$update, {
+    table <- reactiveVal(NULL)
+
+    observeEvent(input$update, {
 
       #Setting input$ejercicio default value
       if (is.null(input$ejercicio)) {
@@ -237,12 +267,11 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
       db <- db %>%
         dplyr::mutate(prop_desv = (abs(.data$diferencia) / total_desvio))
 
-      return(db)
+      table(db)
 
-    }, ignoreNULL = FALSE)
+    })
 
     return(table)
-
 
   })
 }
