@@ -25,6 +25,23 @@ map_values <- function (x, from, to, warn_missing = TRUE) {
   x
 }
 
+map_cta_cte <- function(sqlite_name, sql_query, from_map){
+
+  ans <- invicodatr::filter_sqlite(
+    sqlite_name,
+    sql_query
+  ) %>%
+    dplyr::pull()
+
+  primary_cta_cte <- invicodatr::read_table_sqlite("primary_key", "cta_cte")
+
+  ans <- map_values(ans,
+                    from = primary_cta_cte[[from_map]],
+                    to = primary_cta_cte$map_to,
+                    warn_missing = FALSE)
+
+}
+
 get_package_version <- function(pkg = "invicoctrlr"){
 
   base::gsub('\n\\s+', ' ',
