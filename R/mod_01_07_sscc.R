@@ -134,7 +134,7 @@ mod_01_07_sscc_server <- function(id){
                           import_function = reactive(rpw_controller$fct),
                           df_trigger = reactive(rpw_controller$trigger))
 
-    hide_columns_banco <- c(1, 6, 7, 10, 11)
+    hide_columns_banco <- c(2, 7, 8, 11, 12)
 
     formatr_sscc <- list(columns = c("monto"))
 
