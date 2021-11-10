@@ -12,6 +12,14 @@ make_reactive_trigger <- function() {
   )
 }
 
+primary_key_cta_cte_trigger <- make_reactive_trigger()
+primary_key_cta_cte <- shiny::reactive({
+  primary_key_cta_cte_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("primary_key",
+                                       "cta_cte")
+
+})
+
 siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
 siif_ppto_gtos_fte_rf602 <- shiny::reactive({
   siif_ppto_gtos_fte_trigger$depend()
@@ -45,6 +53,10 @@ siif_comprobantes_rec_rci02 <- shiny::reactive({
                   verificado = ifelse(verificado == "S", TRUE, FALSE),
                   remanente = as.logical(remanente),
                   invico = as.logical(invico)) %>%
+    # dplyr::mutate(cta_cte = map_values(cta_cte,
+    #                                    from = primary_key_cta_cte()$siif_recursos_cta_cte,
+    #                                    to = primary_key_cta_cte()$map_to,
+    #                                    warn_missing = FALSE)) %>%
     dplyr::select(ejercicio, fecha, nro_entrada, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), fecha, nro_entrada)
 
@@ -179,17 +191,9 @@ sscc_banco_invico <- shiny::reactive({
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01"),
                   es_cheque = as.logical(es_cheque)) %>%
-    dplyr::select(fecha, mes, movimiento, cta_cte, monto,
+    dplyr::select(ejercicio, fecha, mes, movimiento, cta_cte, monto,
                   dplyr::everything()) %>%
     dplyr::arrange(desc(fecha))
-
-})
-
-primary_key_cta_cte_trigger <- make_reactive_trigger()
-primary_key_cta_cte <- shiny::reactive({
-  primary_key_cta_cte_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("primary_key",
-                                       "cta_cte")
 
 })
 
