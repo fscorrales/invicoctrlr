@@ -38,7 +38,7 @@ mod_save_button_server <- function(id, df) {
         file_ext <- tools::file_ext(fileinfo$datapath)
 
         if (file_ext == "xlsx") {
-          openxlsx::write.xlsx(df(), as.character(fileinfo$datapath))
+          openxlsx::write.xlsx(df(), as.character(fileinfo$datapath), overwrite = TRUE)
         }
 
         if (file_ext == "csv") {
