@@ -31,13 +31,19 @@ MyConnection <- R6::R6Class(
       self$list_fields()
 
     },
-    write = function(table_name, df, ...) {
+    connect_sql = function(sqlite_name = NULL) {
+
+      stopifnot(is.character(sqlite_name), length(sqlite_name) == 1)
+      private$conn = invicodatr::connect_sqlite(sqlite_name)
+
+    },
+    write_table = function(table_name, df, ...) {
 
       DBI::dbWriteTable(private$conn, name = table_name,
                         value = df, ...)
 
     },
-    read = function(table_name, ...) {
+    read_table = function(table_name, ...) {
 
       self$data <- DBI::dbReadTable(private$conn,
                                     table_name, ...) %>%
@@ -72,14 +78,14 @@ MyConnection <- R6::R6Class(
       DBI::dbExecute(private$conn, SQLquery)
 
     },
-    filter = function(sql_query, ...) {
+    get_query = function(sql_query, ...) {
 
       ans <- DBI::dbGetQuery(private$conn, sql_query, ...)
       ans <- tibble::as_tibble(ans)
       self$data <- ans
 
     },
-    execute = function(sql_query, ...) {
+    execute_sql = function(sql_query, ...) {
 
       rs <- DBI::dbSendStatement(private$conn, sql_query, ...)
       x <- DBI::dbGetRowsAffected(rs)
@@ -94,7 +100,7 @@ MyConnection <- R6::R6Class(
       #Disconnect from database
       DBI::dbDisconnect(private$conn)
       #Cleaning data
-      data = NULL
+      self$data = NULL
       private$.tables = NULL
       private$.fields = NULL
 
