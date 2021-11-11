@@ -91,6 +91,9 @@ mod_02_01_recursos_server <- function(id){
 
     ns <- session$ns
 
+    siif_r6 <- MyData$new("siif")
+    sscc_r6 <- MyData$new("sscc")
+
     shinyjs::reset("update-file")
     shinyFeedback::hideFeedback("update-file")
 
@@ -123,22 +126,28 @@ mod_02_01_recursos_server <- function(id){
 
 
     #Table Recursos SIIF vs SSCC Banco INVICO
-    rec_vs_sscc <- mod_02_01_01_rec_vs_sscc_server("filter_rec_vs_sscc")
+    rec_vs_sscc <- mod_02_01_01_rec_vs_sscc_server("filter_rec_vs_sscc", siif_r6, sscc_r6)
 
-    formatr_rec_vs_sscc <- list(columns = c("recursos_siif", "depositos_sscc",
-                                     "diferencia", "dif_acum"))
-    formatp_rec_vs_sscc <- list(columns = "prop_desv")
+    shiny::observeEvent(rec_vs_sscc(), {
 
-    mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc,
-                          format_round = formatr_rec_vs_sscc,
-                          format_perc = formatp_rec_vs_sscc,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
+      formatr_rec_vs_sscc <- list(columns = c("recursos_siif", "depositos_sscc",
+                                              "diferencia", "dif_acum"))
+      formatp_rec_vs_sscc <- list(columns = "prop_desv")
+
+      mod_data_table_server("dt_rec_vs_sscc", rec_vs_sscc,
+                            format_round = formatr_rec_vs_sscc,
+                            format_perc = formatp_rec_vs_sscc,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+
 
 
     # #Table Recursos SIIF vs Banco SIIF

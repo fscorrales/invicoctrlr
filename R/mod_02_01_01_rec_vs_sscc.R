@@ -73,7 +73,7 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
 #' 02_01_01_rec_vs_sscc Server Functions
 #'
 #' @noRd
-mod_02_01_01_rec_vs_sscc_server <- function(id){
+mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
   moduleServer( id, function(input, output, session){
 
     ns <- session$ns
@@ -125,44 +125,56 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
     observeEvent(to_listen(), {
 
-      db_rec <-  map_cta_cte("siif",
-                             "SELECT DISTINCT cta_cte FROM comprobantes_rec_rci02",
-                             "siif_recursos_cta_cte")
+      siif_r6$data <- map_cta_cte("siif",
+                                  "SELECT DISTINCT cta_cte FROM comprobantes_rec_rci02",
+                                  "siif_recursos_cta_cte")
 
-      db_sscc <-  map_cta_cte("sscc",
-                             "SELECT DISTINCT cta_cte FROM banco_invico",
-                             "sscc_cta_cte")
+      sscc_r6$data <-  map_cta_cte("sscc",
+                              "SELECT DISTINCT cta_cte FROM banco_invico",
+                              "sscc_cta_cte")
 
-      choices_rv$cta_cte <- sort(unique(c(db_rec, db_sscc)))
+      choices_rv$cta_cte <- sort(unique(c(siif_r6$data, sscc_r6$data)))
 
       shiny::updateSelectizeInput(session, "cta_cte",
                                   choices = choices_rv$cta_cte)
 
-      db_rec <- invicodatr::filter_sqlite(
-        "siif",
-        "SELECT DISTINCT Ejercicio FROM comprobantes_rec_rci02"
-        )
+      siif_r6$get_query("SELECT DISTINCT ejercicio FROM comprobantes_rec_rci02")
 
-      choices_rv$ejercicio <- sort(db_rec$ejercicio,
+      # db_rec <- invicodatr::filter_sqlite(
+      #   "siif",
+      #   "SELECT DISTINCT Ejercicio FROM comprobantes_rec_rci02"
+      #   )
+
+      choices_rv$ejercicio <- sort(siif_r6$data$ejercicio,
                                    decreasing = TRUE)
 
       shiny::updateSelectizeInput(session, "ejercicio",
                                   choices = choices_rv$ejercicio )
 
-      db_rec <- invicodatr::filter_sqlite(
-        "siif",
+      siif_r6$get_query(
         paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
                "FROM comprobantes_rec_rci02")
       )
 
-      db_sscc <- invicodatr::filter_sqlite(
-        "sscc",
+      # db_rec <- invicodatr::filter_sqlite(
+      #   "siif",
+      #   paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
+      #          "FROM comprobantes_rec_rci02")
+      # )
+
+      sscc_r6$get_query(
         paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
                "FROM banco_invico")
       )
 
-      db <- db_rec %>%
-        dplyr::bind_rows(db_sscc)
+      # db_sscc <- invicodatr::filter_sqlite(
+      #   "sscc",
+      #   paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
+      #          "FROM banco_invico")
+      # )
+
+      db <- siif_r6$data %>%
+        dplyr::bind_rows(sscc_r6$data)
 
       db <- c(db$max_fecha, db$min_fecha) %>%
         as.Date(origin = "1970-01-01")
@@ -176,9 +188,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
 
     #Generate Table
-    table <- reactiveVal(data.frame())
-
-    observeEvent(input$update, {
+    table <- shiny::eventReactive(input$update, {
 
       #Setting input default value
       if (is.null(input$ejercicio)) {
@@ -299,7 +309,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
       db <- db %>%
         dplyr::mutate(prop_desv = (abs(.data$diferencia) / total_desvio))
 
-      table(db)
+      return(db)
 
     })
 
