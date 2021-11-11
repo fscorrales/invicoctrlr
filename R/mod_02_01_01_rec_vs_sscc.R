@@ -218,7 +218,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
         db <- db %>%
-          dplyr::filter(dplyr::between(fecha,
+          dplyr::filter(dplyr::between(.data$fecha,
                                        lubridate::ymd(input$fecha[[1]]),
                                        lubridate::ymd(input$fecha[[2]])))
       }
@@ -249,7 +249,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
         db <- db %>%
-          dplyr::filter(dplyr::between(fecha,
+          dplyr::filter(dplyr::between(.data$fecha,
                                        lubridate::ymd(input$fecha[[1]]),
                                        lubridate::ymd(input$fecha[[2]])))
       }
