@@ -33,11 +33,12 @@ map_cta_cte <- function(sqlite_name, sql_query, from_map){
   ) %>%
     dplyr::pull()
 
-  primary_cta_cte <- invicodatr::read_table_sqlite("primary_key", "cta_cte")
+  # primary_cta_cte <- invicodatr::read_table_sqlite("primary_key", "cta_cte")
+  primary_cta_cte <- r6_primary_key_cta_cte$data
 
   ans <- map_values(ans,
-                    from = primary_cta_cte[[from_map]],
-                    to = primary_cta_cte$map_to,
+                    from = r6_primary_key_cta_cte$data[[from_map]],
+                    to = r6_primary_key_cta_cte$data$map_to,
                     warn_missing = FALSE)
 
 }

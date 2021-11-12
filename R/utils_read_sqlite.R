@@ -12,13 +12,34 @@ make_reactive_trigger <- function() {
   )
 }
 
+r6_primary_key_cta_cte <- MyData$new("primary_key")
 primary_key_cta_cte_trigger <- make_reactive_trigger()
-primary_key_cta_cte <- shiny::reactive({
-  primary_key_cta_cte_trigger$depend()
-  Ans <- invicodatr::read_table_sqlite("primary_key",
-                                       "cta_cte")
+primary_key_cta_cte <- shiny::reactive(primary_key_cta_cte_trigger$depend())
+observeEvent(primary_key_cta_cte(),
+  r6_primary_key_cta_cte$read_table("cta_cte"),
+  ignoreNULL = FALSE
+)
 
-})
+# primary_key_cta_cte_trigger <- make_reactive_trigger()
+# primary_key_cta_cte <- shiny::reactive({
+#   primary_key_cta_cte_trigger$depend()
+#   Ans <- invicodatr::read_table_sqlite("primary_key",
+#                                        "cta_cte")
+#
+# })
+
+## It would be a very nice implementation of R6
+# r6_ppto_gtos_fte_rf602 <- MyData$new("siif")
+# siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
+# siif_ppto_gtos_fte_rf602 <- shiny::reactive(siif_ppto_gtos_fte_trigger$depend())
+# observeEvent(siif_ppto_gtos_fte_rf602(), {
+#   r6_ppto_gtos_fte_rf602$read_table("ppto_gtos_fte_rf602")
+#   r6_ppto_gtos_fte_rf602$
+#     mutate(estructura = paste(programa, subprograma, proyecto, actividad, sep = "-"))$
+#     select(ejercicio, estructura, dplyr::everything())$
+#     arrange(desc(ejercicio), estructura)
+#
+# })
 
 siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
 siif_ppto_gtos_fte_rf602 <- shiny::reactive({

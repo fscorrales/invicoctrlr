@@ -91,9 +91,6 @@ mod_02_01_recursos_server <- function(id){
 
     ns <- session$ns
 
-    siif_r6 <- MyData$new("siif")
-    sscc_r6 <- MyData$new("sscc")
-
     shinyjs::reset("update-file")
     shinyFeedback::hideFeedback("update-file")
 
@@ -126,7 +123,7 @@ mod_02_01_recursos_server <- function(id){
 
 
     #Table Recursos SIIF vs SSCC Banco INVICO
-    rec_vs_sscc <- mod_02_01_01_rec_vs_sscc_server("filter_rec_vs_sscc", siif_r6, sscc_r6)
+    rec_vs_sscc <- mod_02_01_01_rec_vs_sscc_server("filter_rec_vs_sscc")
 
     shiny::observeEvent(rec_vs_sscc(), {
 

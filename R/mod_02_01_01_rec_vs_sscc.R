@@ -73,10 +73,12 @@ mod_02_01_01_rec_vs_sscc_ui <- function(id){
 #' 02_01_01_rec_vs_sscc Server Functions
 #'
 #' @noRd
-mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
+mod_02_01_01_rec_vs_sscc_server <- function(id){
   moduleServer( id, function(input, output, session){
 
     ns <- session$ns
+    r6_siif <- MyData$new("siif")
+    r6_sscc <- MyData$new("sscc")
 
     # #Initial DBs setting
     # db_rec <- reactive({
@@ -125,33 +127,33 @@ mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
 
     observeEvent(to_listen(), {
 
-      siif_r6$data <- map_cta_cte("siif",
+      r6_siif$data <- map_cta_cte("siif",
                                   "SELECT DISTINCT cta_cte FROM comprobantes_rec_rci02",
                                   "siif_recursos_cta_cte")
 
-      sscc_r6$data <-  map_cta_cte("sscc",
+      r6_sscc$data <-  map_cta_cte("sscc",
                               "SELECT DISTINCT cta_cte FROM banco_invico",
                               "sscc_cta_cte")
 
-      choices_rv$cta_cte <- sort(unique(c(siif_r6$data, sscc_r6$data)))
+      choices_rv$cta_cte <- sort(unique(c(r6_siif$data, r6_sscc$data)))
 
       shiny::updateSelectizeInput(session, "cta_cte",
                                   choices = choices_rv$cta_cte)
 
-      siif_r6$get_query("SELECT DISTINCT ejercicio FROM comprobantes_rec_rci02")
+      r6_siif$get_query("SELECT DISTINCT ejercicio FROM comprobantes_rec_rci02")
 
       # db_rec <- invicodatr::filter_sqlite(
       #   "siif",
       #   "SELECT DISTINCT Ejercicio FROM comprobantes_rec_rci02"
       #   )
 
-      choices_rv$ejercicio <- sort(siif_r6$data$ejercicio,
+      choices_rv$ejercicio <- sort(r6_siif$data$ejercicio,
                                    decreasing = TRUE)
 
       shiny::updateSelectizeInput(session, "ejercicio",
                                   choices = choices_rv$ejercicio )
 
-      siif_r6$get_query(
+      r6_siif$get_query(
         paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
                "FROM comprobantes_rec_rci02")
       )
@@ -162,7 +164,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
       #          "FROM comprobantes_rec_rci02")
       # )
 
-      sscc_r6$get_query(
+      r6_sscc$get_query(
         paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
                "FROM banco_invico")
       )
@@ -173,17 +175,25 @@ mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
       #          "FROM banco_invico")
       # )
 
-      db <- siif_r6$data %>%
-        dplyr::bind_rows(sscc_r6$data)
+      # db <- r6_siif$data %>%
+      #   dplyr::bind_rows(r6_sscc$data)
+      r6_siif$bind_rows(r6_sscc$data)
 
-      db <- c(db$max_fecha, db$min_fecha) %>%
-        as.Date(origin = "1970-01-01")
+      # db <- c(db$max_fecha, db$min_fecha) %>%
+      #   as.Date(origin = "1970-01-01")
 
-      choices_rv$fecha <- db
+      choices_rv$fecha <- c(
+        r6_siif$data$max_fecha, r6_siif$data$min_fecha
+      ) %>% as.Date(origin = "1970-01-01")
+
 
       shiny::updateDateRangeInput(session, "fecha",
                                   min = min(choices_rv$fecha),
                                   max = max(choices_rv$fecha))
+
+      r6_siif$finalize()
+      r6_sscc$finalize()
+
     })
 
 
@@ -219,8 +229,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
       ) %>%
         dplyr::mutate(
           cta_cte = map_values(.data$cta_cte,
-                               from = primary_key_cta_cte()$siif_recursos_cta_cte,
-                               to = primary_key_cta_cte()$map_to,
+                               from = r6_primary_key_cta_cte$data$siif_recursos_cta_cte,
+                               to = r6_primary_key_cta_cte$data$map_to,
                                warn_missing = FALSE),
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
         )%>%
@@ -250,8 +260,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id, siif_r6, sscc_r6){
       ) %>%
         dplyr::mutate(
           cta_cte = map_values(.data$cta_cte,
-                               from = primary_key_cta_cte()$sscc_cta_cte,
-                               to = primary_key_cta_cte()$map_to,
+                               from = r6_primary_key_cta_cte$data$sscc_cta_cte,
+                               to = r6_primary_key_cta_cte$data$map_to,
                                warn_missing = FALSE),
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
         ) %>%
