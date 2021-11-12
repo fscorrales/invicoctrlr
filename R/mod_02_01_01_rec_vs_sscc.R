@@ -218,6 +218,23 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
         unique(choices_rv$cta_cte)
 
       #Filtering siif_rec
+      r6_siif$
+        get_query(
+          paste0("SELECT ejercicio, mes, fecha, cta_cte, ",
+                 "monto FROM comprobantes_rec_rci02 ",
+                 "WHERE invico = 0 ",
+                 "AND remanente = 0 ",
+                 "AND ejercicio = ?"),
+          params = list(ejercicio_vec)
+        )$
+        mutate(
+          cta_cte = map_values(.data$cta_cte,
+                               from = r6_primary_key_cta_cte$data$siif_recursos_cta_cte,
+                               to = r6_primary_key_cta_cte$data$map_to,
+                               warn_missing = FALSE),
+          fecha = as.Date(.data$fecha, origin = "1970-01-01")
+        )
+
       siif <- invicodatr::filter_sqlite(
         "siif",
         paste0("SELECT ejercicio, mes, fecha, cta_cte, ",

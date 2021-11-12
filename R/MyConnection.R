@@ -48,6 +48,7 @@ MyConnection <- R6::R6Class(
       self$data <- DBI::dbReadTable(private$conn,
                                     table_name, ...) %>%
         dplyr::as_tibble()
+      invisible(self)
 
     },
     list_tables = function() {
@@ -76,6 +77,7 @@ MyConnection <- R6::R6Class(
       DBI::dbExecute(private$conn, SQLquery)
       SQLquery <- paste0("ALTER TABLE COPY RENAME TO ", table_name)
       DBI::dbExecute(private$conn, SQLquery)
+      invisible(self)
 
     },
     get_query = function(sql_query, ...) {
@@ -83,6 +85,7 @@ MyConnection <- R6::R6Class(
       ans <- DBI::dbGetQuery(private$conn, sql_query, ...)
       ans <- tibble::as_tibble(ans)
       self$data <- ans
+      invisible(self)
 
     },
     execute_sql = function(sql_query, ...) {
@@ -91,6 +94,7 @@ MyConnection <- R6::R6Class(
       x <- DBI::dbGetRowsAffected(rs)
       DBI::dbClearResult(rs)
       cat("Rows affected: ", x)
+      invisible(self)
 
     },
     finalize = function() {
