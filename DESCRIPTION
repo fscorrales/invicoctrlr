@@ -43,5 +43,4 @@ Suggests:
 Config/testthat/edition: 3
 Language: en-US
 Remotes: 
-    github::fscorrales/invicodatr,
-    gitlab::thomasp85/shinyFiles
+    github::fscorrales/invicodatr
