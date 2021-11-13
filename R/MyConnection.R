@@ -27,14 +27,19 @@ MyConnection <- R6::R6Class(
     initialize = function(sqlite_name = NULL) {
 
       stopifnot(is.character(sqlite_name), length(sqlite_name) == 1)
-      private$conn = invicodatr::connect_sqlite(sqlite_name)
+      # private$conn = invicodatr::connect_sqlite(sqlite_name)
+      private$conn = paste0(dirname(getwd()),
+                            "/R Output/SQLite Files/",
+                            sqlite_name, ".sqlite")
       self$list_fields()
 
     },
     connect_sql = function(sqlite_name = NULL) {
 
       stopifnot(is.character(sqlite_name), length(sqlite_name) == 1)
-      private$conn = invicodatr::connect_sqlite(sqlite_name)
+      private$conn = paste0(dirname(getwd()),
+                            "/R Output/SQLite Files/",
+                            sqlite_name, ".sqlite")
 
     },
     write_table = function(table_name, df, ...) {
