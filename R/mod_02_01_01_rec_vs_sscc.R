@@ -77,45 +77,6 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
   moduleServer( id, function(input, output, session){
 
     ns <- session$ns
-    r6_siif <- MyData$new("siif")
-    r6_sscc <- MyData$new("sscc")
-
-    # #Initial DBs setting
-    # db_rec <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- siif_comprobantes_rec_rci02() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$siif_recursos_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE)
-    #                   # grupo = dplyr::case_when(
-    #                   #   .data$cta_cte == "10270" ~ "FONAVI",
-    #                   #   .data$cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
-    #                   #   TRUE ~ "OTROS"
-    #                   # )
-    #                   )
-    #   return(db)
-    # })
-    #
-    # db_sscc <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- sscc_banco_invico() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$sscc_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE),
-    #                   ejercicio = as.character(lubridate::year(.data$fecha))
-    #                   # grupo = dplyr::case_when(
-    #                   #   .data$cta_cte == "10270" ~ "FONAVI",
-    #                   #   .data$cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
-    #                   #   TRUE ~ "OTROS"
-    #                   # )
-    #                   )
-    #   return(db)
-    #
-    # })
 
     #Updting shiny input objets
     choices_rv <- rv()
@@ -126,6 +87,9 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
     })
 
     observeEvent(to_listen(), {
+
+      r6_siif <- MyData$new("siif")
+      r6_sscc <- MyData$new("sscc")
 
       r6_siif$data <- map_cta_cte("siif",
                                   "SELECT DISTINCT cta_cte FROM comprobantes_rec_rci02",
@@ -142,11 +106,6 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
       r6_siif$get_query("SELECT DISTINCT ejercicio FROM comprobantes_rec_rci02")
 
-      # db_rec <- invicodatr::filter_sqlite(
-      #   "siif",
-      #   "SELECT DISTINCT Ejercicio FROM comprobantes_rec_rci02"
-      #   )
-
       choices_rv$ejercicio <- sort(r6_siif$data$ejercicio,
                                    decreasing = TRUE)
 
@@ -158,29 +117,12 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                "FROM comprobantes_rec_rci02")
       )
 
-      # db_rec <- invicodatr::filter_sqlite(
-      #   "siif",
-      #   paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
-      #          "FROM comprobantes_rec_rci02")
-      # )
-
       r6_sscc$get_query(
         paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
                "FROM banco_invico")
       )
 
-      # db_sscc <- invicodatr::filter_sqlite(
-      #   "sscc",
-      #   paste0("SELECT MAX(fecha) as max_fecha, MIN(fecha) as min_fecha ",
-      #          "FROM banco_invico")
-      # )
-
-      # db <- r6_siif$data %>%
-      #   dplyr::bind_rows(r6_sscc$data)
       r6_siif$bind_rows(r6_sscc$data)
-
-      # db <- c(db$max_fecha, db$min_fecha) %>%
-      #   as.Date(origin = "1970-01-01")
 
       choices_rv$fecha <- c(
         r6_siif$data$max_fecha, r6_siif$data$min_fecha
@@ -200,6 +142,9 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
     #Generate Table
     table <- shiny::eventReactive(input$update, {
 
+      r6_siif <- MyData$new("siif")
+      r6_sscc <- MyData$new("sscc")
+
       #Setting input default value
       if (is.null(input$ejercicio)) {
         shiny::updateSelectizeInput(session, "ejercicio",
@@ -217,6 +162,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
       cta_cte_vec <- input$cta_cte %||%
         unique(choices_rv$cta_cte)
 
+      # browser()
+
       #Filtering siif_rec
       r6_siif$
         get_query(
@@ -233,110 +180,100 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                                to = r6_primary_key_cta_cte$data$map_to,
                                warn_missing = FALSE),
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
-        )
-
-      siif <- invicodatr::filter_sqlite(
-        "siif",
-        paste0("SELECT ejercicio, mes, fecha, cta_cte, ",
-               "monto FROM comprobantes_rec_rci02 ",
-               "WHERE invico = 0 ",
-               "AND remanente = 0 ",
-               "AND ejercicio = ?"),
-        params = list(ejercicio_vec)
-      ) %>%
-        dplyr::mutate(
-          cta_cte = map_values(.data$cta_cte,
-                               from = r6_primary_key_cta_cte$data$siif_recursos_cta_cte,
-                               to = r6_primary_key_cta_cte$data$map_to,
-                               warn_missing = FALSE),
-          fecha = as.Date(.data$fecha, origin = "1970-01-01")
-        )%>%
-        dplyr::filter(.data$cta_cte %in% cta_cte_vec)
+        )$
+        filter(.data$cta_cte %in% cta_cte_vec)
 
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
-        db <- db %>%
-          dplyr::filter(dplyr::between(.data$fecha,
-                                       lubridate::ymd(input$fecha[[1]]),
-                                       lubridate::ymd(input$fecha[[2]])))
+        r6_siif$filter(
+          dplyr::between(.data$fecha,
+                         lubridate::ymd(input$fecha[[1]]),
+                         lubridate::ymd(input$fecha[[2]]))
+        )
       }
 
       #Grouping and summarising siif
-      siif <- siif %>%
-        dplyr::select(input$grupo %||% "mes", .data$monto) %>%
-        dplyr::group_by(!!! rlang::syms(input$grupo %||% "mes")) %>%
-        dplyr::summarise(recursos_siif = sum(.data$monto, na.rm = TRUE))
+      r6_siif$
+        select(input$grupo %||% "mes", .data$monto)$
+        group_by(!!! rlang::syms(input$grupo %||% "mes"))$
+        summarise(recursos_siif = sum(.data$monto, na.rm = TRUE))
 
       #Filtering sscc_banco_invico
-      sscc <- invicodatr::filter_sqlite(
-        "sscc",
-        paste0("SELECT ejercicio, mes, fecha, cta_cte, codigo_imputacion, ",
-               "monto FROM banco_invico ",
-               "WHERE movimiento = 'DEPOSITO' ",
-               "AND ejercicio = ?"),
-        params = list(ejercicio_vec)
-      ) %>%
-        dplyr::mutate(
+      r6_sscc$
+        get_query(
+          paste0("SELECT ejercicio, mes, fecha, cta_cte, codigo_imputacion, ",
+                 "monto FROM banco_invico ",
+                 "WHERE movimiento = 'DEPOSITO' ",
+                 "AND ejercicio = ?"),
+          params = list(ejercicio_vec)
+        )$
+        mutate(
           cta_cte = map_values(.data$cta_cte,
                                from = r6_primary_key_cta_cte$data$sscc_cta_cte,
                                to = r6_primary_key_cta_cte$data$map_to,
                                warn_missing = FALSE),
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
-        ) %>%
-        dplyr::filter(.data$cta_cte %in% cta_cte_vec)
+        )$
+        filter(.data$cta_cte %in% cta_cte_vec)
 
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
-        db <- db %>%
-          dplyr::filter(dplyr::between(.data$fecha,
-                                       lubridate::ymd(input$fecha[[1]]),
-                                       lubridate::ymd(input$fecha[[2]])))
+        r6_sscc$filter(
+            dplyr::between(.data$fecha,
+                           lubridate::ymd(input$fecha[[1]]),
+                           lubridate::ymd(input$fecha[[2]]))
+            )
       }
 
-
       if (input$dep_transf_int == "SI") {
-        sscc <- sscc %>%
-          dplyr::filter(.data$codigo_imputacion != 34 &
-                          .data$codigo_imputacion != 4)
+        r6_sscc$filter(
+            .data$codigo_imputacion != 34 &
+              .data$codigo_imputacion != 4
+            )
       }
 
       if (input$dep_pf == "SI") {
-        sscc <- sscc %>%
-          dplyr::filter(.data$codigo_imputacion != 214 &
-                          .data$codigo_imputacion != 215)
+        r6_sscc$filter(
+            .data$codigo_imputacion != 214 &
+              .data$codigo_imputacion != 215
+            )
       }
 
       if (input$dep_otros == "SI") {
-        sscc <- sscc %>%
-          dplyr::filter(.data$codigo_imputacion != 3 &
-                          .data$codigo_imputacion != 55 &
-                          .data$codigo_imputacion != 5 &
-                          .data$codigo_imputacion != 13)
+        r6_sscc$filter(
+            .data$codigo_imputacion != 3 &
+              .data$codigo_imputacion != 55 &
+              .data$codigo_imputacion != 5 &
+              .data$codigo_imputacion != 13
+            )
       }
 
       if (input$dep_cert_neg == "SI") {
-        sscc <- sscc %>%
-          dplyr::filter(.data$codigo_imputacion != 18)
+        r6_sscc$filter(
+          .data$codigo_imputacion != 18
+        )
       }
 
       #Grouping and summarising sscc
-      sscc <- sscc %>%
-        dplyr::select(input$grupo %||% "mes", .data$monto) %>%
-        dplyr::group_by(!!! rlang::syms(input$grupo %||% "mes")) %>%
-        dplyr::summarise(depositos_sscc = sum(.data$monto, na.rm = TRUE))
+      r6_sscc$
+        select(input$grupo %||% "mes", .data$monto)$
+        group_by(!!! rlang::syms(input$grupo %||% "mes"))$
+        summarise(depositos_sscc = sum(.data$monto, na.rm = TRUE))
 
       #Joinning and calulating
-      db <- siif %>%
-        dplyr::full_join(sscc, by = input$grupo %||% "mes") %>%
-        replace(., is.na(.), 0) %>%
-        # tidyr::replace_na(list(recursos_siif = 0, depositos_sscc = 0)) %>%
-        dplyr::mutate(diferencia = .data$recursos_siif - .data$depositos_sscc,
-                      dif_acum = cumsum(.data$diferencia))
+      r6_siif$
+        full_join(r6_sscc$data, by = input$grupo %||% "mes")$
+        mutate_if(is.numeric, replace_NA_0)$
+        mutate(
+          diferencia = .data$recursos_siif - .data$depositos_sscc,
+          dif_acum = cumsum(.data$diferencia)
+        )
 
-      total_desvio <- sum(abs(db$diferencia))
+      total_desvio <- sum(abs(r6_siif$data$diferencia))
+      r6_siif$mutate(prop_desv = (abs(.data$diferencia) / total_desvio))
 
-      db <- db %>%
-        dplyr::mutate(prop_desv = (abs(.data$diferencia) / total_desvio))
+      return(r6_siif$data)
 
-      return(db)
+      r6_siif$finalize()
+      r6_sscc$finalize()
 
     })
 

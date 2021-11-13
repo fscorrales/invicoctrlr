@@ -10,13 +10,16 @@ MyData <- R6::R6Class(
       # self$list_fields()
 
     },
-    select = function(a_list) {
-      a_list$.data <- self$data
+    select = function(...) {
       self$data <- dplyr::select(self$data, ...)
       invisible(self)
     },
     mutate = function(...) {
       self$data <- dplyr::mutate(self$data, ...)
+      invisible(self)
+    },
+    mutate_if = function(...) {
+      self$data <- dplyr::mutate_if(self$data, ...)
       invisible(self)
     },
     filter = function(...) {
@@ -33,6 +36,14 @@ MyData <- R6::R6Class(
     },
     left_join = function(...) {
       self$data <- dplyr::left_join(self$data, ...)
+      invisible(self)
+    },
+    group_by = function(...) {
+      self$data <- dplyr::group_by(self$data, ...)
+      invisible(self)
+    },
+    summarise = function(...) {
+      self$data <- dplyr::summarise(self$data, ...)
       invisible(self)
     },
     bind_rows = function(...) {

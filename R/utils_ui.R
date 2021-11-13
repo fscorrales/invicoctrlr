@@ -1,5 +1,9 @@
 utils::globalVariables(".")
 
+replace_NA_0 <- function(x){
+  dplyr::if_else(is.na(x),0,x)
+}
+
 map_values <- function (x, from, to, warn_missing = TRUE) {
 
   ##From plyr::mapvalues to avoid taking dependency
