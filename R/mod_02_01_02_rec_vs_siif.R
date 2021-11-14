@@ -308,56 +308,6 @@ mod_02_01_02_rec_vs_siif_server <- function(id){
       r6_siif_rec$finalize()
       r6_siif_cont$finalize()
 
-    #   #Filtering siif_banco_invico
-    #   siif_cont <- db_cont() %>%
-    #     dplyr::filter(.data$ejercicio %in% (input$ejercicio %||%
-    #                              max(as.integer(ejercicio_var()$ejercicio))),
-    #                   .data$cta_cte %in% (input$cta_cte %||%
-    #                            unique(ejercicio_var()$cta_cte)))
-    #
-    #   if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
-    #     siif_cont <- siif_cont %>%
-    #       dplyr::filter(dplyr::between(.data$fecha,
-    #                                    lubridate::ymd(input$fecha[[1]]),
-    #                                    lubridate::ymd(input$fecha[[2]])))
-    #   }
-    #
-    #   if (input$dep_aju_siif == "SI") {
-    #     siif_cont <- siif_cont %>%
-    #       dplyr::filter(.data$tipo_comprobante != "AJU")
-    #   }
-    #
-    #   if (input$dep_rev_siif == "SI") {
-    #     siif_cont <- siif_cont %>%
-    #       dplyr::filter(.data$tipo_comprobante != "REV")
-    #   }
-    #
-    #   if (input$dep_fpg_siif == "SI") {
-    #     siif_cont <- siif_cont %>%
-    #       dplyr::filter(.data$tipo_comprobante != "FPG")
-    #   }
-    #
-    #   #Grouping and summarising siif
-    #   siif_cont <- siif_cont %>%
-    #     dplyr::select(input$grupo %||% "mes", .data$debitos) %>%
-    #     dplyr::group_by(!!! rlang::syms(input$grupo %||% "mes")) %>%
-    #     dplyr::summarise(debitos_banco_siif = sum(.data$debitos, na.rm = TRUE))
-    #
-    #   #Joinning and calulating
-    #   db <- siif_rec %>%
-    #     dplyr::full_join(siif_cont, by = input$grupo %||% "mes") %>%
-    #     replace(., is.na(.), 0) %>%
-    #     # tidyr::replace_na(list(recursos_siif = 0, debitos_banco_siif = 0)) %>%
-    #     dplyr::mutate(diferencia = .data$recursos_siif - .data$debitos_banco_siif,
-    #                   dif_acum = cumsum(.data$diferencia))
-    #
-    #   total_desvio <- sum(abs(db$diferencia))
-    #
-    #   db <- db %>%
-    #     dplyr::mutate(prop_desv = (abs(.data$diferencia) / total_desvio))
-    #
-    #   return(db)
-
     })
 
     return(table)

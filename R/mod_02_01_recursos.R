@@ -171,25 +171,29 @@ mod_02_01_recursos_server <- function(id){
     })
 
 
-    #
-    # #Table Recursos 337 vs Codigo Retencion 337
-    # # rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
-    #
-    # formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
-    #                                         "pagos_337_siif", "dif_pagado_337",
-    #                                         "dif_ingresado", "dif_acum"))
-    # formatp_rec_vs_invico <- list(columns = "prop_desv")
-    #
-    # mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
-    #                       format_round = formatr_rec_vs_invico,
-    #                       format_perc = formatp_rec_vs_invico,
-    #                       buttons = list(
-    #                         list(
-    #                           extend = 'collection',
-    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                           text = 'Download 100 primeras filas')
-    #                       )
-    # )
+
+    #Table Recursos 337 vs Codigo Retencion 337
+    rec_vs_invico <- mod_02_01_03_rec_vs_invico_server("filter_rec_vs_invico")
+
+    shiny::observeEvent(rec_vs_invico(), {
+
+      formatr_rec_vs_invico <- list(columns = c("recursos_siif", "gastos_337_siif",
+                                                "pagos_337_siif", "dif_pagado_337",
+                                                "dif_ingresado", "dif_acum"))
+      formatp_rec_vs_invico <- list(columns = "prop_desv")
+
+      mod_data_table_server("dt_rec_vs_invico", rec_vs_invico,
+                            format_round = formatr_rec_vs_invico,
+                            format_perc = formatp_rec_vs_invico,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
 
   })
 }
