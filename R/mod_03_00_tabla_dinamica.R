@@ -10,12 +10,11 @@
 mod_03_00_tabla_dinamica_ui <- function(id){
 
   ns <- NS(id)
-  tablas_anexas <- c()
+
+  # tablas_anexas <- c()
   # r6_siif <- MyConnection$new("siif")
   # r6_sscc <- MyConnection$new("sscc")
   # r6_sgf <- MyConnection$new("sgf")
-
-  tablas <- c(tablas_anexas)
   #             sapply(r6_siif$tables,
   #                    function(x) paste0("siif_", x), USE.NAMES = FALSE),
   #             sapply(r6_sscc$tables,
@@ -75,7 +74,7 @@ mod_03_00_tabla_dinamica_ui <- function(id){
         ),
         rep_br(),
         selectizeInput(ns("tabla"), "Selecci\u00f3n de Tabla",
-                       choices = tablas, selected = "", multiple = F,
+                       choices = "", selected = "", multiple = F,
                        options = list(placeholder = "Elegir una opci\u00f3n")),
         shiny::column(12, align = "center",
                       bs4Dash::actionButton(ns("update_td"),
@@ -95,6 +94,31 @@ mod_03_00_tabla_dinamica_server <- function(id){
     ns <- session$ns
 
     td <- shiny::reactiveVal()
+
+    observe({
+
+      r6_siif <- MyConnection$new(sql_path("siif"))
+      r6_sscc <- MyConnection$new(sql_path("sscc"))
+      r6_sgf <- MyConnection$new(sql_path("sgf"))
+
+      tablas <- c(sapply(r6_siif$tables,
+                         function(x) paste0("siif_", x), USE.NAMES = FALSE),
+                  sapply(r6_sscc$tables,
+                         function(x) paste0("sscc_", x), USE.NAMES = FALSE),
+                  sapply(r6_sgf$tables,
+                         function(x) paste0("sgf_", x), USE.NAMES = FALSE))
+                  # sapply(invicodatr::list_tables_sqlite("SGO"),
+                  #        function(x) paste0("sgo_", x), USE.NAMES = FALSE),
+                  # sapply(invicodatr::list_tables_sqlite("ICARO"),
+                  #        function(x) paste0("icaro_", x), USE.NAMES = FALSE))
+
+      shiny::updateSelectizeInput(session, "tabla", choices = tablas)
+
+      r6_siif$finalize()
+      r6_sscc$finalize()
+      r6_sgf$finalize()
+
+    })
 
     observeEvent(input$update_td, {
 
