@@ -162,8 +162,6 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
       cta_cte_vec <- input$cta_cte %||%
         unique(choices_rv$cta_cte)
 
-      # browser()
-
       #Filtering siif_rec
       r6_siif$
         get_query(

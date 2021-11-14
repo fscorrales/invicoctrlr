@@ -5,7 +5,6 @@ sql_path <- function(db_name) {
          db_name, ".sqlite")
 
 }
-  paste0(dirname(getwd()), "/R Output/SQLite Files")
 
 make_reactive_trigger <- function() {
   rv <- shiny::reactiveValues(a = 0)
