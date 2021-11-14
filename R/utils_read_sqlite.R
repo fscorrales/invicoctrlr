@@ -1,4 +1,12 @@
 ##Trigger sync
+sql_path <- function(db_name) {
+
+  paste0(dirname(getwd()), "/R Output/SQLite Files/",
+         db_name, ".sqlite")
+
+}
+  paste0(dirname(getwd()), "/R Output/SQLite Files")
+
 make_reactive_trigger <- function() {
   rv <- shiny::reactiveValues(a = 0)
   list(
@@ -12,23 +20,22 @@ make_reactive_trigger <- function() {
   )
 }
 
-r6_primary_key_cta_cte <- MyData$new("primary_key")
 primary_key_cta_cte_trigger <- make_reactive_trigger()
-primary_key_cta_cte <- shiny::reactive(primary_key_cta_cte_trigger$depend())
-observeEvent(primary_key_cta_cte(),
-  r6_primary_key_cta_cte$read_table("cta_cte"),
-  ignoreNULL = FALSE
-)
+primary_key_cta_cte <- shiny::reactive({
+  primary_key_cta_cte_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("primary_key",
+                                       "cta_cte")
+})
 
+# r6_primary_key_cta_cte <- MyData$new(sql_path("primary_key"))
 # primary_key_cta_cte_trigger <- make_reactive_trigger()
-# primary_key_cta_cte <- shiny::reactive({
-#   primary_key_cta_cte_trigger$depend()
-#   Ans <- invicodatr::read_table_sqlite("primary_key",
-#                                        "cta_cte")
-#
-# })
+# primary_key_cta_cte <- shiny::reactive(primary_key_cta_cte_trigger$depend())
+# observeEvent(primary_key_cta_cte(),
+#   r6_primary_key_cta_cte$read_table("cta_cte"),
+#   ignoreNULL = FALSE
+# )
 
-## It would be a very nice implementation of R6
+## It would be a very nice implementation of R6 (problem when connecting outside WD)
 # r6_ppto_gtos_fte_rf602 <- MyData$new("siif")
 # siif_ppto_gtos_fte_trigger <- make_reactive_trigger()
 # siif_ppto_gtos_fte_rf602 <- shiny::reactive(siif_ppto_gtos_fte_trigger$depend())

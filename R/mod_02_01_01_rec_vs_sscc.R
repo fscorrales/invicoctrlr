@@ -88,8 +88,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
     observeEvent(to_listen(), {
 
-      r6_siif <- MyData$new("siif")
-      r6_sscc <- MyData$new("sscc")
+      r6_siif <- MyData$new(sql_path("siif"))
+      r6_sscc <- MyData$new(sql_path("sscc"))
 
       r6_siif$data <- map_cta_cte("siif",
                                   "SELECT DISTINCT cta_cte FROM comprobantes_rec_rci02",
@@ -142,8 +142,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
     #Generate Table
     table <- shiny::eventReactive(input$update, {
 
-      r6_siif <- MyData$new("siif")
-      r6_sscc <- MyData$new("sscc")
+      r6_siif <- MyData$new(sql_path("siif"))
+      r6_sscc <- MyData$new(sql_path("sscc"))
 
       #Setting input default value
       if (is.null(input$ejercicio)) {
@@ -176,8 +176,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
         )$
         mutate(
           cta_cte = map_values(.data$cta_cte,
-                               from = r6_primary_key_cta_cte$data$siif_recursos_cta_cte,
-                               to = r6_primary_key_cta_cte$data$map_to,
+                               from = primary_key_cta_cte()$siif_recursos_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
                                warn_missing = FALSE),
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
         )$
@@ -208,8 +208,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
         )$
         mutate(
           cta_cte = map_values(.data$cta_cte,
-                               from = r6_primary_key_cta_cte$data$sscc_cta_cte,
-                               to = r6_primary_key_cta_cte$data$map_to,
+                               from = primary_key_cta_cte()$sscc_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
                                warn_missing = FALSE),
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
         )$

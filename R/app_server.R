@@ -10,6 +10,11 @@ NULL
 #' @noRd
 app_server <- function( input, output, session ) {
 
+  # con <- DBI::dbConnect(
+  #   RSQLite::SQLite(),
+  #   golem::get_golem_options("db_path")
+  # )
+
   # Your application server logic
   (paste0("mod_", tab_id$bd_presupuesto, "_server")) %>%
     do.call(list(tab_id$bd_presupuesto))

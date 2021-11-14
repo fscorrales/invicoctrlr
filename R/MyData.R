@@ -6,9 +6,8 @@ MyData <- R6::R6Class(
     initialize = function(sqlite_name = NULL) {
 
       stopifnot(is.character(sqlite_name), length(sqlite_name) == 1)
-      private$conn = paste0(dirname(getwd()),
-                            "/R Output/SQLite Files/",
-                            sqlite_name, ".sqlite")
+      private$conn = DBI::dbConnect(RSQLite::SQLite(),
+                                    dbname = sqlite_name)
       # self$list_fields()
 
     },
