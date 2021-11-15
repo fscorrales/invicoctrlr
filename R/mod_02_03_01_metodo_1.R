@@ -53,146 +53,220 @@ mod_02_03_01_metodo_1_server <- function(id){
 
     ns <- session$ns
 
-    #Initial DBs setting
-    db_sscc <- reactive({
-
-      db_cta_cte <- primary_key_cta_cte()
-      db <- sscc_banco_invico() %>%
-        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-                                                from = db_cta_cte$sscc_cta_cte,
-                                                to = db_cta_cte$map_to,
-                                                warn_missing = FALSE),
-                      ejercicio = as.character(lubridate::year(.data$fecha))
-                      )
-      return(db)
-
-    })
-
-    db_rdeu <- reactive({
-
-      db_cta_cte <- primary_key_cta_cte()
-      db <- siif_deuda_flotante_rdeu012() %>%
-        dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-                                                from = db_cta_cte$siif_contabilidad_cta_cte,
-                                                to = db_cta_cte$map_to,
-                                                warn_missing = FALSE),
-                      fecha = .data$fecha_hasta,
-                      ejercicio = as.character(lubridate::year(.data$fecha)),
-                      mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
-                                                            2, pad = "0"),
-                                           lubridate::year(.data$fecha), sep = "/")
-        )
-        # dplyr::select(-fecha_hasta, mes_hasta)
-
-      return(db)
-
-    })
+    # #Initial DBs setting
+    # db_sscc <- reactive({
+    #
+    #   db_cta_cte <- primary_key_cta_cte()
+    #   db <- sscc_banco_invico() %>%
+    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
+    #                                             from = db_cta_cte$sscc_cta_cte,
+    #                                             to = db_cta_cte$map_to,
+    #                                             warn_missing = FALSE),
+    #                   ejercicio = as.character(lubridate::year(.data$fecha))
+    #                   )
+    #   return(db)
+    #
+    # })
+    #
+    # db_rdeu <- reactive({
+    #
+    #   db_cta_cte <- primary_key_cta_cte()
+    #   db <- siif_deuda_flotante_rdeu012() %>%
+    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
+    #                                             from = db_cta_cte$siif_contabilidad_cta_cte,
+    #                                             to = db_cta_cte$map_to,
+    #                                             warn_missing = FALSE),
+    #                   fecha = .data$fecha_hasta,
+    #                   ejercicio = as.character(lubridate::year(.data$fecha)),
+    #                   mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
+    #                                                         2, pad = "0"),
+    #                                        lubridate::year(.data$fecha), sep = "/")
+    #     )
+    #     # dplyr::select(-fecha_hasta, mes_hasta)
+    #
+    #   return(db)
+    #
+    # })
 
     #Updting shiny input objets
-    ejercicio_var <- reactive({
+    choices_rv <- rv()
 
-      ans <- db_sscc() %>%
-        dplyr::select(.data$ejercicio, .data$fecha, .data$cta_cte)
-
-      ans <- db_rdeu() %>%
-        dplyr::select(.data$ejercicio, .data$fecha, .data$cta_cte) %>%
-        dplyr::full_join(ans,
-                         by = c("ejercicio", "fecha", "cta_cte")) %>%
-        unique() %>%
-        dplyr::arrange(dplyr::desc(.data$ejercicio), .data$fecha)
-
-      return(ans)
-
+    to_listen <- reactive({
+      list(sscc_banco_invico(),
+           siif_deuda_flotante_rdeu012())
     })
 
-    observeEvent(ejercicio_var, {
+    observeEvent(to_listen(), {
+
+      r6_sscc <- MyData$new(sql_path("sscc"))
+      r6_siif <- MyData$new(sql_path("siif"))
+
+      r6_sscc$data <-  map_cta_cte("sscc",
+                                   "SELECT DISTINCT cta_cte FROM banco_invico",
+                                   "sscc_cta_cte")
+
+      r6_siif$data <- map_cta_cte("siif",
+                                  "SELECT DISTINCT cta_cte FROM deuda_flotante_rdeu012",
+                                  "siif_contabilidad_cta_cte")
+
+      choices_rv$cta_cte <- sort(unique(c(r6_siif$data, r6_sscc$data)))
+
+      shiny::updateSelectizeInput(session, "cta_cte",
+                                  choices = choices_rv$cta_cte)
+
+      r6_sscc$get_query("SELECT DISTINCT ejercicio FROM banco_invico")
+
+      r6_siif$
+        get_query("SELECT DISTINCT fecha_hasta FROM deuda_flotante_rdeu012")$
+        mutate(fecha = as.Date(.data$fecha_hasta, origin = "1970-01-01"),
+               ejercicio = as.character(lubridate::year(.data$fecha)))
+
+      choices_rv$ejercicio <- sort(unique(c(r6_siif$data$ejercicio,
+                                            r6_sscc$data$ejercicio)),
+                                   decreasing = TRUE)
 
       shiny::updateSelectizeInput(session, "ejercicio",
-                                  choices = unique(ejercicio_var()$ejercicio))
+                                  choices = choices_rv$ejercicio )
+
+      r6_sscc$get_query(
+        paste0("SELECT MAX(fecha) as max_fecha, ",
+               "MIN(fecha) as min_fecha ",
+               "FROM banco_invico")
+      )
+
+      r6_siif$get_query(
+        paste0("SELECT MAX(fecha_hasta) as max_fecha, ",
+               "MIN(fecha_hasta) as min_fecha ",
+               "FROM deuda_flotante_rdeu012")
+      )
+
+      r6_siif$bind_rows(r6_sscc$data)
+
+      choices_rv$fecha <- c(
+        r6_siif$data$max_fecha, r6_siif$data$min_fecha
+      ) %>% as.Date(origin = "1970-01-01")
+
+
       shiny::updateDateInput(session, "fecha",
-                                  min = min(ejercicio_var()$fecha),
-                                  max = max(ejercicio_var()$fecha))
-      shiny::updateSelectizeInput(session, "cta_cte",
-                                  choices = sort(unique(ejercicio_var()$cta_cte)))
+                             min = min(choices_rv$fecha),
+                             max = max(choices_rv$fecha))
+
+      r6_siif$finalize()
+      r6_sscc$finalize()
 
     })
 
     #Generate Table
     table <- eventReactive(input$update, {
 
-      #Setting input$ejercicio default value
+      r6_siif <- MyData$new(sql_path("siif"))
+      r6_sscc <- MyData$new(sql_path("sscc"))
+
+      #Setting input default value
       if (is.null(input$ejercicio)) {
         shiny::updateSelectizeInput(session, "ejercicio",
-                                    selected = max(as.integer(ejercicio_var()$ejercicio)))
+                                    selected = max(as.integer(choices_rv$ejercicio)))
       }
 
       if (is.null(input$grupo)) {
         shiny::updateCheckboxGroupInput(session, "grupo",
                                         selected = "cta_cte")
       }
+      #Global function variables
+      # ejercicio_vec <- input$ejercicio %||%
+      #   as.character(max(as.integer(choices_rv$ejercicio)))
 
-      #Filtering sscc
-      sscc <- db_sscc() %>%
-        dplyr::filter(.data$cta_cte %in% (input$cta_cte %||%
-                                      unique(ejercicio_var()$cta_cte))
-                      )
+      cta_cte_vec <- input$cta_cte %||%
+        unique(choices_rv$cta_cte)
+
+      #Filtering sscc_banco_invico
+      r6_sscc$
+        get_query(
+          paste0("SELECT ejercicio, mes, fecha, cta_cte, ",
+                 "monto FROM banco_invico")
+        )$
+        mutate(
+          cta_cte = map_values(.data$cta_cte,
+                               from = primary_key_cta_cte()$sscc_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
+                               warn_missing = FALSE),
+          fecha = as.Date(.data$fecha, origin = "1970-01-01")
+        )$
+        filter(.data$cta_cte %in% cta_cte_vec)
 
       if (length(input$fecha) > 0) {
-        sscc <- sscc %>%
-          dplyr::filter(dplyr::between(.data$fecha,
-                                       lubridate::ymd("2017/01/01"),
-                                       lubridate::ymd(input$fecha)))
+        r6_sscc$filter(
+          dplyr::between(.data$fecha,
+                         lubridate::ymd("2017/01/01"),
+                         lubridate::ymd(input$fecha))
+        )
       } else{
         #Only for the initial loop
         if (input$ejercicio == "") {
-          ejercicio_max <- max(as.integer(ejercicio_var()$ejercicio))
+          ejercicio_max <- max(as.integer(choices_rv$ejercicio))
         } else {
           ejercicio_max <- as.integer(input$ejercicio)
         }
 
-        sscc <- sscc %>%
-          dplyr::filter(dplyr::between(.data$ejercicio, 2017, ejercicio_max))
+        r6_sscc$filter(
+          dplyr::between(.data$ejercicio, 2017, ejercicio_max)
+        )
 
-        }
+      }
 
       #Filtering siif_rdeu
-      mes_hasta_rdeu <- dplyr::last(sort(sscc$fecha))
-      mes_hasta_rdeu <- stringr::str_c(stringr::str_pad(lubridate::month(mes_hasta_rdeu),
-                                                        2, pad = "0"),
-                                       lubridate::year(mes_hasta_rdeu), sep = "/")
+      mes_hasta_rdeu <- dplyr::last(sort(r6_sscc$data$fecha))
+      mes_hasta_rdeu <- stringr::str_c(
+        stringr::str_pad(lubridate::month(mes_hasta_rdeu), 2, pad = "0"),
+        lubridate::year(mes_hasta_rdeu), sep = "/"
+        )
 
-      rdeu <- db_rdeu() %>%
-        dplyr::filter(.data$cta_cte %in% (input$cta_cte %||%
-                                      unique(ejercicio_var()$cta_cte)),
-                      .data$mes_hasta == mes_hasta_rdeu)
+      r6_siif$
+        get_query(
+          paste0("SELECT mes_hasta, fecha_hasta, cta_cte, ",
+                 "saldo FROM deuda_flotante_rdeu012 ",
+                 "WHERE mes_hasta = '", mes_hasta_rdeu, "'")
+        )$
+        mutate(
+          cta_cte = map_values(.data$cta_cte,
+                               from = primary_key_cta_cte()$siif_recursos_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
+                               warn_missing = FALSE),
+          fecha = as.Date(.data$fecha_hasta, origin = "1970-01-01"),
+          ejercicio = as.character(lubridate::year(.data$fecha)),
+          mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
+                                                2, pad = "0"),
+                               lubridate::year(.data$fecha), sep = "/")
+        )$
+        filter(.data$cta_cte %in% cta_cte_vec)
 
       #Grouping and summarising sscc
-      sscc <- sscc %>%
-        dplyr::select(input$grupo %||% "cta_cte", .data$monto) %>%
-        dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-        dplyr::summarise(saldo_banco = sum(.data$monto, na.rm = TRUE))
+      r6_sscc$
+        select(input$grupo %||% "cta_cte", .data$monto)$
+        group_by(!!! rlang::syms(input$grupo %||% "cta_cte"))$
+        summarise(saldo_banco = sum(.data$monto, na.rm = TRUE))
+        # mutate(saldo_banco = cumsum(sum_banco))
 
       #Grouping and summarising siif_rdeu
-      rdeu <- rdeu %>%
-        dplyr::select(input$grupo %||% "cta_cte", .data$saldo) %>%
-        dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-        dplyr::summarise(deuda_flotante = sum(.data$saldo, na.rm = TRUE))
+      r6_siif$
+        select(input$grupo %||% "cta_cte", .data$saldo)$
+        group_by(!!! rlang::syms(input$grupo %||% "cta_cte"))$
+        summarise(deuda_flotante = sum(.data$saldo, na.rm = TRUE))
 
       #Joinning and calulating
-      db <- sscc %>%
-        dplyr::full_join(rdeu, by = input$grupo %||% "mes") %>%
-        replace(., is.na(.), 0) %>%
-        # tidyr::replace_na(list(saldo_banco = 0, deuda_flotante = 0)) %>%
-        dplyr::mutate(remanente = .data$saldo_banco - .data$deuda_flotante)
+      r6_sscc$
+        full_join(r6_siif$data, by = input$grupo %||% "cta_cte")$
+        mutate_if(is.numeric, replace_NA_0)$
+        mutate(
+          remanente = .data$saldo_banco - .data$deuda_flotante
+          )
 
-      # total_desvio <- sum(abs(db$dif_ingresado))
-      #
-      # db <- db %>%
-      #   dplyr::mutate(prop_desv = (abs(dif_ingresado) / total_desvio))
+      return(r6_sscc$data)
 
-      return(db)
+      r6_siif$finalize()
+      r6_sscc$finalize()
 
-    }, ignoreNULL = FALSE)
+    })
 
     return(table)
 

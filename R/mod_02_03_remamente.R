@@ -17,6 +17,7 @@ mod_02_03_remamente_ui <- function(id){
       status = "olive",
       solidHeader = TRUE,
       width = 12,
+      height = "600px",
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,
@@ -100,14 +101,14 @@ mod_02_03_remamente_server <- function(id){
 
       Ans <- switch(input$controller,
                     metodo_1 = list(data = metodo_1()),
-                    metodo_2 = list(data = metodo_2()),
-                    diferencia = list(data = diferencia()),
+      #               metodo_2 = list(data = metodo_2()),
+      #               diferencia = list(data = diferencia()),
                     stop("Invalid `x` value")
       )
-
+      #
       rpw_controller$df <- Ans$data
-      rpw_controller$fct <- Ans$import_function
-      rpw_controller$trigger <- Ans$df_trigger
+      # rpw_controller$fct <- Ans$import_function
+      # rpw_controller$trigger <- Ans$df_trigger
 
       updateTabsetPanel(inputId = "switcher", selected = input$controller)
       updateTabsetPanel(inputId = "switcher_footer", selected = input$controller)
@@ -125,51 +126,69 @@ mod_02_03_remamente_server <- function(id){
     #Table Remamente Metodo 1
     metodo_1 <- mod_02_03_01_metodo_1_server("filter_metodo_1")
 
-    formatr_metodo_1 <- list(columns = c("saldo_banco", "deuda_flotante",
-                                         "remanente"))
+    shiny::observeEvent(metodo_1(), {
 
-    mod_data_table_server("dt_metodo_1", metodo_1,
-                          format_round = formatr_metodo_1,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
+      formatr_metodo_1 <- list(columns = c("saldo_banco", "deuda_flotante",
+                                           "remanente"))
+
+      mod_data_table_server("dt_metodo_1", metodo_1,
+                            format_round = formatr_metodo_1,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
 
 
-    #Table Remanente Metodo 2
-    metodo_2 <- mod_02_03_02_metodo_2_server("filter_metodo_2")
 
-    formatr_metodo_2 <- list(columns = c("recursos", "gastos",
-                                         "remanente"))
 
-    mod_data_table_server("dt_metodo_2", metodo_2,
-                          format_round = formatr_metodo_2,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
+    # #Table Remanente Metodo 2
+    # metodo_2 <- mod_02_03_02_metodo_2_server("filter_metodo_2")
+    #
+    # shiny::observeEvent(metodo_2(), {
+    #
+    #   formatr_metodo_2 <- list(columns = c("recursos", "gastos",
+    #                                        "remanente"))
+    #
+    #   mod_data_table_server("dt_metodo_2", metodo_2,
+    #                         format_round = formatr_metodo_2,
+    #                         buttons = list(
+    #                           list(
+    #                             extend = 'collection',
+    #                             buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                             text = 'Download 100 primeras filas')
+    #                         )
+    #   )
+    #
+    # })
+    #
+    #
+    #
+    # #Table Diferencia Metodo 1 vs Metodo 2
+    # diferencia <- mod_02_03_03_diferencia_server("filter_diferencia")
+    #
+    # shiny::observeEvent(diferencia(), {
+    #
+    #   formatr_diferencia <- list(columns = c("remanente_1", "remanente_2",
+    #                                          "diferencia"))
+    #
+    #   mod_data_table_server("dt_diferencia", diferencia,
+    #                         format_round = formatr_diferencia,
+    #                         buttons = list(
+    #                           list(
+    #                             extend = 'collection',
+    #                             buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+    #                             text = 'Download 100 primeras filas')
+    #                         )
+    #   )
+    #
+    # })
 
-    #Table Recursos 337 vs Codigo Retencion 337
-    diferencia <- mod_02_03_03_diferencia_server("filter_diferencia")
 
-    formatr_diferencia <- list(columns = c("remanente_1", "remanente_2",
-                                           "diferencia"))
-
-    mod_data_table_server("dt_diferencia", diferencia,
-                          format_round = formatr_diferencia,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
 
   })
 }

@@ -99,14 +99,14 @@ mod_02_01_recursos_server <- function(id){
 
     observeEvent(input$controller, {
 
-      # Ans <- switch(input$controller,
-      #               rec_vs_sscc = list(data = rec_vs_sscc()),
-      #               rec_vs_siif = list(data = rec_vs_siif()),
-      #               rec_vs_invico = list(data = rec_vs_invico()),
-      #               stop("Invalid `x` value")
-      # )
-      #
-      # rpw_controller$df <- Ans$data
+      Ans <- switch(input$controller,
+                    rec_vs_sscc = list(data = rec_vs_sscc()),
+                    rec_vs_siif = list(data = rec_vs_siif()),
+                    rec_vs_invico = list(data = rec_vs_invico()),
+                    stop("Invalid `x` value")
+      )
+
+      rpw_controller$df <- Ans$data
       # rpw_controller$fct <- Ans$import_function
       # rpw_controller$trigger <- Ans$df_trigger
 
