@@ -133,8 +133,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                                   min = min(choices_rv$fecha),
                                   max = max(choices_rv$fecha))
 
-      r6_siif$finalize()
-      r6_sscc$finalize()
+      # r6_siif$finalize()
+      # r6_sscc$finalize()
 
     })
 
@@ -270,8 +270,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
 
       return(r6_siif$data)
 
-      r6_siif$finalize()
-      r6_sscc$finalize()
+      # r6_siif$finalize()
+      # r6_sscc$finalize()
 
     })
 

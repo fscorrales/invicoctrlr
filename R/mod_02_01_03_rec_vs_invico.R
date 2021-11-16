@@ -79,49 +79,6 @@ mod_02_01_03_rec_vs_invico_server <- function(id){
       "AND R.nro_entrada = B.nro_entrada)"
     )
 
-    # #Initial DBs setting
-    # db_rec <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- siif_comprobantes_rec_rci02() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$siif_recursos_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE)
-    #                   )
-    #   return(db)
-    # })
-    #
-    # db_cont <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db_banco <- siif_mayor_contable_rcocc31() %>%
-    #     dplyr::filter(.data$cta_contable == "1112-2-6",
-    #                   .data$tipo_comprobante != "APE") %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$auxiliar_1,
-    #                                             from = db_cta_cte$siif_contabilidad_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE),
-    #                   mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
-    #                                        lubridate::year(.data$fecha), sep = "/")) %>%
-    #     dplyr::select(-.data$auxiliar_1, -.data$auxiliar_2, -.data$cta_contable)
-    #
-    #   db <- siif_mayor_contable_rcocc31() %>%
-    #     dplyr::filter(.data$cta_contable == "2122-1-2",
-    #                   .data$auxiliar_1 == "337",
-    #                   .data$tipo_comprobante != "APE") %>%
-    #     dplyr::mutate(mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha), 2, pad = "0"),
-    #                                        lubridate::year(.data$fecha), sep = "/")) %>%
-    #     dplyr::select(-.data$auxiliar_2, -.data$cta_contable) %>%
-    #     dplyr::rename(cod_ret = .data$auxiliar_1) %>%
-    #     dplyr::left_join(dplyr::select(db_banco, .data$cta_cte,
-    #                                    .data$ejercicio, .data$nro_entrada),
-    #                      by = c("nro_entrada", "ejercicio"))
-    #
-    #   return(db)
-    #
-    # })
-
     #Updting shiny input objets
     choices_rv <- rv()
 
@@ -190,8 +147,8 @@ mod_02_01_03_rec_vs_invico_server <- function(id){
                                   min = min(choices_rv$fecha),
                                   max = max(choices_rv$fecha))
 
-      r6_siif_rec$finalize()
-      r6_siif_cont$finalize()
+      # r6_siif_rec$finalize()
+      # r6_siif_cont$finalize()
 
     })
 
@@ -306,8 +263,8 @@ mod_02_01_03_rec_vs_invico_server <- function(id){
 
       return(r6_siif_rec$data)
 
-      r6_siif_rec$finalize()
-      r6_siif_cont$finalize()
+      # r6_siif_rec$finalize()
+      # r6_siif_cont$finalize()
 
     })
 

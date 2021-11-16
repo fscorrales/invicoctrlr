@@ -62,36 +62,6 @@ mod_02_03_02_metodo_2_server <- function(id){
 
     ns <- session$ns
 
-    #Initial DBs setting
-    # db_rec <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- siif_comprobantes_rec_rci02() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$siif_recursos_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE)
-    #     )
-    #
-    #   return(db)
-    # })
-    #
-    # db_gto <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- siif_comprobantes_gtos_rcg01_uejp() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$siif_gastos_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE),
-                      # mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
-                      #                                       2, pad = "0"),
-                      #                      lubridate::year(.data$fecha), sep = "/")
-    #     )
-    #
-    #   return(db)
-    # })
-
     #Updting shiny input objets
     choices_rv <- rv()
 
@@ -168,8 +138,8 @@ mod_02_03_02_metodo_2_server <- function(id){
       shiny::updateSelectizeInput(session, "fuente",
                                   choices = choices_rv$fuente )
 
-      r6_siif_rec$finalize()
-      r6_siif_gto$finalize()
+      # r6_siif_rec$finalize()
+      # r6_siif_gto$finalize()
 
     })
 
@@ -257,45 +227,8 @@ mod_02_03_02_metodo_2_server <- function(id){
 
       return(r6_siif_rec$data)
 
-      r6_siif_rec$finalize()
-      r6_siif_gto$finalize()
-
-
-      # #Joining rec y gto
-      # rec_and_gto <- db_gto() %>%
-      #   dplyr::select(.data$ejercicio, .data$fecha, .data$mes, .data$fuente,
-      #                 .data$cta_cte, gasto = .data$monto) %>%
-      #   dplyr::bind_rows(dplyr::select(db_rec(), .data$ejercicio, .data$fecha, .data$mes,
-      #                                  .data$fuente, .data$cta_cte, recurso = .data$monto))
-      #
-      # rec_and_gto <- rec_and_gto %>%
-      #   dplyr::filter(.data$ejercicio %in% (input$ejercicio %||%
-      #                                   max(as.integer(ejercicio_var()$ejercicio))),
-      #                 .data$cta_cte %in% (input$cta_cte %||%
-      #                                 unique(ejercicio_var()$cta_cte)),
-      #                 .data$fuente %in% (input$fuente %||%
-      #                                 unique(ejercicio_var()$fuente))
-      #                 )
-      #
-      # if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
-      #   rec_and_gto <- rec_and_gto %>%
-      #     dplyr::filter(dplyr::between(.data$fecha,
-      #                                  lubridate::ymd(input$fecha[[1]]),
-      #                                  lubridate::ymd(input$fecha[[2]])))
-      # }
-      #
-      # #Grouping and summarising
-      # db <- rec_and_gto %>%
-      #   dplyr::select(input$grupo %||% "cta_cte", .data$recurso, .data$gasto) %>%
-      #   dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-      #   dplyr::summarise(recursos = sum(.data$recurso, na.rm = TRUE),
-      #                    gastos = sum(.data$gasto, na.rm = TRUE),
-      #                    remanente = .data$recursos - .data$gastos) %>%
-      #   replace(., is.na(.), 0)
-      #   # tidyr::replace_na(list(recursos = 0, gastos = 0,
-      #   #                        remanente = 0))
-      #
-      # return(db)
+      # r6_siif_rec$finalize()
+      # r6_siif_gto$finalize()
 
     })
 
