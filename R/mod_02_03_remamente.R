@@ -119,9 +119,9 @@ mod_02_03_remamente_server <- function(id){
 
     })
 
-    mod_save_button_server("download_xls", reactive(rpw_controller$df))
-
-    mod_save_button_server("download_csv", reactive(rpw_controller$df))
+    # mod_save_button_server("download_xls", reactive(rpw_controller$df))
+    #
+    # mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
 
     #Table Remamente Metodo 1
@@ -163,30 +163,27 @@ mod_02_03_remamente_server <- function(id){
       )
 
     })
-    #
-    #
-    #
-    # #Table Diferencia Metodo 1 vs Metodo 2
-    # diferencia <- mod_02_03_03_diferencia_server("filter_diferencia")
-    #
-    # shiny::observeEvent(diferencia(), {
-    #
-    #   formatr_diferencia <- list(columns = c("remanente_1", "remanente_2",
-    #                                          "diferencia"))
-    #
-    #   mod_data_table_server("dt_diferencia", diferencia,
-    #                         format_round = formatr_diferencia,
-    #                         buttons = list(
-    #                           list(
-    #                             extend = 'collection',
-    #                             buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                             text = 'Download 100 primeras filas')
-    #                         )
-    #   )
-    #
-    # })
 
 
+    #Table Diferencia Metodo 1 vs Metodo 2
+    diferencia <- mod_02_03_03_diferencia_server("filter_diferencia")
+
+    shiny::observeEvent(diferencia(), {
+
+      formatr_diferencia <- list(columns = c("remanente_1", "remanente_2",
+                                             "diferencia"))
+
+      mod_data_table_server("dt_diferencia", diferencia,
+                            format_round = formatr_diferencia,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
 
   })
 }

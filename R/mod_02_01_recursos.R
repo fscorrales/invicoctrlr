@@ -119,9 +119,9 @@ mod_02_01_recursos_server <- function(id){
 
     })
 
-    mod_save_button_server("download_xls", reactive(rpw_controller$df))
-
-    mod_save_button_server("download_csv", reactive(rpw_controller$df))
+    # mod_save_button_server("download_xls", reactive(rpw_controller$df))
+    #
+    # mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
 
     #Table Recursos SIIF vs SSCC Banco INVICO
