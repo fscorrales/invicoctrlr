@@ -53,41 +53,6 @@ mod_02_03_01_metodo_1_server <- function(id){
 
     ns <- session$ns
 
-    # #Initial DBs setting
-    # db_sscc <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- sscc_banco_invico() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$sscc_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE),
-    #                   ejercicio = as.character(lubridate::year(.data$fecha))
-    #                   )
-    #   return(db)
-    #
-    # })
-    #
-    # db_rdeu <- reactive({
-    #
-    #   db_cta_cte <- primary_key_cta_cte()
-    #   db <- siif_deuda_flotante_rdeu012() %>%
-    #     dplyr::mutate(cta_cte = map_values(.data$cta_cte,
-    #                                             from = db_cta_cte$siif_contabilidad_cta_cte,
-    #                                             to = db_cta_cte$map_to,
-    #                                             warn_missing = FALSE),
-    #                   fecha = .data$fecha_hasta,
-    #                   ejercicio = as.character(lubridate::year(.data$fecha)),
-    #                   mes = stringr::str_c(stringr::str_pad(lubridate::month(.data$fecha),
-    #                                                         2, pad = "0"),
-    #                                        lubridate::year(.data$fecha), sep = "/")
-    #     )
-    #     # dplyr::select(-fecha_hasta, mes_hasta)
-    #
-    #   return(db)
-    #
-    # })
-
     #Updting shiny input objets
     choices_rv <- rv()
 

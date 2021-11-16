@@ -99,14 +99,15 @@ mod_02_03_remamente_server <- function(id){
 
     observeEvent(input$controller, {
 
-      Ans <- switch(input$controller,
-                    metodo_1 = list(data = metodo_1()),
+      ## DANGER, THIS IS NOT WORKING. TRY ANOTHER WAY
+      # Ans <- switch(input$controller,
+      #               metodo_1 = list(data = metodo_1()),
       #               metodo_2 = list(data = metodo_2()),
       #               diferencia = list(data = diferencia()),
-                    stop("Invalid `x` value")
-      )
+      #               stop("Invalid `x` value")
+      # )
       #
-      rpw_controller$df <- Ans$data
+      # rpw_controller$df <- Ans$data
       # rpw_controller$fct <- Ans$import_function
       # rpw_controller$trigger <- Ans$df_trigger
 
@@ -143,28 +144,25 @@ mod_02_03_remamente_server <- function(id){
 
     })
 
+    #Table Remanente Metodo 2
+    metodo_2 <- mod_02_03_02_metodo_2_server("filter_metodo_2")
 
+    shiny::observeEvent(metodo_2(), {
 
+      formatr_metodo_2 <- list(columns = c("recursos", "gastos",
+                                           "remanente"))
 
-    # #Table Remanente Metodo 2
-    # metodo_2 <- mod_02_03_02_metodo_2_server("filter_metodo_2")
-    #
-    # shiny::observeEvent(metodo_2(), {
-    #
-    #   formatr_metodo_2 <- list(columns = c("recursos", "gastos",
-    #                                        "remanente"))
-    #
-    #   mod_data_table_server("dt_metodo_2", metodo_2,
-    #                         format_round = formatr_metodo_2,
-    #                         buttons = list(
-    #                           list(
-    #                             extend = 'collection',
-    #                             buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                             text = 'Download 100 primeras filas')
-    #                         )
-    #   )
-    #
-    # })
+      mod_data_table_server("dt_metodo_2", metodo_2,
+                            format_round = formatr_metodo_2,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
     #
     #
     #
