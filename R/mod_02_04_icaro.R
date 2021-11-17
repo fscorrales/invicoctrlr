@@ -17,6 +17,7 @@ mod_02_04_icaro_ui <- function(id){
       status = "olive",
       solidHeader = TRUE,
       width = 12,
+      height = "600px",
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,
@@ -73,7 +74,7 @@ mod_02_04_icaro_ui <- function(id){
           #          mod_02_03_02_metodo_2_ui(ns("filter_mensual"))
           #           ),
           tabPanel("registro",
-                   mod_02_03_03_diferencia_ui(ns("filter_registro"))
+                   mod_02_04_03_registro_ui(ns("filter_registro"))
                     )
         )
       )
@@ -124,18 +125,71 @@ mod_02_04_icaro_server <- function(id){
     # Table Control Anual ICARO
     anual <- mod_02_04_01_anual_server("filter_anual")
 
-    # formatr_anual <- list(columns = c("saldo_banco", "deuda_flotante",
-    #                                      "remanente"))
+    shiny::observeEvent(anual(), {
 
-    mod_data_table_server("dt_anual", icaro_carga,
-                          # format_round = formatr_anual,
-                          buttons = list(
-                            list(
-                              extend = 'collection',
-                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-                              text = 'Download 100 primeras filas')
-                          )
-    )
+      formatr_anual <- list(columns = c("siif", "icaro",
+                                        "diferencia"))
+
+      mod_data_table_server("dt_anual", anual,
+                            format_round = formatr_anual,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    registro <- mod_02_04_03_registro_server("filter_registro")
+
+    shiny::observeEvent(registro(), {
+
+      sketch = htmltools::withTags(table(
+        class = 'display',
+        thead(
+          tr(
+            th(class = 'dt-center', colspan = 3, 'fuente'),
+            th(class = 'dt-center', colspan = 3, 'monto'),
+            th(class = 'dt-center', colspan = 3, 'cta_cte'),
+            th(class = 'dt-center', colspan = 3, 'cuit'),
+            th(class = 'dt-center', colspan = 3, 'nro_entrada'),
+            th(class = 'dt-center', colspan = 3, 'fecha'),
+            th(class = 'dt-center', colspan = 3, 'partida'),
+          ),
+          tr(
+            lapply(rep(c('siif', 'icaro', "dif"), 7), th)
+          )
+        )
+      ))
+
+      # formatr_registro <- list(columns = c("siif", "icaro",
+      #                                   "diferencia"))
+
+      formats_registro <- list(columns = c("dif_fuente", "dif_monto", "dif_cta_cte",
+                                           "dif_cuit", "dif_nro_entrada",
+                                           "dif_fecha", "dif_partida"),
+                               color = DT::styleEqual(
+                                 c("\u2713", "\u2718"), c('green', 'red')),
+                               fontWeight = "bold",
+                               fontSize = "24px")
+
+      mod_data_table_server("dt_registro", registro,
+                            container = sketch,
+                            # format_round = formatr_registro,
+                            format_style = formats_registro,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+                            # columnDefs = list(list(className = 'dt-center', targets = "_all"))
+      )
+
+    })
+
     #
     #
     # #Table Remanente Metodo 2

@@ -33,8 +33,8 @@ mod_02_04_01_anual_ui <- function(id){
       ),
       shiny::column(
         6, shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
-                                     choices = c("ejercicio", "imputacion", "partida", "fuente"),
-                                     selected = c("ejercicio", "imputacion", "partida", "fuente"),
+                                     choices = c("ejercicio", "estructura", "partida", "fuente"),
+                                     selected = c("ejercicio", "estructura", "partida", "fuente"),
                                      inline = FALSE),
 
         rep_br(2),
@@ -56,114 +56,185 @@ mod_02_04_01_anual_server <- function(id){
     ns <- session$ns
 
     #Initial DBs setting
-    db_icaro <- reactive({
-
-      db <- icaro_carga()
-
-      return(db)
-    })
-
-    db_siif <- reactive({
-
-      db <- siif_ppto_gtos_fte_rf602()
-
-      return(db)
-    })
+    # db_icaro <- reactive({
+    #
+    #   db <- icaro_carga()
+    #
+    #   return(db)
+    # })
+    #
+    # db_siif <- reactive({
+    #
+    #   db <- siif_ppto_gtos_fte_rf602()
+    #
+    #   return(db)
+    # })
 
     #Updting shiny input objets
-    ejercicio_var <- reactive({
+    choices_rv <- rv()
 
-      ans <- db_icaro() %>%
-        dplyr::select(.data$ejercicio, .data$partida, .data$fuente)
-
-      ans <- db_siif() %>%
-        dplyr::select(.data$ejercicio, .data$partida, .data$fuente) %>%
-        dplyr::full_join(ans,
-                         by = c("ejercicio", "partida", "fuente")) %>%
-        unique() %>%
-        dplyr::arrange(dplyr::desc(.data$ejercicio))
-
-      return(ans)
-
+    to_listen <- reactive({
+      list(icaro_carga(),
+           siif_ppto_gtos_fte_rf602())
     })
 
-    observeEvent(ejercicio_var, {
+    observeEvent(to_listen(), {
+
+      r6_icaro <- MyData$new(sql_path("icaro_new"))
+      r6_siif <- MyData$new(sql_path("siif"))
+
+      r6_icaro$
+        get_query("SELECT DISTINCT fecha FROM carga")$
+        mutate(fecha = as.Date(.data$fecha, origin = "1970-01-01"),
+               ejercicio = as.character(lubridate::year(.data$fecha)))
+
+      r6_siif$get_query("SELECT DISTINCT ejercicio FROM ppto_gtos_fte_rf602")
+
+      choices_rv$ejercicio <- sort(c(unique(r6_icaro$data$ejercicio),
+                                     r6_siif$data$ejercicio),
+                                   decreasing = TRUE)
 
       shiny::updateSelectizeInput(session, "ejercicio",
-                                  choices = unique(ejercicio_var()$ejercicio))
-      shiny::updateSelectizeInput(session, "partida",
-                                  choices = sort(unique(ejercicio_var()$partida)),
-                                  selected = c("421", "422"))
-      shiny::updateSelectizeInput(session, "fuente",
-                                  choices = sort(unique(ejercicio_var()$fuente)))
+                                  choices = choices_rv$ejercicio )
 
+      r6_icaro$get_query("SELECT DISTINCT partida FROM carga")
+
+      r6_siif$get_query("SELECT DISTINCT partida FROM ppto_gtos_fte_rf602")
+
+      choices_rv$partida <- unique(sort(
+        c(r6_icaro$data$partida,
+          r6_siif$data$partida)
+        ))
+
+
+      shiny::updateSelectizeInput(session, "partida",
+                                  choices = choices_rv$partida,
+                                  selected = c("421", "422"))
+
+      r6_icaro$get_query("SELECT DISTINCT fuente FROM carga")
+
+      r6_siif$get_query("SELECT DISTINCT fuente FROM ppto_gtos_fte_rf602")
+
+      choices_rv$fuente <- unique(sort(
+        c(r6_icaro$data$fuente,
+          r6_siif$data$fuente)
+        ))
+
+      shiny::updateSelectizeInput(session, "fuente",
+                                  choices = choices_rv$fuente)
+
+
+      # r6_siif$finalize()
+      # r6_sscc$finalize()
 
     })
 
     #Generate Table
     table <- eventReactive(input$update, {
 
+      r6_icaro <- MyData$new(sql_path("icaro_new"))
+      r6_siif <- MyData$new(sql_path("siif"))
+
       #Setting input$ejercicio default value
       if (is.null(input$ejercicio)) {
         shiny::updateSelectizeInput(session, "ejercicio",
-                                    selected = max(as.integer(ejercicio_var()$ejercicio)))
-      }
-
-      if (is.null(input$partida)) {
-        shiny::updateSelectizeInput(session, "partida",
-                                        selected = c("421", "422"))
-      }
-
-      if (is.null(input$fuente)) {
-        shiny::updateSelectizeInput(session, "fuente",
-                                    selected = sort(unique(ejercicio_var()$ejercicio)))
+                                    selected = max(as.integer(choices_rv$ejercicio)))
       }
 
       if (is.null(input$grupo)) {
         shiny::updateCheckboxGroupInput(session, "grupo",
-                                        selected = c("ejercicio", "imputacion",
+                                        selected = c("ejercicio", "estructura",
                                                      "partida", "fuente"))
       }
 
-    #   #Joining rec y gto
-    #   rec_and_gto <- db_gto() %>%
-    #     dplyr::select(.data$ejercicio, .data$fecha, .data$mes, .data$fuente,
-    #                   .data$cta_cte, gasto = .data$monto) %>%
-    #     dplyr::bind_rows(dplyr::select(db_rec(), .data$ejercicio, .data$fecha, .data$mes,
-    #                                    .data$fuente, .data$cta_cte, recurso = .data$monto))
-    #
-    #   rec_and_gto <- rec_and_gto %>%
-    #     dplyr::filter(.data$ejercicio %in% (input$ejercicio %||%
-    #                                     max(as.integer(ejercicio_var()$ejercicio))),
-    #                   .data$cta_cte %in% (input$cta_cte %||%
-    #                                   unique(ejercicio_var()$cta_cte)),
-    #                   .data$fuente %in% (input$fuente %||%
-    #                                   unique(ejercicio_var()$fuente))
-    #                   )
-    #
-    #   if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
-    #     rec_and_gto <- rec_and_gto %>%
-    #       dplyr::filter(dplyr::between(.data$fecha,
-    #                                    lubridate::ymd(input$fecha[[1]]),
-    #                                    lubridate::ymd(input$fecha[[2]])))
-    #   }
-    #
-    #   #Grouping and summarising
-    #   db <- rec_and_gto %>%
-    #     dplyr::select(input$grupo %||% "cta_cte", .data$recurso, .data$gasto) %>%
-    #     dplyr::group_by(!!! rlang::syms(input$grupo %||% "cta_cte")) %>%
-    #     dplyr::summarise(recursos = sum(.data$recurso, na.rm = TRUE),
-    #                      gastos = sum(.data$gasto, na.rm = TRUE),
-    #                      remanente = .data$recursos - .data$gastos) %>%
-    #     replace(., is.na(.), 0)
-    #     # tidyr::replace_na(list(recursos = 0, gastos = 0,
-    #     #                        remanente = 0))
-    #
-    #   return(db)
+      if (is.null(input$partida)) {
+        shiny::updateSelectizeInput(session, "partida",
+                                    selected = c("421", "422"))
+      }
+#
+#       if (is.null(input$fuente)) {
+#         shiny::updateSelectizeInput(session, "fuente",
+#                                     selected = sort(unique(ejercicio_var()$ejercicio)))
+#       }
 
-    }, ignoreNULL = FALSE)
-    #
-    # return(table)
+      #Global function variables
+      ejercicio_vec <- input$ejercicio %||%
+        as.character(max(as.integer(choices_rv$ejercicio)))
+
+      partida_vec <- input$partida %||%
+        c("421", "422")
+
+      fuente_vec <- input$fuente %||%
+        unique(choices_rv$fuente)
+
+      grupo_vec <- input$grupo %||%
+        c("ejercicio", "estructura",
+          "partida", "fuente")
+
+      #Filtering and grouping icaro
+      r6_icaro$
+        get_query(
+          paste0("SELECT fecha, estructura, partida, fuente, ",
+                 "tipo, importe AS icaro FROM carga ",
+                 "WHERE partida = ? "),
+          params = list(partida_vec)
+        )$
+        mutate(
+          fecha = as.Date(.data$fecha, origin = "1970-01-01"),
+          ejercicio = as.character(lubridate::year(.data$fecha))
+        )$
+        select(
+          -.data$fecha,
+        )$
+        filter(.data$ejercicio %in% ejercicio_vec,
+               tipo != "PA6",
+               .data$fuente %in% fuente_vec)$
+        select(grupo_vec, .data$icaro)$
+        group_by(!!! rlang::syms(grupo_vec))$
+        summarise(icaro = sum(.data$icaro, na.rm = TRUE))
+
+      #Filtering and grouping siif
+      r6_siif$
+        get_query(
+          paste0("SELECT ejercicio, programa, subprograma, ",
+                 "proyecto, actividad, partida, fuente, ",
+                 "ordenado AS siif FROM ppto_gtos_fte_rf602 ",
+                 "WHERE partida = ? ",
+                 "AND ejercicio = '", ejercicio_vec, "'" ),
+          params = list(partida_vec)
+        )$
+        mutate(
+          estructura = stringr::str_c(.data$programa, .data$subprograma,
+                                      .data$proyecto, .data$actividad, sep = "-")
+        )$
+        select(
+          -.data$programa, -.data$subprograma,
+          -.data$proyecto, -.data$actividad
+        )$
+        filter(.data$fuente %in% fuente_vec)$
+        select(grupo_vec, .data$siif)$
+        group_by(!!! rlang::syms(grupo_vec))$
+        summarise(siif = sum(.data$siif, na.rm = TRUE))
+
+      #Joinning and calulating
+      r6_siif$
+        full_join(r6_icaro$data, by = grupo_vec)$
+        mutate_if(is.numeric, replace_NA_0)$
+        mutate(
+          diferencia = .data$siif - .data$icaro,
+          # dif_acum = cumsum(.data$diferencia)
+        )
+
+      if (input$mostrar) {
+        r6_siif$
+          filter(!dplyr::near(diferencia, 0))
+      }
+
+      return(r6_siif$data)
+
+    })
+
+    return(table)
 
   })
 }
