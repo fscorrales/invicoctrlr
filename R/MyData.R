@@ -15,6 +15,10 @@ MyData <- R6::R6Class(
       self$data <- dplyr::select(self$data, ...)
       invisible(self)
     },
+    rename = function(...) {
+      self$data <- dplyr::rename(self$data, ...)
+      invisible(self)
+    },
     mutate = function(...) {
       self$data <- dplyr::mutate(self$data, ...)
       invisible(self)
