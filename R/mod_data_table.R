@@ -19,6 +19,7 @@ mod_data_table_ui <- function(id){
 #' @noRd
 mod_data_table_server <- function(id, data, selection = "single",
                                   DTServer = TRUE,
+                                  container = htmltools::tags$table(DT::tableHeader(data())),
                                   format_curr = NULL, format_perc = NULL,
                                   format_round = NULL, format_date = NULL,
                                   format_style = NULL, ...){
@@ -39,7 +40,8 @@ mod_data_table_server <- function(id, data, selection = "single",
                                    language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json'),
                                    dom = 'BRtlip', ...
                                    ),
-                    selection = selection
+                    selection = selection,
+                    container = container
                     )
 
       if (not_null(format_curr)) {
@@ -137,6 +139,8 @@ mod_data_table_server <- function(id, data, selection = "single",
 # ), 2)
 # colnames(m) = c('<span style="color:red">Column 1</span>', '<em>Column 2</em>')
 # datatable(m)  # escape = TRUE by default
+
+## DT format functions https://rstudio.github.io/DT/functions.html
 
 ## DT Plugins https://rstudio.github.io/DT/plugins.html (see ellipsis and scrollResize)
 
