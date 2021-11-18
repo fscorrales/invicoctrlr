@@ -34,7 +34,11 @@ mod_02_04_icaro_ui <- function(id){
         tabPanel("registro",
                  htmltools::HTML("<strong>Fuente: R Icaro, Gastos SIIF (rcg01_uejp), ",
                                  "y Gastos por Grupo SIIF (gto_rpa03g)</strong>")
-                 )
+                 ),
+        tabPanel("pa6",
+                 htmltools::HTML("<strong>Fuente: R Icaro, Gastos SIIF (rcg01_uejp), ",
+                                 "y Comprobantes Fondos SIIF (rfondo07tp - PA6)</strong>")
+        )
         ),
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
@@ -61,6 +65,11 @@ mod_02_04_icaro_ui <- function(id){
         value = "registro",
         mod_data_table_ui(ns("dt_registro"))
       ),
+      shiny::tabPanel(
+        title = "Carga PA6",
+        value = "pa6",
+        mod_data_table_ui(ns("dt_pa6"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -75,7 +84,10 @@ mod_02_04_icaro_ui <- function(id){
           #           ),
           tabPanel("registro",
                    mod_02_04_03_registro_ui(ns("filter_registro"))
-                    )
+                    ),
+          tabPanel("pa6",
+                   mod_02_04_04_pa6_ui(ns("filter_pa6"))
+          )
         )
       )
     )
@@ -142,11 +154,12 @@ mod_02_04_icaro_server <- function(id){
 
     })
 
+    # Table Control Registro Carga ICARO
     registro <- mod_02_04_03_registro_server("filter_registro")
 
     shiny::observeEvent(registro(), {
 
-      sketch = htmltools::withTags(table(
+      sketch_registro = htmltools::withTags(table(
         class = 'display',
         thead(
           tr(
@@ -159,7 +172,7 @@ mod_02_04_icaro_server <- function(id){
             th(class = 'dt-center', colspan = 3, 'partida'),
           ),
           tr(
-            lapply(rep(c('siif', 'icaro', "dif"), 7), th)
+            lapply(rep(c('siif', 'icaro', "ctrl"), 7), th)
           )
         )
       ))
@@ -175,8 +188,18 @@ mod_02_04_icaro_server <- function(id){
                                fontWeight = "bold",
                                fontSize = "24px")
 
+      headjs_registro <- "function(thead) {
+      $(thead).closest('thead').find('th').eq(0).css('background-color', '#D9E1F2');
+      $(thead).closest('thead').find('th').eq(1).css('background-color', '#8EA9DB');
+      $(thead).closest('thead').find('th').eq(2).css('background-color', '#D9E1F2');
+      $(thead).closest('thead').find('th').eq(3).css('background-color', '#8EA9DB');
+      $(thead).closest('thead').find('th').eq(4).css('background-color', '#D9E1F2');
+      $(thead).closest('thead').find('th').eq(5).css('background-color', '#8EA9DB');
+      $(thead).closest('thead').find('th').eq(6).css('background-color', '#D9E1F2');
+      }"
+
       mod_data_table_server("dt_registro", registro,
-                            container = sketch,
+                            container = sketch_registro,
                             # format_round = formatr_registro,
                             format_style = formats_registro,
                             buttons = list(
@@ -184,11 +207,73 @@ mod_02_04_icaro_server <- function(id){
                                 extend = 'collection',
                                 buttons = c('copy', 'print','csv', 'excel', 'pdf'),
                                 text = 'Download 100 primeras filas')
-                            )
-                            # columnDefs = list(list(className = 'dt-center', targets = "_all"))
+                            ),
+                            headerCallback = htmlwidgets::JS(headjs_registro)
       )
 
     })
+
+    # Table Control PA6 ICARO
+    pa6 <- mod_02_04_04_pa6_server("filter_pa6")
+
+    shiny::observeEvent(pa6(), {
+
+      sketch_pa6 = htmltools::withTags(table(
+        class = 'display',
+        thead(
+          tr(
+            th(class = 'dt-center', colspan = 6, 'siif'),
+            th(class = 'dt-center', rowspan = 2, 'ctrl'),
+            th(class = 'dt-center', colspan = 6, 'icaro')
+          ),
+          tr(
+            th(colspan = 1, 'nro_fondo'),
+            th(colspan = 1, 'nro_reg'),
+            th(colspan = 1, 'fecha_pa6'),
+            th(colspan = 1, 'fecha_reg'),
+            th(colspan = 1, 'monto_pa6'),
+            th(colspan = 1, 'monto_reg'),
+            th(colspan = 1, 'nro_pa6'),
+            th(colspan = 1, 'tipo'),
+            th(colspan = 1, 'monto_pa6'),
+            th(colspan = 1, 'nro_reg'),
+            th(colspan = 1, 'tipo'),
+            th(colspan = 1, 'monto_reg')
+          )
+        )
+      ))
+
+      headjs_pa6 <- "function(thead) {
+      $(thead).closest('thead').find('th').eq(0).css('background-color', '#D9E1F2');
+      $(thead).closest('thead').find('th').eq(1).css('background-color', '#8EA9DB');
+      $(thead).closest('thead').find('th').eq(2).css('background-color', '#D9E1F2');
+      }"
+
+      formatr_pa6 <- list(columns = c("monto_pa6", "saldo_pa6",
+                                      "monto_pa6_icaro", "monto_reg_icaro"))
+
+      formats_pa6<- list(columns = c("ctrl"),
+                               color = DT::styleEqual(
+                                 c("\u2713", "\u2718"), c('green', 'red')),
+                               fontWeight = "bold",
+                               fontSize = "24px")
+
+      mod_data_table_server("dt_pa6", pa6,
+                            container = sketch_pa6,
+                            format_round = formatr_pa6,
+                            format_style = formats_pa6,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            ),
+                            columnDefs = list(list(className = 'dt-center', targets = 6)),
+                            headerCallback = htmlwidgets::JS(headjs_pa6)
+      )
+
+    })
+
 
     #
     #
