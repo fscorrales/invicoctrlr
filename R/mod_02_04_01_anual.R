@@ -187,7 +187,7 @@ mod_02_04_01_anual_server <- function(id){
           -.data$fecha,
         )$
         filter(.data$ejercicio %in% ejercicio_vec,
-               tipo != "PA6",
+               .data$tipo != "PA6",
                .data$fuente %in% fuente_vec)$
         select(grupo_vec, .data$icaro)$
         group_by(!!! rlang::syms(grupo_vec))$
@@ -227,7 +227,7 @@ mod_02_04_01_anual_server <- function(id){
 
       if (input$mostrar) {
         r6_siif$
-          filter(!dplyr::near(diferencia, 0))
+          filter(!dplyr::near(.data$diferencia, 0))
       }
 
       return(r6_siif$data)

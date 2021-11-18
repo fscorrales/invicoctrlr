@@ -169,16 +169,16 @@ mod_02_04_03_registro_server <- function(id){
           ejercicio = as.character(lubridate::year(.data$fecha))
         )$
         rename(
-          cta_cte_icaro = cta_cte,
-          fuente_icaro = fuente,
-          cuit_icaro = cuit,
-          fecha_icaro = fecha,
-          nro_entrada_icaro = nro_entrada,
-          partida_icaro = partida,
-          monto_icaro = importe
+          cta_cte_icaro = .data$cta_cte,
+          fuente_icaro = .data$fuente,
+          cuit_icaro = .data$cuit,
+          fecha_icaro = .data$fecha,
+          nro_entrada_icaro = .data$nro_entrada,
+          partida_icaro = .data$partida,
+          monto_icaro = .data$importe
         )$
         filter(.data$ejercicio %in% ejercicio_vec,
-               tipo != "PA6",
+               .data$tipo != "PA6",
                .data$fuente_icaro %in% fuente_vec)$
         select(-.data$ejercicio, -.data$tipo)
 
@@ -200,13 +200,13 @@ mod_02_04_03_registro_server <- function(id){
                                        sep="/")
         )$
         rename(
-          cta_cte_siif = cta_cte,
-          fuente_siif = fuente,
-          cuit_siif = cuit,
-          fecha_siif = fecha,
-          nro_entrada_siif = nro_entrada,
-          partida_siif = partida,
-          monto_siif = monto
+          cta_cte_siif = .data$cta_cte,
+          fuente_siif = .data$fuente,
+          cuit_siif = .data$cuit,
+          fecha_siif = .data$fecha,
+          nro_entrada_siif = .data$nro_entrada,
+          partida_siif = .data$partida,
+          monto_siif = .data$monto
         )$
         filter(.data$fuente_siif %in% fuente_vec)
 
@@ -217,29 +217,29 @@ mod_02_04_03_registro_server <- function(id){
                   keep = TRUE)$
         mutate_if(is.numeric, replace_NA_0)$
         mutate(
-          dif_nro_entrada = ifelse((nro_entrada_siif == nro_entrada_icaro), TRUE, FALSE),
-          dif_nro_entrada = ifelse(is.na(dif_nro_entrada), FALSE, dif_nro_entrada),
-          dif_fecha = ifelse((fecha_siif == fecha_icaro), TRUE, FALSE),
-          dif_fecha = ifelse(is.na(dif_fecha), FALSE, dif_fecha),
-          dif_partida = ifelse((partida_siif == partida_icaro), TRUE, FALSE),
-          dif_partida = ifelse(is.na(dif_partida), FALSE, dif_partida),
-          dif_fuente = ifelse((fuente_siif == fuente_icaro), TRUE, FALSE),
-          dif_fuente = ifelse(is.na(dif_fuente), FALSE, dif_fuente),
-          dif_monto = ifelse(dplyr::near(monto_siif , monto_icaro), TRUE, FALSE),
-          dif_monto = ifelse(is.na(dif_monto), FALSE, dif_monto),
-          dif_cta_cte = ifelse((cta_cte_siif  == cta_cte_icaro), TRUE, FALSE),
-          dif_cta_cte = ifelse(is.na(dif_cta_cte), FALSE, dif_cta_cte),
-          dif_cuit = ifelse((cuit_siif == cuit_icaro), TRUE, FALSE),
-          dif_cuit = ifelse(is.na(dif_cuit), FALSE, dif_cuit)
+          dif_nro_entrada = ifelse((.data$nro_entrada_siif == .data$nro_entrada_icaro), TRUE, FALSE),
+          dif_nro_entrada = ifelse(is.na(.data$dif_nro_entrada), FALSE, .data$dif_nro_entrada),
+          dif_fecha = ifelse((.data$fecha_siif == .data$fecha_icaro), TRUE, FALSE),
+          dif_fecha = ifelse(is.na(.data$dif_fecha), FALSE, .data$dif_fecha),
+          dif_partida = ifelse((.data$partida_siif == .data$partida_icaro), TRUE, FALSE),
+          dif_partida = ifelse(is.na(.data$dif_partida), FALSE, .data$dif_partida),
+          dif_fuente = ifelse((.data$fuente_siif == .data$fuente_icaro), TRUE, FALSE),
+          dif_fuente = ifelse(is.na(.data$dif_fuente), FALSE, .data$dif_fuente),
+          dif_monto = ifelse(dplyr::near(.data$monto_siif , .data$monto_icaro), TRUE, FALSE),
+          dif_monto = ifelse(is.na(.data$dif_monto), FALSE, .data$dif_monto),
+          dif_cta_cte = ifelse((.data$cta_cte_siif  == .data$cta_cte_icaro), TRUE, FALSE),
+          dif_cta_cte = ifelse(is.na(.data$dif_cta_cte), FALSE, .data$dif_cta_cte),
+          dif_cuit = ifelse((.data$cuit_siif == .data$cuit_icaro), TRUE, FALSE),
+          dif_cuit = ifelse(is.na(.data$dif_cuit), FALSE, .data$dif_cuit)
         )$
         select(
-          fuente_siif, fuente_icaro, dif_fuente,
-          monto_siif, monto_icaro, dif_monto,
-          cta_cte_siif, cta_cte_icaro, dif_cta_cte,
-          cuit_siif, cuit_icaro, dif_cuit,
-          nro_entrada_siif, nro_entrada_icaro, dif_nro_entrada,
-          fecha_siif, fecha_icaro, dif_fecha,
-          partida_siif, partida_icaro, dif_partida
+          .data$fuente_siif, .data$fuente_icaro, .data$dif_fuente,
+          .data$monto_siif, .data$monto_icaro, .data$dif_monto,
+          .data$cta_cte_siif, .data$cta_cte_icaro, .data$dif_cta_cte,
+          .data$cuit_siif, .data$cuit_icaro, .data$dif_cuit,
+          .data$nro_entrada_siif, .data$nro_entrada_icaro, .data$dif_nro_entrada,
+          .data$fecha_siif, .data$fecha_icaro, .data$dif_fecha,
+          .data$partida_siif, .data$partida_icaro, .data$dif_partida
         )
         # mutate_if(is.logical, replace_logical_symbol)
         # dif_nro_entrada = ifelse(dif_nro_entrada > 0, "\u2713", "\u2718")
@@ -247,8 +247,8 @@ mod_02_04_03_registro_server <- function(id){
       if (input$mostrar) {
         r6_siif$
           filter(
-            (dif_fuente + dif_monto + dif_cta_cte + dif_cuit +
-               dif_nro_entrada + dif_fecha + dif_partida) < 7
+            (.data$dif_fuente + .data$dif_monto + .data$dif_cta_cte + .data$dif_cuit +
+               .data$dif_nro_entrada + .data$dif_fecha + .data$dif_partida) < 7
           )
       }
 

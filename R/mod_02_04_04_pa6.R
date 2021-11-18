@@ -157,13 +157,13 @@ mod_02_04_04_pa6_server <- function(id){
                                    format(.data$fecha_reg, format="%y"),
                                    sep="/"),
           dplyr::across(is.numeric, replace_NA_0),
-          saldo_pa6 = ifelse((monto_pa6 - monto_reg) < saldo_pa6,
-                             (monto_pa6 - monto_reg), saldo_pa6),
+          saldo_pa6 = ifelse((.data$monto_pa6 - .data$monto_reg) < .data$saldo_pa6,
+                             (.data$monto_pa6 - .data$monto_reg), .data$saldo_pa6),
           ctrl = TRUE
         )$
         select(
-          nro_fondo, nro_reg, fecha_pa6, fecha_reg,
-          monto_pa6, saldo_pa6, ctrl
+          .data$nro_fondo, .data$nro_reg, .data$fecha_pa6, .data$fecha_reg,
+          .data$monto_pa6, .data$saldo_pa6, .data$ctrl
           # cuit, fuente, monto_reg, cta_cte
         )
 
@@ -182,31 +182,31 @@ mod_02_04_04_pa6_server <- function(id){
           ejercicio = as.character(lubridate::year(.data$fecha))
         )$
         rename(
-          nro_icaro = nro_entrada,
-          monto_icaro = importe,
-          tipo_icaro = tipo
+          nro_icaro = .data$nro_entrada,
+          monto_icaro = .data$importe,
+          tipo_icaro = .data$tipo
         )$
         filter(.data$ejercicio %in% ejercicio_vec)$
         select(-.data$ejercicio, -.data$fecha)
 
       #Joining with siif
       ans <- r6_icaro$data %>%
-        dplyr::filter(tipo_icaro == "PA6",
-                      nro_icaro %in% r6_siif$data$nro_fondo)
+        dplyr::filter(.data$tipo_icaro == "PA6",
+                      .data$nro_icaro %in% r6_siif$data$nro_fondo)
       r6_siif$
         full_join(ans, by = c("nro_fondo" = "nro_icaro"), keep = TRUE)$
-        rename(nro_pa6_icaro = nro_icaro,
-               monto_pa6_icaro = monto_icaro,
-               tipo_pa6_icaro = tipo_icaro)
+        rename(nro_pa6_icaro = .data$nro_icaro,
+               monto_pa6_icaro = .data$monto_icaro,
+               tipo_pa6_icaro = .data$tipo_icaro)
 
       ans <- r6_icaro$data %>%
-        dplyr::filter(tipo_icaro != "PA6",
-                      nro_icaro %in% r6_siif$data$nro_reg)
+        dplyr::filter(.data$tipo_icaro != "PA6",
+                      .data$nro_icaro %in% r6_siif$data$nro_reg)
       r6_siif$
         full_join(ans, by = c("nro_reg" = "nro_icaro"), keep = TRUE)$
-        rename(nro_reg_icaro = nro_icaro,
-               monto_reg_icaro = monto_icaro,
-               tipo_reg_icaro = tipo_icaro)$
+        rename(nro_reg_icaro = .data$nro_icaro,
+               monto_reg_icaro = .data$monto_icaro,
+               tipo_reg_icaro = .data$tipo_icaro)$
         mutate(
           dplyr::across(is.numeric, replace_NA_0),
           ctrl = ifelse(.data$ctrl > 0, "\u2713", "\u2718")

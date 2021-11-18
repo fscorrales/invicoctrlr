@@ -161,18 +161,18 @@ mod_02_04_icaro_server <- function(id){
 
       sketch_registro = htmltools::withTags(table(
         class = 'display',
-        thead(
-          tr(
-            th(class = 'dt-center', colspan = 3, 'fuente'),
-            th(class = 'dt-center', colspan = 3, 'monto'),
-            th(class = 'dt-center', colspan = 3, 'cta_cte'),
-            th(class = 'dt-center', colspan = 3, 'cuit'),
-            th(class = 'dt-center', colspan = 3, 'nro_entrada'),
-            th(class = 'dt-center', colspan = 3, 'fecha'),
-            th(class = 'dt-center', colspan = 3, 'partida'),
+        htmltools::tags$thead(
+          htmltools::tags$tr(
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'fuente'),
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'monto'),
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'cta_cte'),
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'cuit'),
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'nro_entrada'),
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'fecha'),
+            htmltools::tags$th(class = 'dt-center', colspan = 3, 'partida'),
           ),
-          tr(
-            lapply(rep(c('siif', 'icaro', "ctrl"), 7), th)
+          htmltools::tags$tr(
+            lapply(rep(c('siif', 'icaro', "ctrl"), 7), htmltools::tags$th)
           )
         )
       ))
@@ -208,7 +208,7 @@ mod_02_04_icaro_server <- function(id){
                                 buttons = c('copy', 'print','csv', 'excel', 'pdf'),
                                 text = 'Download 100 primeras filas')
                             ),
-                            headerCallback = htmlwidgets::JS(headjs_registro)
+                            headerCallback = DT::JS(headjs_registro)
       )
 
     })
@@ -220,25 +220,25 @@ mod_02_04_icaro_server <- function(id){
 
       sketch_pa6 = htmltools::withTags(table(
         class = 'display',
-        thead(
-          tr(
-            th(class = 'dt-center', colspan = 6, 'siif'),
-            th(class = 'dt-center', rowspan = 2, 'ctrl'),
-            th(class = 'dt-center', colspan = 6, 'icaro')
+        htmltools::tags$thead(
+          htmltools::tags$tr(
+            htmltools::tags$th(class = 'dt-center', colspan = 6, 'siif'),
+            htmltools::tags$th(class = 'dt-center', rowspan = 2, 'ctrl'),
+            htmltools::tags$th(class = 'dt-center', colspan = 6, 'icaro')
           ),
-          tr(
-            th(colspan = 1, 'nro_fondo'),
-            th(colspan = 1, 'nro_reg'),
-            th(colspan = 1, 'fecha_pa6'),
-            th(colspan = 1, 'fecha_reg'),
-            th(colspan = 1, 'monto_pa6'),
-            th(colspan = 1, 'monto_reg'),
-            th(colspan = 1, 'nro_pa6'),
-            th(colspan = 1, 'tipo'),
-            th(colspan = 1, 'monto_pa6'),
-            th(colspan = 1, 'nro_reg'),
-            th(colspan = 1, 'tipo'),
-            th(colspan = 1, 'monto_reg')
+          htmltools::tags$tr(
+            htmltools::tags$th(colspan = 1, 'nro_fondo'),
+            htmltools::tags$th(colspan = 1, 'nro_reg'),
+            htmltools::tags$th(colspan = 1, 'fecha_pa6'),
+            htmltools::tags$th(colspan = 1, 'fecha_reg'),
+            htmltools::tags$th(colspan = 1, 'monto_pa6'),
+            htmltools::tags$th(colspan = 1, 'monto_reg'),
+            htmltools::tags$th(colspan = 1, 'nro_pa6'),
+            htmltools::tags$th(colspan = 1, 'tipo'),
+            htmltools::tags$th(colspan = 1, 'monto_pa6'),
+            htmltools::tags$th(colspan = 1, 'nro_reg'),
+            htmltools::tags$th(colspan = 1, 'tipo'),
+            htmltools::tags$th(colspan = 1, 'monto_reg')
           )
         )
       ))
@@ -269,7 +269,7 @@ mod_02_04_icaro_server <- function(id){
                                 text = 'Download 100 primeras filas')
                             ),
                             columnDefs = list(list(className = 'dt-center', targets = 6)),
-                            headerCallback = htmlwidgets::JS(headjs_pa6)
+                            headerCallback = DT::JS(headjs_pa6)
       )
 
     })
