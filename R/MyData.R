@@ -51,6 +51,10 @@ MyData <- R6::R6Class(
       self$data <- dplyr::summarise(self$data, ...)
       invisible(self)
     },
+    bind_cols = function(...) {
+      self$data <- dplyr::bind_cols(self$data, ...)
+      invisible(self)
+    },
     bind_rows = function(...) {
       self$data <- dplyr::bind_rows(self$data, ...)
       invisible(self)
