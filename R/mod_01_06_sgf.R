@@ -8,6 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 mod_01_06_sgf_ui <- function(id){
+
   ns <- NS(id)
 
   steps_rend_prov <- list(
@@ -37,6 +38,15 @@ mod_01_06_sgf_ui <- function(id){
     )
   )
 
+  steps_listado_prov <- steps_rend_prov
+
+  steps_listado_prov$ingreso <- paste0(
+    "Ingrese al <strong>Sistema de Gesti\u00f3n Financiera</strong> ",
+    "y seleccione el men\u00fa <strong>Archivo / Proveedores ",
+    "/ Listado de Proveedores</strong>"
+  )
+  steps_listado_prov$filtro <- NULL
+
   tagList(
     bs4Dash::tabBox(
       id = ns("controller"),
@@ -62,11 +72,11 @@ mod_01_06_sgf_ui <- function(id){
         value = "rend_prov",
         mod_data_table_ui(ns("rend_prov"))
       ),
-      # shiny::tabPanel(
-      #   title = "Presupuesto con Descripcion",
-      #   value = "pres_desc",
-      #   mod_data_table_ui(ns("pres_desc"))
-      # ),
+      shiny::tabPanel(
+        title = "Listado Proveedores",
+        value = "listado_prov",
+        mod_data_table_ui(ns("listado_prov"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -80,12 +90,12 @@ mod_01_06_sgf_ui <- function(id){
                              htmltools::tags$ol(
                                list_to_li(steps_rend_prov)
                              )
+                    ),
+                    tabPanel("listado_prov",
+                             htmltools::tags$ol(
+                               list_to_li(steps_listado_prov)
+                             )
                     )
-                    # tabPanel("pres_desc",
-                    #          htmltools::tags$ol(
-                    #            list_to_li(steps_pres_desc)
-                    #          )
-                    # )
         )
       )
     )
@@ -110,9 +120,9 @@ mod_01_06_sgf_server <- function(id){
                     rend_prov = list(data = sgf_resumen_rend_prov(),
                                  import_function = invicodatr::rpw_sgf_resumen_rend_prov,
                                  df_trigger = sgf_resumen_rend_prov_trigger),
-                    # pres_desc = list(data = siif_ppto_gtos_desc_rf610(),
-                    #                  import_function = invicodatr::rpw_siif_ppto_gtos_desc,
-                    #                  df_trigger = siif_ppto_gtos_desc_trigger),
+                    listado_prov = list(data = sgf_listado_prov(),
+                                     import_function = invicodatr::rpw_sgf_listado_prov,
+                                     df_trigger = sgf_listado_prov_trigger),
                     stop("Invalid `x` value")
       )
 
@@ -156,6 +166,25 @@ mod_01_06_sgf_server <- function(id){
                               extend='colvis',
                               text="Mostrar / Ocultar columnas",
                               columns = hide_columns_rend_prov)
+                          )
+    )
+
+    hide_columns_listado_prov <- c(5:6)
+
+    mod_data_table_server("listado_prov", sgf_listado_prov,
+                          # format_round = formatr_rend_prov,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_listado_prov)
+                          ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_listado_prov)
                           )
     )
 

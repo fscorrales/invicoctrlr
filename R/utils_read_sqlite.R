@@ -210,6 +210,18 @@ sgf_resumen_rend_prov <- shiny::reactive({
 
 })
 
+sgf_listado_prov_trigger <- make_reactive_trigger()
+sgf_listado_prov <- shiny::reactive({
+  sgf_listado_prov_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("sgf",
+                                       "listado_prov")
+  Ans <- Ans %>%
+    dplyr::select(cuit, descripcion,
+                  dplyr::everything()) %>%
+    dplyr::arrange(descripcion)
+
+})
+
 sscc_banco_invico_trigger <- make_reactive_trigger()
 sscc_banco_invico <- shiny::reactive({
   sscc_banco_invico_trigger$depend()
