@@ -205,10 +205,10 @@ mod_02_02_01_obras_server <- function(id){
 
         #Neteamos los comprobantes de gastos no pagados (Deuda Flotante)
         r6_icaro$data <- r6_siif$data %>%
-          dplyr::filter(ejercicio == ejercicio_vec) %>%
+          dplyr::filter(.data$ejercicio == ejercicio_vec) %>%
           dplyr::select(.data$nro_entrada, .data$mes, .data$saldo) %>%
           unique() %>%
-          dplyr::inner_join(dplyr::filter(r6_icaro$data, tipo != "PA6"),
+          dplyr::inner_join(dplyr::filter(r6_icaro$data, .data$tipo != "PA6"),
                            by = c("nro_entrada" = "nro_entrada",
                                   "mes" = "mes")) %>%
           dplyr::mutate(importe = (.data$saldo * (-1)),
@@ -237,46 +237,18 @@ mod_02_02_01_obras_server <- function(id){
 
         #Incorporamos los comprobantes de gastos pagados en periodos posteriores (Deuda Flotante)
           r6_siif$
-            filter(ejercicio == ejercicio_vec)$
-            semi_join(dplyr::filter(r6_icaro$data, tipo != "PA6"),
+            filter(.data$ejercicio == ejercicio_vec)$
+            semi_join(dplyr::filter(r6_icaro$data, .data$tipo != "PA6"),
                             by = c("nro_entrada" = "nro_entrada"))$
             mutate(importe = .data$saldo,
                    tipo = "RDEU")$
-            select(ejercicio, fecha = fecha_hasta, mes = mes_hasta,
-                   nro_entrada, cuit, cta_cte, tipo, importe)
+            select(.data$ejercicio, fecha = .data$fecha_hasta,
+                   mes = .data$mes_hasta, .data$nro_entrada,
+                   .data$cuit, .data$cta_cte,
+                   .data$tipo, .data$importe)
 
           r6_icaro$
             bind_rows(r6_siif$data)
-        #
-        #   #Vinculamos en base a lo que se ejecuto como 421 y 422
-        #   DeudaPagada <- GastosCompletoSIIF.rmd %>%
-        #     filter(Partida == 421 | Partida == 422) %>%
-        #     semi_join(DeudaPagada, ., by = c("PeriodoAnterior" = "Periodo",
-        #                                      "NroEntrada" = "NroEntrada",
-        #                                      "CUIT" = "CUIT")) %>%
-        #     transmute(CuentaContable = "2111-1-2",
-        #               Periodo = Periodo,
-        #               Fecha = FechaHasta,
-        #               FechaAprobado = Fecha,
-        #               NroEntrada = NroEntrada,
-        #               CUIT = CUIT,
-        #               TipoComprobante = "FSC",
-        #               Debitos = 0,
-        #               Creditos = Saldo,
-        #               Saldo = Saldo,
-        #               Mes = MesHasta) %>%
-        #     filter(Periodo %in% input$EjercicioObra)
-        #
-        #   if (!is.na(input$FechaObra[[1]]) & !is.na(input$FechaObra[[2]])) {
-        #     DeudaPagada <- DeudaPagada %>%
-        #       filter(between(Fecha, ymd(input$FechaObra[[1]]),
-        #                      ymd(input$FechaObra[[2]])))
-        #   }
-        #
-        #   SIIF <- DeudaPagada %>%
-        #     bind_rows(SIIF, .)
-        #
-        # }
 
       }
 
@@ -330,55 +302,6 @@ mod_02_02_01_obras_server <- function(id){
 
       total_desvio <- sum(abs(r6_icaro$data$diferencia))
       r6_icaro$mutate(prop_desv = (abs(.data$diferencia) / total_desvio))
-
-    #   #Joinning and calulating
-    #   r6_siif$
-    #     full_join(r6_icaro$data,
-    #               by = c("nro_entrada_siif" = "nro_entrada_icaro"),
-    #               keep = TRUE)$
-    #     mutate_if(is.numeric, replace_NA_0)$
-    #     mutate(
-    #       dif_nro_entrada = ifelse((nro_entrada_siif == nro_entrada_icaro), TRUE, FALSE),
-    #       dif_nro_entrada = ifelse(is.na(dif_nro_entrada), FALSE, dif_nro_entrada),
-    #       dif_fecha = ifelse((fecha_siif == fecha_icaro), TRUE, FALSE),
-    #       dif_fecha = ifelse(is.na(dif_fecha), FALSE, dif_fecha),
-    #       dif_partida = ifelse((partida_siif == partida_icaro), TRUE, FALSE),
-    #       dif_partida = ifelse(is.na(dif_partida), FALSE, dif_partida),
-    #       dif_fuente = ifelse((fuente_siif == fuente_icaro), TRUE, FALSE),
-    #       dif_fuente = ifelse(is.na(dif_fuente), FALSE, dif_fuente),
-    #       dif_monto = ifelse(dplyr::near(monto_siif , monto_icaro), TRUE, FALSE),
-    #       dif_monto = ifelse(is.na(dif_monto), FALSE, dif_monto),
-    #       dif_cta_cte = ifelse((cta_cte_siif  == cta_cte_icaro), TRUE, FALSE),
-    #       dif_cta_cte = ifelse(is.na(dif_cta_cte), FALSE, dif_cta_cte),
-    #       dif_cuit = ifelse((cuit_siif == cuit_icaro), TRUE, FALSE),
-    #       dif_cuit = ifelse(is.na(dif_cuit), FALSE, dif_cuit)
-    #     )$
-    #     select(
-    #       fuente_siif, fuente_icaro, dif_fuente,
-    #       monto_siif, monto_icaro, dif_monto,
-    #       cta_cte_siif, cta_cte_icaro, dif_cta_cte,
-    #       cuit_siif, cuit_icaro, dif_cuit,
-    #       nro_entrada_siif, nro_entrada_icaro, dif_nro_entrada,
-    #       fecha_siif, fecha_icaro, dif_fecha,
-    #       partida_siif, partida_icaro, dif_partida
-    #     )
-    #     # mutate_if(is.logical, replace_logical_symbol)
-    #     # dif_nro_entrada = ifelse(dif_nro_entrada > 0, "\u2713", "\u2718")
-    #
-    #   if (input$mostrar) {
-    #     r6_siif$
-    #       filter(
-    #         (dif_fuente + dif_monto + dif_cta_cte + dif_cuit +
-    #            dif_nro_entrada + dif_fecha + dif_partida) < 7
-    #       )
-    #   }
-    #
-    #   r6_siif$mutate(
-    #     dplyr::across(
-    #       dplyr::starts_with("dif"),
-    #       ~ ifelse(.x > 0, "\u2713", "\u2718")
-    #     )
-    #   )
 
       return(r6_icaro$data)
 
