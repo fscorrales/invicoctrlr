@@ -51,6 +51,10 @@ MyData <- R6::R6Class(
       self$data <- dplyr::anti_join(self$data, ...)
       invisible(self)
     },
+    semi_join = function(...) {
+      self$data <- dplyr::semi_join(self$data, ...)
+      invisible(self)
+    },
     group_by = function(...) {
       self$data <- dplyr::group_by(self$data, ...)
       invisible(self)
