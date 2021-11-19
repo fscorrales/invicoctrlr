@@ -132,17 +132,17 @@ mod_02_02_04_pa6_server <- function(id){
                                      format(.data$fecha_reg, format="%y"),
                                      sep="/"),
           dplyr::across(is.numeric, replace_NA_0),
-          saldo_pa6 = ifelse((monto_pa6 - monto_reg) < saldo_pa6,
-                             (monto_pa6 - monto_reg), saldo_pa6)
+          saldo_pa6 = ifelse((.data$monto_pa6 - .data$monto_reg) < .data$saldo_pa6,
+                             (.data$monto_pa6 - .data$monto_reg), .data$saldo_pa6)
         )$
         select(
-          nro_fondo, nro_reg, fecha_pa6, fecha_reg,
-          monto_pa6, monto_reg, saldo_pa6, cta_cte,
-          cuit, fuente
+          .data$nro_fondo, .data$nro_reg, .data$fecha_pa6, .data$fecha_reg,
+          .data$monto_pa6, .data$monto_reg, .data$saldo_pa6, .data$cta_cte,
+          .data$cuit, .data$fuente
         )
 
       if (input$mostrar) {
-        r6_siif$filter(!dplyr::near(saldo_pa6, 0))
+        r6_siif$filter(!dplyr::near(.data$saldo_pa6, 0))
       }
 
       return(r6_siif$data)

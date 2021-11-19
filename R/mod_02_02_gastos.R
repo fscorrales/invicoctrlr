@@ -24,8 +24,9 @@ mod_02_02_gastos_ui <- function(id){
       footer = tabsetPanel(
         id = ns("switcher_footer"), type = "hidden",
         tabPanel("obras",
-                 htmltools::HTML("<strong>Fuente:R Icaro, Deuda Flotante SIIF (rdeu012), ",
-                                 "y Gastos SIIF (rcg01_uejp)</strong>")
+                 htmltools::HTML("<strong>Fuente: R Icaro, Deuda Flotante SIIF (rdeu012), ",
+                                 "Resumen de Rendiciones por Prov. SGF y ",
+                                 "Litado Proveedores SGF</strong>")
                  ),
         # tabPanel("sueldo",
         #          htmltools::HTML("<strong>Fuente: Recursos SIIF (rci02) ",
@@ -134,25 +135,27 @@ mod_02_02_gastos_server <- function(id){
     # mod_save_button_server("download_csv", reactive(rpw_controller$df))
 
 
-    # Table Control Anual ICARO
+    # Table Control obras
     obras <- mod_02_02_01_obras_server("filter_obras")
 
-    # shiny::observeEvent(obras(), {
-    #
-    #   formatr_obras <- list(columns = c("siif", "icaro",
-    #                                     "diferencia"))
-    #
-    #   mod_data_table_server("dt_obras", obras,
-    #                         format_round = formatr_obras,
-    #                         buttons = list(
-    #                           list(
-    #                             extend = 'collection',
-    #                             buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                             text = 'Download 100 primeras filas')
-    #                         )
-    #   )
-    #
-    # })
+    shiny::observeEvent(obras(), {
+
+      formatr_obras <- list(columns = c("ejecutado_icaro", "bruto_sgf",
+                                        "diferencia", "dif_acum"))
+      formatp_obras <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_obras", obras,
+                            format_round = formatr_obras,
+                            format_perc = formatp_obras,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
 
     pa6 <- mod_02_02_04_pa6_server("filter_pa6")
 
