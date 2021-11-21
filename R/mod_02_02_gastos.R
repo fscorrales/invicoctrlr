@@ -38,8 +38,17 @@ mod_02_02_gastos_ui <- function(id){
         #          )
         tabPanel("pa6",
                  htmltools::HTML("<strong>Fuente: Gastos SIIF (rcg01_uejp) y ",
-                                 "Comprobantes Fondos SIIF (rfondo07tp - PA6))</strong>")
-                 )
+                                 "Comprobantes Fondos SIIF (rfondo07tp - PA6)</strong>")
+                 ),
+        tabPanel("debitos_bancarios",
+                 htmltools::HTML("<strong>Fuente: Gastos SIIF (rcg01_uejp), ",
+                                 "Gastos por Gpo Partida SIIF (gto_rpa03g) ",
+                                 "y Sist. Seg. Ctas. Ctes. INVICO</strong>")
+        ),
+        tabPanel("fei",
+                 htmltools::HTML("<strong>Fuente: Libro Mayor SIIF (rcocc31 - 2113-2-9) y ",
+                                 "Rensumen de Rendiciones SGF</strong>")
+        )
         ),
       boxToolSize = "lg",
       dropdownMenu =  bs4Dash::boxDropdown(
@@ -71,6 +80,16 @@ mod_02_02_gastos_ui <- function(id){
         value = "pa6",
         mod_data_table_ui(ns("dt_pa6"))
       ),
+      shiny::tabPanel(
+        title = "Debitos Bancarios",
+        value = "debitos_bancarios",
+        mod_data_table_ui(ns("dt_debitos_bancarios"))
+      ),
+      shiny::tabPanel(
+        title = "FEI",
+        value = "fei",
+        mod_data_table_ui(ns("dt_fei"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -88,7 +107,13 @@ mod_02_02_gastos_ui <- function(id){
           #           )
           tabPanel("pa6",
                    mod_02_02_04_pa6_ui(ns("filter_pa6"))
-                    )
+                    ),
+          tabPanel("debitos_bancarios",
+                   mod_02_02_05_debitos_bancarios_ui(ns("filter_debitos_bancarios"))
+          ),
+          tabPanel("fei",
+                   mod_02_02_06_fei_ui(ns("filter_fei"))
+          )
         )
       )
     )
@@ -161,39 +186,58 @@ mod_02_02_gastos_server <- function(id){
 
     shiny::observeEvent(pa6(), {
 
-      # sketch = htmltools::withTags(table(
-      #   class = 'display',
-      #   thead(
-      #     tr(
-      #       th(class = 'dt-center', colspan = 3, 'fuente'),
-      #       th(class = 'dt-center', colspan = 3, 'monto'),
-      #       th(class = 'dt-center', colspan = 3, 'cta_cte'),
-      #       th(class = 'dt-center', colspan = 3, 'cuit'),
-      #       th(class = 'dt-center', colspan = 3, 'nro_entrada'),
-      #       th(class = 'dt-center', colspan = 3, 'fecha'),
-      #       th(class = 'dt-center', colspan = 3, 'partida'),
-      #     ),
-      #     tr(
-      #       lapply(rep(c('siif', 'icaro', "dif"), 7), th)
-      #     )
-      #   )
-      # ))
-
       formatr_pa6 <- list(columns = c("monto_reg", "monto_pa6",
                                         "saldo_pa6"))
-
-      # formats_registro <- list(columns = c("dif_fuente", "dif_monto", "dif_cta_cte",
-      #                                      "dif_cuit", "dif_nro_entrada",
-      #                                      "dif_fecha", "dif_partida"),
-      #                          color = DT::styleEqual(
-      #                            c("\u2713", "\u2718"), c('green', 'red')),
-      #                          fontWeight = "bold",
-      #                          fontSize = "24px")
 
       mod_data_table_server("dt_pa6", pa6,
                             # container = sketch,
                             format_round = formatr_pa6,
-                            # format_style = formats_pa6,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    debitos_bancarios <- mod_02_02_05_debitos_bancarios_server("filter_debitos_bancarios")
+
+    shiny::observeEvent(debitos_bancarios(), {
+
+      formatr_debitos_bancarios <- list(columns = c("ejecutado_siif", "debitos_sscc",
+                                                    "diferencia", "dif_acum"))
+
+      formatp_debitos_bancarios <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_debitos_bancarios", debitos_bancarios,
+                            # container = sketch,
+                            format_round = formatr_debitos_bancarios,
+                            format_perc = formatp_debitos_bancarios,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    fei <- mod_02_02_06_fei_server("filter_fei")
+
+    shiny::observeEvent(fei(), {
+
+      formatr_fei <- list(columns = c("carga_fei", "pago_fei", "dif_fei",
+                                      "bruto_sgf", "dif_pago", "dif_acum"))
+
+      formatp_fei <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_fei", fei,
+                            # container = sketch,
+                            format_round = formatr_fei,
+                            format_perc = formatp_fei,
                             buttons = list(
                               list(
                                 extend = 'collection',
