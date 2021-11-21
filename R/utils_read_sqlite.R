@@ -204,7 +204,7 @@ sgf_resumen_rend_prov <- shiny::reactive({
                                        "resumen_rend_prov")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
-    dplyr::select(origen, fecha,
+    dplyr::select(origen, ejercicio, mes, fecha,
                   dplyr::everything()) %>%
     dplyr::arrange(origen, fecha)
 
