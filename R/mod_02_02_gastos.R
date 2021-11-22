@@ -28,10 +28,13 @@ mod_02_02_gastos_ui <- function(id){
                                  "Resumen de Rendiciones por Prov. SGF y ",
                                  "Litado Proveedores SGF</strong>")
                  ),
-        # tabPanel("sueldo",
-        #          htmltools::HTML("<strong>Fuente: Recursos SIIF (rci02) ",
-        #                          "y Gastos SIIF (rcg01_uejp)</strong>")
-        #          ),
+        tabPanel("sueldo",
+                 htmltools::HTML("<strong>Fuente: Gastos SIIF (rcg01_uejp), ",
+                                 "Gastos por Grupo SIIF (gto_rpa03g), ",
+                                 "Deuda Flotante SIIF (rdeu012), ",
+                                 "Libro Mayor SIIF (rcocc31 - 2122-1-2) y ",
+                                 "Sist. Seg. Ctas. Ctes. INVICO</strong>")
+                 ),
         # tabPanel("honorarios",
         #          htmltools::HTML("<strong>Fuente: R Icaro, Gastos SIIF (rcg01_uejp), ",
         #                          "y Gastos por Grupo SIIF (gto_rpa03g)</strong>")
@@ -65,11 +68,11 @@ mod_02_02_gastos_ui <- function(id){
         value = "obras",
         mod_data_table_ui(ns("dt_obras"))
       ),
-      # shiny::tabPanel(
-      #   title = "Sueldo",
-      #   value = "sueldo",
-      #   mod_data_table_ui(ns("dt_sueldo"))
-      # ),
+      shiny::tabPanel(
+        title = "Sueldo",
+        value = "sueldo",
+        mod_data_table_ui(ns("dt_sueldo"))
+      ),
       # shiny::tabPanel(
       #   title = "Honorarios Factureros",
       #   value = "honorarios",
@@ -99,9 +102,9 @@ mod_02_02_gastos_ui <- function(id){
           tabPanel("obras",
                    mod_02_02_01_obras_ui(ns("filter_obras"))
                    ),
-          # tabPanel("sueldo",
-          #          mod_02_02_02_sueldo(ns("filter_sueldo"))
-          #           ),
+          tabPanel("sueldo",
+                   mod_02_02_02_sueldo_ui(ns("filter_sueldo"))
+                    ),
           # tabPanel("honorarios",
           #          mod_02_02_03_honorarios_ui(ns("filter_honorarios"))
           #           )
@@ -182,6 +185,29 @@ mod_02_02_gastos_server <- function(id){
 
     })
 
+    # Table Control SUELDO
+    sueldo <- mod_02_02_02_sueldo_server("filter_sueldo")
+
+    shiny::observeEvent(sueldo(), {
+
+      formatr_sueldo <- list(columns = c("ejecutado_siif", "pagado_sscc",
+                                         "diferencia", "dif_acum"))
+      formatp_sueldo <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_sueldo", sueldo,
+                            format_round = formatr_sueldo,
+                            format_perc = formatp_sueldo,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    # Table Control PA6
     pa6 <- mod_02_02_04_pa6_server("filter_pa6")
 
     shiny::observeEvent(pa6(), {
@@ -202,6 +228,7 @@ mod_02_02_gastos_server <- function(id){
 
     })
 
+    # Table Control DEBITOS BANCARIOS
     debitos_bancarios <- mod_02_02_05_debitos_bancarios_server("filter_debitos_bancarios")
 
     shiny::observeEvent(debitos_bancarios(), {
@@ -225,6 +252,7 @@ mod_02_02_gastos_server <- function(id){
 
     })
 
+    # Table Control FEI
     fei <- mod_02_02_06_fei_server("filter_fei")
 
     shiny::observeEvent(fei(), {
