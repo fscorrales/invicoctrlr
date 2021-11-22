@@ -207,7 +207,7 @@ mod_02_02_01_obras_server <- function(id){
         r6_icaro$data <- r6_siif$data %>%
           dplyr::filter(.data$ejercicio == ejercicio_vec) %>%
           dplyr::select(.data$nro_entrada, .data$mes, .data$saldo) %>%
-          unique() %>%
+          dplyr::distinct(.data$nro_entrada, .data$mes, .keep_all = TRUE) %>%
           dplyr::inner_join(dplyr::filter(r6_icaro$data, .data$tipo != "PA6"),
                            by = c("nro_entrada" = "nro_entrada",
                                   "mes" = "mes")) %>%
