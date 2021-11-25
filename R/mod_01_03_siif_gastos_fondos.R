@@ -88,6 +88,7 @@ mod_01_03_siif_gastos_fondos_ui <- function(id){
       status = "olive",
       solidHeader = TRUE,
       width = 12,
+      height = "600px",
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,

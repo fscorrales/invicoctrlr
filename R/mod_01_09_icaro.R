@@ -32,6 +32,7 @@ mod_01_09_icaro_ui <- function(id){
       status = "olive",
       solidHeader = TRUE,
       width = 12,
+      height = "600px",
       collapsible = FALSE,
       maximizable = TRUE,
       elevation = NULL,
