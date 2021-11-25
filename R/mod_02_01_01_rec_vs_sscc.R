@@ -177,7 +177,12 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                                from = primary_key_cta_cte()$siif_recursos_cta_cte,
                                to = primary_key_cta_cte()$map_to,
                                warn_missing = FALSE),
-          fecha = as.Date(.data$fecha, origin = "1970-01-01")
+          fecha = as.Date(.data$fecha, origin = "1970-01-01"),
+          grupo = dplyr::case_when(
+            cta_cte == "10270" ~ "FONAVI",
+            cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
+            TRUE ~ "OTROS"
+          )
         )$
         filter(.data$cta_cte %in% cta_cte_vec)
 
@@ -209,7 +214,12 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                                from = primary_key_cta_cte()$sscc_cta_cte,
                                to = primary_key_cta_cte()$map_to,
                                warn_missing = FALSE),
-          fecha = as.Date(.data$fecha, origin = "1970-01-01")
+          fecha = as.Date(.data$fecha, origin = "1970-01-01"),
+          grupo = dplyr::case_when(
+            cta_cte == "10270" ~ "FONAVI",
+            cta_cte %in% c("130832-12", "334", "Macro", "Patagonia") ~ "RECUPEROS",
+            TRUE ~ "OTROS"
+          )
         )$
         filter(.data$cta_cte %in% cta_cte_vec)
 
