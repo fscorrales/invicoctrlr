@@ -37,15 +37,15 @@ mod_02_01_recursos_ui <- function(id){
                  )
         ),
       boxToolSize = "lg",
-      dropdownMenu =  bs4Dash::boxDropdown(
-        icon = shiny::icon("save"),
-        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_xls"), "Exportar xls",
-                                                    icon = shiny::icon("file-excel"),
-                                                    filetype=list(xlsx="xlsx"))),
-        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
-                                                    icon = shiny::icon("file-csv"),
-                                                    filetype=list(csv="csv")))
-      ),
+      # dropdownMenu =  bs4Dash::boxDropdown(
+      #   icon = shiny::icon("save"),
+      #   bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_xls"), "Exportar xls",
+      #                                               icon = shiny::icon("file-excel"),
+      #                                               filetype=list(xlsx="xlsx"))),
+      #   bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
+      #                                               icon = shiny::icon("file-csv"),
+      #                                               filetype=list(csv="csv")))
+      # ),
       shiny::tabPanel(
         title = "Recursos vs Banco SSCC",
         value = "rec_vs_sscc",

@@ -38,15 +38,15 @@ mod_02_03_remamente_ui <- function(id){
                  )
         ),
       boxToolSize = "lg",
-      dropdownMenu =  bs4Dash::boxDropdown(
-        icon = shiny::icon("save"),
-        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_xls"), "Exportar xls",
-                                                    icon = shiny::icon("file-excel"),
-                                                    filetype=list(xlsx="xlsx"))),
-        bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
-                                                    icon = shiny::icon("file-csv"),
-                                                    filetype=list(csv="csv")))
-      ),
+      # dropdownMenu =  bs4Dash::boxDropdown(
+      #   icon = shiny::icon("save"),
+      #   bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_xls"), "Exportar xls",
+      #                                               icon = shiny::icon("file-excel"),
+      #                                               filetype=list(xlsx="xlsx"))),
+      #   bs4Dash::boxDropdownItem(mod_save_button_ui(ns("download_csv"), "Exportar csv",
+      #                                               icon = shiny::icon("file-csv"),
+      #                                               filetype=list(csv="csv")))
+      # ),
       shiny::tabPanel(
         title = "M\u00e9todo I: Saldo Banco - Deuda Flotante",
         value = "metodo_1",
