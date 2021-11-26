@@ -249,7 +249,7 @@ mod_02_04_icaro_server <- function(id){
       $(thead).closest('thead').find('th').eq(2).css('background-color', '#D9E1F2');
       }"
 
-      formatr_pa6 <- list(columns = c("monto_pa6", "saldo_pa6",
+      formatr_pa6 <- list(columns = c("monto_pa6", "monto_reg",
                                       "monto_pa6_icaro", "monto_reg_icaro"))
 
       formats_pa6<- list(columns = c("ctrl"),

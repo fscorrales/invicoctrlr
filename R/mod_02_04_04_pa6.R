@@ -163,7 +163,7 @@ mod_02_04_04_pa6_server <- function(id){
         )$
         select(
           .data$nro_fondo, .data$nro_reg, .data$fecha_pa6, .data$fecha_reg,
-          .data$monto_pa6, .data$saldo_pa6, .data$ctrl
+          .data$monto_pa6, .data$monto_reg, .data$ctrl
           # cuit, fuente, monto_reg, cta_cte
         )
 
@@ -209,6 +209,15 @@ mod_02_04_04_pa6_server <- function(id){
                tipo_reg_icaro = .data$tipo_icaro)$
         mutate(
           dplyr::across(is.numeric, replace_NA_0),
+          ctrl = dplyr::case_when(
+            .data$nro_fondo != .data$nro_pa6_icaro ~ FALSE,
+            .data$tipo_pa6_icaro != "PA6" ~ FALSE,
+            !dplyr::near(.data$monto_pa6, .data$monto_pa6_icaro) ~ FALSE,
+            .data$nro_reg != .data$nro_reg_icaro ~ FALSE,
+            .data$tipo_reg_icaro != "REG" ~ FALSE,
+            !dplyr::near(.data$monto_reg, .data$monto_reg_icaro) ~ FALSE,
+            TRUE ~ TRUE
+          ),
           ctrl = ifelse(.data$ctrl > 0, "\u2713", "\u2718")
         )
 
