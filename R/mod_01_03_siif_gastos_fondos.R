@@ -220,7 +220,7 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
                           import_function = reactive(rpw_controller$fct),
                           df_trigger = reactive(rpw_controller$trigger))
 
-    hide_columns_comp_gtos <- c(14:17) #begins in 0
+    hide_columns_comp_gtos <- c(15:18) #begins in 0
 
     formatr_rcg01_uejp <- list(columns = c("monto"))
 
@@ -241,7 +241,7 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
                           )
     )
 
-    hide_columns_comp_gtos_part <- c(14:17) #begins in 0
+    hide_columns_comp_gtos_part <- c(15:18) #begins in 0
 
     formatr_rcg01_par <- list(columns = c("monto"))
 
@@ -304,7 +304,7 @@ mod_01_03_siif_gastos_fondos_server <- function(id){
                           )
     )
 
-    hide_columns_comp_fdos <- c(7) #begins in 0
+    hide_columns_comp_fdos <- c(8) #begins in 0
 
     formatr_rfondo07tp <- list(columns = c("ingresos", "egresos", "saldo"))
 

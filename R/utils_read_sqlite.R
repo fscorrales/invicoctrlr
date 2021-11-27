@@ -122,7 +122,7 @@ siif_comprobantes_gtos_rcg01_uejp <- shiny::reactive({
                   verificado = as.logical(verificado),
                   aprobado = as.logical(aprobado),
                   pagado = as.logical(pagado)) %>%
-    dplyr::select(ejercicio, fecha, nro_entrada,
+    dplyr::select(ejercicio, mes, fecha, nro_entrada,
                   nro_origen, nro_fondo, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), fecha, nro_entrada)
 
@@ -139,7 +139,7 @@ siif_comprobantes_gtos_partida_rcg01_par <- shiny::reactive({
                   verificado = as.logical(verificado),
                   aprobado = as.logical(aprobado),
                   pagado = as.logical(pagado)) %>%
-    dplyr::select(ejercicio, fecha, dplyr::everything()) %>%
+    dplyr::select(ejercicio, mes, fecha, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), fecha, nro_entrada)
 
 })
@@ -178,7 +178,7 @@ siif_resumen_fdos_rfondo07tp <- shiny::reactive({
                                        "resumen_fdos_rfondo07tp")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
-    dplyr::select(ejercicio, dplyr::everything()) %>%
+    dplyr::select(ejercicio, mes, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), nro_fondo)
 
 })
