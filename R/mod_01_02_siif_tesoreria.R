@@ -197,7 +197,7 @@ mod_01_02_siif_tesoreria_server <- function(id){
                           )
     )
 
-    hide_columns_pagos <- c(11) #begins in 0
+    hide_columns_pagos <- c(12) #begins in 0
 
     formatr_rtr03 <- list(columns = c("monto"))
 
@@ -218,7 +218,7 @@ mod_01_02_siif_tesoreria_server <- function(id){
                           )
     )
 
-    hide_columns_ret_cod <- c(4) #begins in 0
+    hide_columns_ret_cod <- c(5) #begins in 0
 
     formatr_rao01 <- list(columns = c("monto"))
 

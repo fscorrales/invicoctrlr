@@ -95,7 +95,7 @@ siif_pagos_rtr03 <- shiny::reactive({
   Ans <- invicodatr::read_table_sqlite("siif", "pagos_rtr03")
   Ans <- Ans %>%
     dplyr::mutate(fecha_pago = as.Date(fecha_pago, origin = "1970-01-01")) %>%
-    dplyr::select(ejercicio, fecha_pago, nro_entrada, dplyr::everything()) %>%
+    dplyr::select(ejercicio, mes, fecha_pago, nro_entrada, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), fecha_pago, nro_entrada)
 
 })
@@ -106,7 +106,7 @@ siif_retenciones_por_codigo_rao01 <- shiny::reactive({
   Ans <- invicodatr::read_table_sqlite("siif", "retenciones_por_codigo_rao01")
   Ans <- Ans %>%
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
-    dplyr::select(ejercicio, fecha, nro_entrada, dplyr::everything()) %>%
+    dplyr::select(ejercicio, mes, fecha, nro_entrada, dplyr::everything()) %>%
     dplyr::arrange(desc(ejercicio), fecha, nro_entrada)
 
 })
