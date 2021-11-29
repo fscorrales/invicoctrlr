@@ -39,15 +39,22 @@ mod_02_02_01_obras_ui <- function(id){
         shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
                                      choices = c("mes", "fecha", "cta_cte", "cuit"),
                                      selected = "mes",
-                                     inline = FALSE),
-
-        rep_br(2),
-
-        checkboxInput(ns("rdeu"),
-                      "\u00bfAjustar Deuda Flotante?", value = TRUE)
+                                     inline = FALSE)
 
       )
+      ),
+
+    shiny::fluidRow(
+      shiny::column(
+        6, checkboxInput(ns("rdeu"), "\u00bfAjustar Deuda Flotante?",
+                         value = TRUE)
+        ),
+      shiny::column(
+        6, checkboxInput(ns("cheq"), "\u00bfAjustar reemplazo cheque?",
+                         value = TRUE)
       )
+    )
+
   )
 }
 
@@ -139,6 +146,7 @@ mod_02_02_01_obras_server <- function(id){
       r6_icaro <- MyData$new(sql_path("icaro_new"))
       r6_siif <- MyData$new(sql_path("siif"))
       r6_sgf <- MyData$new(sql_path("sgf"))
+      r6_sscc <- MyData$new(sql_path("sscc"))
 
       #Setting input default value
       if (is.null(input$ejercicio)) {
@@ -267,7 +275,7 @@ mod_02_02_01_obras_server <- function(id){
       r6_sgf$
         get_query(
           paste0("SELECT P.cuit, R.fecha, R.cta_cte, R.importe_bruto, ",
-                 "R.origen, R.destino FROM ", sql_join, " ",
+                 "R.origen, R.destino, R.movimiento FROM ", sql_join, " ",
                  "WHERE R.origen <> 'FUNCIONAMIENTO'")
         )$
         mutate(
@@ -284,6 +292,29 @@ mod_02_02_01_obras_server <- function(id){
                !(.data$origen == "EPAM" & stringr::str_detect(.data$destino, "HONORARIOS")),
                .data$cta_cte %in% cta_cte_vec)$
         select(-.data$ejercicio, -.data$destino, -.data$origen)
+
+      if (input$cheq) {
+        r6_sscc$get_query(
+          paste0(
+            "SELECT movimiento, cta_cte ",
+            "FROM banco_invico ",
+            "WHERE ejercicio = ? ",
+            "AND codigo_imputacion = 55 ",
+            "AND es_cheque = 1"
+          ),
+          params = list(ejercicio_vec)
+        )$mutate(
+          cta_cte = map_values(.data$cta_cte,
+                               from = primary_key_cta_cte()$sscc_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
+                               warn_missing = FALSE)
+        )
+
+        r6_sgf$anti_join(
+          r6_sscc$data, by = c("movimiento", "cta_cte")
+        )
+
+      }
 
       #Grouping and summarising sgf
       r6_sgf$
