@@ -265,6 +265,15 @@ mod_02_02_01_obras_server <- function(id){
                .data$cta_cte %in% cta_cte_vec)$
         select(-.data$ejercicio)
 
+      #Filtramos por fecha y ejercicio
+      if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
+        r6_icaro$filter(
+          dplyr::between(.data$fecha,
+                         lubridate::ymd(input$fecha[[1]]),
+                         lubridate::ymd(input$fecha[[2]]))
+        )
+      }
+
       #Grouping and summarising icaro
       r6_icaro$
         select(input$grupo %||% "mes", .data$importe)$
@@ -293,10 +302,19 @@ mod_02_02_01_obras_server <- function(id){
                .data$cta_cte %in% cta_cte_vec)$
         select(-.data$ejercicio, -.data$destino, -.data$origen)
 
+      #Filtramos por fecha y ejercicio
+      if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
+        r6_sgf$filter(
+          dplyr::between(.data$fecha,
+                         lubridate::ymd(input$fecha[[1]]),
+                         lubridate::ymd(input$fecha[[2]]))
+        )
+      }
+
       if (input$cheq) {
         r6_sscc$get_query(
           paste0(
-            "SELECT movimiento, cta_cte ",
+            "SELECT movimiento, cta_cte, fecha ",
             "FROM banco_invico ",
             "WHERE ejercicio = ? ",
             "AND codigo_imputacion = 55 ",
@@ -308,7 +326,17 @@ mod_02_02_01_obras_server <- function(id){
                                from = primary_key_cta_cte()$sscc_cta_cte,
                                to = primary_key_cta_cte()$map_to,
                                warn_missing = FALSE)
-        )
+        )$filter(
+          .data$cta_cte %in% cta_cte_vec)
+
+        #Filtramos por fecha y ejercicio
+        if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
+          r6_sscc$filter(
+            dplyr::between(.data$fecha,
+                           lubridate::ymd(input$fecha[[1]]),
+                           lubridate::ymd(input$fecha[[2]]))
+          )
+        }
 
         r6_sgf$anti_join(
           r6_sscc$data, by = c("movimiento", "cta_cte")
