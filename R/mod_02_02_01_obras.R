@@ -50,8 +50,11 @@ mod_02_02_01_obras_ui <- function(id){
                          value = TRUE)
         ),
       shiny::column(
-        6, checkboxInput(ns("cheq"), "\u00bfAjustar reemplazo cheque?",
-                         value = TRUE)
+        6,
+        checkboxInput(ns("cheq"), "\u00bfAjustar reemplazo cheque?",
+                         value = FALSE),
+        checkboxInput(ns("cert_neg"), "\u00bfAjustar certificados negativos SSCC?",
+                      value = TRUE)
       )
     )
 
@@ -340,6 +343,43 @@ mod_02_02_01_obras_server <- function(id){
 
         r6_sgf$anti_join(
           r6_sscc$data, by = c("movimiento", "cta_cte")
+        )
+
+      }
+
+      if (input$cert_neg) {
+        r6_sscc$get_query(
+          paste0(
+            "SELECT movimiento, cta_cte, mes, fecha, ",
+            "monto as importe_bruto FROM banco_invico ",
+            "WHERE ejercicio = ? ",
+            "AND codigo_imputacion = 18 ",
+            "AND es_cheque = 0 ",
+            "AND movimiento = 'DEPOSITO'"
+          ),
+          params = list(ejercicio_vec)
+        )$mutate(
+          cta_cte = map_values(.data$cta_cte,
+                               from = primary_key_cta_cte()$sscc_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
+                               warn_missing = FALSE),
+          fecha = as.Date(.data$fecha, origin = "1970-01-01"),
+          cuit = "30632351514",
+          importe_bruto = .data$importe_bruto * (-1)
+        )$filter(
+          .data$cta_cte %in% cta_cte_vec)
+
+        #Filtramos por fecha y ejercicio
+        if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
+          r6_sscc$filter(
+            dplyr::between(.data$fecha,
+                           lubridate::ymd(input$fecha[[1]]),
+                           lubridate::ymd(input$fecha[[2]]))
+          )
+        }
+
+        r6_sgf$bind_rows(
+          r6_sscc$data
         )
 
       }
