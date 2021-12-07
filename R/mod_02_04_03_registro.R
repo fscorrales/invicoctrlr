@@ -166,7 +166,11 @@ mod_02_04_03_registro_server <- function(id){
         )$
         mutate(
           fecha = as.Date(.data$fecha, origin = "1970-01-01"),
-          ejercicio = as.character(lubridate::year(.data$fecha))
+          ejercicio = as.character(lubridate::year(.data$fecha)),
+          cta_cte = map_values(.data$cta_cte,
+                               from = primary_key_cta_cte()$icaro_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
+                               warn_missing = FALSE)
         )$
         rename(
           cta_cte_icaro = .data$cta_cte,
@@ -197,7 +201,11 @@ mod_02_04_03_registro_server <- function(id){
           nro_entrada = sprintf("%05d", as.numeric(.data$nro_entrada)),
           nro_entrada = stringr::str_c(.data$nro_entrada,
                                        format(.data$fecha, format="%y"),
-                                       sep="/")
+                                       sep="/"),
+          cta_cte = map_values(.data$cta_cte,
+                               from = primary_key_cta_cte()$siif_gastos_cta_cte,
+                               to = primary_key_cta_cte()$map_to,
+                               warn_missing = FALSE)
         )$
         rename(
           cta_cte_siif = .data$cta_cte,
