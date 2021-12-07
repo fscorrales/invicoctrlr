@@ -294,7 +294,8 @@ mod_02_02_02_sueldo_server <- function(id){
                  "AND ejercicio = ?"),
           params = list(ejercicio_vec)
         )$
-        filter(!stringr::str_detect(.data$concepto, "GCIAS"))$
+        filter(!stringr::str_detect(.data$concepto, "GCIAS"),
+               !stringr::str_detect(.data$concepto, "GANANCIAS"))$
         mutate(
           fecha = as.Date(.data$fecha, origin = "1970-01-01"),
           monto = .data$monto * (-1)
