@@ -148,6 +148,7 @@ mod_02_02_06_fei_server <- function(id){
                  "debitos, creditos, auxiliar_1 AS cuit ",
                  "FROM mayor_contable_rcocc31 ",
                  "WHERE cta_contable = '2113-2-9' ",
+                 "AND tipo_comprobante <> 'APE' ",
                  "AND ejercicio = ?"),
           params = list(ejercicio_vec)
         )$
