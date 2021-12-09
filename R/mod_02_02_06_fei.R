@@ -37,7 +37,8 @@ mod_02_02_06_fei_ui <- function(id){
         6,
         ## filtro por cuenta??
         shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
-                                  choices = c("ejercicio", "mes", "fecha", "cuit"),
+                                  choices = c("ejercicio", "mes", "fecha",
+                                              "cuit", "descripcion"),
                                   selected = "mes",
                                   inline = FALSE),
         #
@@ -156,6 +157,17 @@ mod_02_02_06_fei_server <- function(id){
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
         )
 
+      r6_sgf$get_query(
+          "SELECT cuit, descripcion FROM listado_prov WHERE cuit = ?",
+          params = list(unique(r6_siif$data$cuit))
+        )
+
+      desc_cuit_sgf <- r6_siif$data %>%
+        dplyr::left_join(r6_sgf$data, by = "cuit") %>%
+        dplyr::select(.data$descripcion)
+
+      r6_siif$data$descripcion <- desc_cuit_sgf$descripcion
+
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
         r6_siif$filter(
           dplyr::between(.data$fecha,
@@ -176,14 +188,22 @@ mod_02_02_06_fei_server <- function(id){
       r6_sgf$
         get_query(
           paste0("SELECT R.destino, R.ejercicio, R.mes, R.fecha, ",
-                 "R.importe_bruto, P.cuit, P.descripcion FROM ", sql_join ," ",
+                 "R.importe_bruto, P.cuit, ",
+                 "R.beneficiario, P.descripcion FROM ", sql_join ," ",
                  "WHERE origen = 'FUNCIONAMIENTO' ",
                  "AND cta_cte = '130832-08' ",
                  "AND ejercicio = ?"),
           params = list(ejercicio_vec)
         )$
         mutate(
-          fecha = as.Date(.data$fecha, origin = "1970-01-01")
+          fecha = as.Date(.data$fecha, origin = "1970-01-01"),
+          descripcion = dplyr::case_when(
+            is.na(cuit) ~ .data$beneficiario,
+            TRUE ~ .data$descripcion
+          )
+        )$
+        select(
+          -.data$beneficiario
         )$
         filter(stringr::str_detect(.data$destino, "HONORARIOS ESCRIBANOS"))
 
