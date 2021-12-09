@@ -172,11 +172,11 @@ mod_02_02_06_fei_server <- function(id){
                   pago_fei = sum(.data$debitos, na.rm = TRUE),
                   dif_fei = .data$carga_fei - .data$pago_fei)
 
-      #Filtering sscc_banco_invico
+      #Filtering sgf_invico
       r6_sgf$
         get_query(
           paste0("SELECT R.destino, R.ejercicio, R.mes, R.fecha, ",
-                 "R.importe_bruto, P.cuit FROM ", sql_join ," ",
+                 "R.importe_bruto, P.cuit, P.descripcion FROM ", sql_join ," ",
                  "WHERE origen = 'FUNCIONAMIENTO' ",
                  "AND cta_cte = '130832-08' ",
                  "AND ejercicio = ?"),
