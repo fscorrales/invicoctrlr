@@ -260,3 +260,16 @@ icaro_carga <- shiny::reactive({
     dplyr::arrange(desc(fecha), desc(nro_entrada))
 
 })
+
+#Provisional Slave import
+# slave_trigger <- make_reactive_trigger()
+# slave_honorarios <- shiny::reactive({
+#   slave_trigger$depend()
+#
+#
+#   Ans <- Ans %>%
+#     dplyr::select(obra, estructura, partida,
+#                   dplyr::everything()) %>%
+#     dplyr::arrange(obra)
+#
+# })
