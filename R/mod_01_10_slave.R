@@ -84,57 +84,59 @@ mod_01_10_slave_server <- function(id){
 
     rpw_controller <- rv()
 
-    # observeEvent(input$controller, {
-    #
-    #   Ans <- switch(input$controller,
-    #                 honorarios = list(data = icaro_obras(),
-    #                                 import_function = invicodatr::transmute_icaro_old_to_new,
-    #                                 df_trigger = icaro_trigger),
-    #                 # carga = list(data = icaro_carga(),
-    #                 #                  import_function = invicodatr::transmute_icaro_old_to_new,
-    #                 #                  df_trigger = icaro_trigger),
-    #                 stop("Invalid `x` value")
-    #                 )
-    #
-    #   rpw_controller$df <- Ans$data
-    #   rpw_controller$fct <- Ans$import_function
-    #   rpw_controller$trigger <- Ans$df_trigger
-    #
-    #   # updateTabsetPanel(inputId = "switcher", selected = input$controller)
-    #
-    #   shinyjs::reset("update-file")
-    #   shinyFeedback::hideFeedback("update-file")
-    #
-    # })
-    #
-    # mod_save_button_server("download_xls", reactive(rpw_controller$df))
-    #
-    # mod_save_button_server("download_csv", reactive(rpw_controller$df))
-    #
-    # mod_file_input_server("update",
-    #                       import_function = reactive(rpw_controller$fct),
-    #                       df_trigger = reactive(rpw_controller$trigger))
+    observeEvent(input$controller, {
 
-    # hide_columns_honorarios <- c(8:10)
-    #
-    # formatr_honorarios <- list(columns = c("monto_contrato", "monto_adicional"))
-    #
-    # mod_data_table_server("obras", icaro_obras,
-    #                       format_round = formatr_obras,
-    #                       columnDefs = list(
-    #                         list(visible=FALSE, targets = hide_columns_obras)
-    #                         ),
-    #                       buttons = list(
-    #                         list(
-    #                           extend = 'collection',
-    #                           buttons = c('copy', 'print','csv', 'excel', 'pdf'),
-    #                           text = 'Download 100 primeras filas'),
-    #                         list(
-    #                           extend='colvis',
-    #                           text="Mostrar / Ocultar columnas",
-    #                           columns = hide_columns_obras)
-    #                         )
-    #                       )
+      Ans <- switch(input$controller,
+                    honorarios = list(data = slave_honorarios(),
+                                    import_function = invicodatr::rpw_slave_honorarios,
+                                    df_trigger = slave_trigger),
+                    # carga = list(data = icaro_carga(),
+                    #                  import_function = invicodatr::transmute_icaro_old_to_new,
+                    #                  df_trigger = icaro_trigger),
+                    stop("Invalid `x` value")
+                    )
+
+      rpw_controller$df <- Ans$data
+      rpw_controller$fct <- Ans$import_function
+      rpw_controller$trigger <- Ans$df_trigger
+
+      # updateTabsetPanel(inputId = "switcher", selected = input$controller)
+
+      shinyjs::reset("update-file")
+      shinyFeedback::hideFeedback("update-file")
+
+    })
+
+    mod_save_button_server("download_xls", reactive(rpw_controller$df))
+
+    mod_save_button_server("download_csv", reactive(rpw_controller$df))
+
+    mod_file_input_server("update",
+                          import_function = reactive(rpw_controller$fct),
+                          df_trigger = reactive(rpw_controller$trigger))
+
+    hide_columns_honorarios <- c(10:16)
+
+    formatr_honorarios <- list(columns = c("importe_bruto", "importe_neto",
+                                           "sellos", "seguro","iibb", "lp",
+                                           "otras_ret", "anticipo", "descuento"))
+
+    mod_data_table_server("honorarios", slave_honorarios,
+                          format_round = formatr_honorarios,
+                          columnDefs = list(
+                            list(visible=FALSE, targets = hide_columns_honorarios)
+                            ),
+                          buttons = list(
+                            list(
+                              extend = 'collection',
+                              buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                              text = 'Download 100 primeras filas'),
+                            list(
+                              extend='colvis',
+                              text="Mostrar / Ocultar columnas",
+                              columns = hide_columns_honorarios)
+                            )
+                          )
 
     # hide_columns_carga <- c(11:14)
     #

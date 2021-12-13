@@ -262,14 +262,13 @@ icaro_carga <- shiny::reactive({
 })
 
 #Provisional Slave import
-# slave_trigger <- make_reactive_trigger()
-# slave_honorarios <- shiny::reactive({
-#   slave_trigger$depend()
-#
-#
-#   Ans <- Ans %>%
-#     dplyr::select(obra, estructura, partida,
-#                   dplyr::everything()) %>%
-#     dplyr::arrange(obra)
-#
-# })
+slave_trigger <- make_reactive_trigger()
+slave_honorarios <- shiny::reactive({
+  slave_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("slave",
+                                       "honorarios")
+  Ans <- Ans %>%
+    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
+    dplyr::arrange(desc(ejercicio), fecha)
+
+})
