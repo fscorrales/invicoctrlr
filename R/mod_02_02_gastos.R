@@ -36,10 +36,11 @@ mod_02_02_gastos_ui <- function(id){
                                  "Libro Mayor SIIF (rcocc31 - 2122-1-2) y ",
                                  "Sist. Seg. Ctas. Ctes. INVICO</strong>")
                  ),
-        # tabPanel("honorarios",
-        #          htmltools::HTML("<strong>Fuente: R Icaro, Gastos SIIF (rcg01_uejp), ",
-        #                          "y Gastos por Grupo SIIF (gto_rpa03g)</strong>")
-        #          )
+        tabPanel("honorarios",
+                 htmltools::HTML("<strong>Fuente: Slave, Gastos SIIF (rcg01_uejp), ",
+                                 "Sist. Seg. Ctas. Ctes. INVICO ",
+                                 "y Resumen de Rendiciones por Prov. SGF</strong>")
+                 ),
         tabPanel("pa6",
                  htmltools::HTML("<strong>Fuente: Gastos SIIF (rcg01_uejp) y ",
                                  "Comprobantes Fondos SIIF (rfondo07tp - PA6)</strong>")
@@ -74,11 +75,11 @@ mod_02_02_gastos_ui <- function(id){
         value = "sueldo",
         mod_data_table_ui(ns("dt_sueldo"))
       ),
-      # shiny::tabPanel(
-      #   title = "Honorarios Factureros",
-      #   value = "honorarios",
-      #   mod_data_table_ui(ns("dt_honorarios"))
-      # ),
+      shiny::tabPanel(
+        title = "Honorarios Factureros",
+        value = "honorarios",
+        mod_data_table_ui(ns("dt_honorarios"))
+      ),
       shiny::tabPanel(
         title = "Reg. PA6",
         value = "pa6",
@@ -106,9 +107,9 @@ mod_02_02_gastos_ui <- function(id){
           tabPanel("sueldo",
                    mod_02_02_02_sueldo_ui(ns("filter_sueldo"))
                     ),
-          # tabPanel("honorarios",
-          #          mod_02_02_03_honorarios_ui(ns("filter_honorarios"))
-          #           )
+          tabPanel("honorarios",
+                   mod_02_02_03_honorarios_ui(ns("filter_honorarios"))
+                    ),
           tabPanel("pa6",
                    mod_02_02_04_pa6_ui(ns("filter_pa6"))
                     ),
@@ -198,6 +199,28 @@ mod_02_02_gastos_server <- function(id){
       mod_data_table_server("dt_sueldo", sueldo,
                             format_round = formatr_sueldo,
                             format_perc = formatp_sueldo,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    # Table Control honorarios
+    honorarios <- mod_02_02_03_honorarios_server("filter_honorarios")
+
+    shiny::observeEvent(honorarios(), {
+
+      formatr_honorarios <- list(columns = c("bruto_slave", "bruto_sgf",
+                                         "dif_bruto", "dif_acum"))
+      formatp_honorarios <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_honorarios", honorarios,
+                            format_round = formatr_honorarios,
+                            format_perc = formatp_honorarios,
                             buttons = list(
                               list(
                                 extend = 'collection',

@@ -165,8 +165,8 @@ mod_02_05_01_honorarios_server <- function(id){
                .data$origen %in% origen_vec
                )$
         select(
-          nro_entrada_slave, fecha_slave,
-          partida_slave, monto_slave
+          .data$nro_entrada_slave, .data$fecha_slave,
+          .data$partida_slave, .data$monto_slave
         )$
         group_by(
           .data$nro_entrada_slave, .data$fecha_slave,
@@ -197,7 +197,7 @@ mod_02_05_01_honorarios_server <- function(id){
                                warn_missing = FALSE)
         )$
         filter(
-          cta_cte %in% c("130832-05", "130832-07"),
+          .data$cta_cte %in% c("130832-05", "130832-07"),
          (stringr::str_detect(.data$glosa, "HONOR") |
             stringr::str_detect(.data$glosa, "RECON") |
             stringr::str_detect(.data$glosa, "LOC")),
@@ -217,8 +217,8 @@ mod_02_05_01_honorarios_server <- function(id){
                .data$origen %in% origen_vec
                )$
         select(
-          nro_entrada_siif, fecha_siif,
-          partida_siif, monto_siif
+          .data$nro_entrada_siif, .data$fecha_siif,
+          .data$partida_siif, .data$monto_siif
         )$
         group_by(
           .data$nro_entrada_siif, .data$fecha_siif,
