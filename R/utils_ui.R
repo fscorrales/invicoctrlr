@@ -72,6 +72,7 @@ tab_id <- as.list(c(
   ctrl_gastos = "02_02_gastos",
   ctrl_remamente = "02_03_remamente",
   ctrl_icaro = "02_04_icaro",
+  ctrl_slave = "02_05_slave",
   td = "03_00_tabla_dinamica"
 ))
 
@@ -220,6 +221,11 @@ set_sidebar <- function() {
           "Icaro",
           tabName = tab_id$ctrl_icaro,
           icon = shiny::icon("link"),
+        ),
+        bs4Dash::menuSubItem(
+          "Slave",
+          tabName = tab_id$ctrl_slave,
+          icon = shiny::icon("pray"),
         )
       ),
       bs4Dash::menuItem(
@@ -301,6 +307,11 @@ set_body <- function() {
         tabName = tab_id$ctrl_icaro,
         (paste0("mod_", tab_id$ctrl_icaro, "_ui")) %>%
           do.call(list(tab_id$ctrl_icaro))
+      ),
+      bs4Dash::tabItem(
+        tabName = tab_id$ctrl_slave,
+        (paste0("mod_", tab_id$ctrl_slave, "_ui")) %>%
+          do.call(list(tab_id$ctrl_slave))
       ),
       bs4Dash::tabItem(
         tabName = tab_id$td,

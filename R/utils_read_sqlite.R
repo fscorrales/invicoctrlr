@@ -271,4 +271,5 @@ slave_honorarios <- shiny::reactive({
     dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
     dplyr::arrange(desc(ejercicio), fecha)
 
+
 })
