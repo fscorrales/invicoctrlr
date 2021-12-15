@@ -23,7 +23,7 @@ mod_02_03_02_metodo_2_ui <- function(id){
 
       shiny::column(
         6, shiny::selectizeInput(ns("ejercicio"), "Ejercicio Remanente",
-                                 choices = "", selected = "", multiple = FALSE),
+                                 choices = "", selected = "", multiple = TRUE),
         suppressWarnings(
           shiny::dateRangeInput(ns("fecha"), "Seleccionar Fecha", start = NA,
                                 end = NA, format = "dd-mm-yyyy",
