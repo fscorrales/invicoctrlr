@@ -308,7 +308,7 @@ mod_02_02_01_obras_server <- function(id){
           ejercicio = as.character(lubridate::year(.data$fecha))
         )$
         filter(.data$ejercicio %in% ejercicio_vec,
-               !(.data$origen == "EPAM" & .data$beneficiario %in% r6_slave$data),
+               !(.data$origen == "EPAM" & .data$beneficiario %in% r6_slave$data$beneficiario),
                .data$cta_cte %in% cta_cte_vec)$
         select(-.data$ejercicio, -.data$origen, -.data$beneficiario)
 
