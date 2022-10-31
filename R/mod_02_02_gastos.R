@@ -24,7 +24,7 @@ mod_02_02_gastos_ui <- function(id){
       footer = tabsetPanel(
         id = ns("switcher_footer"), type = "hidden",
         tabPanel("obras",
-                 htmltools::HTML("<strong>Fuente: R Icaro, Deuda Flotante SIIF (rdeu012), ",
+                 htmltools::HTML("<strong>Fuente: R Icaro, Slave, Deuda Flotante SIIF (rdeu012), ",
                                  "Resumen de Rendiciones por Prov. SGF, ",
                                  "Litado Proveedores SGF y ",
                                  "Sist. Seg. Ctas. Ctes. INVICO</strong>")

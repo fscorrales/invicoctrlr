@@ -146,7 +146,7 @@ mod_01_06_sgf_server <- function(id){
                           import_function = reactive(rpw_controller$fct),
                           df_trigger = reactive(rpw_controller$trigger))
 
-    hide_columns_rend_prov <- c(9:14, 17:19)
+    hide_columns_rend_prov <- c(9:14, 16:18)
 
     formatr_rend_prov <- list(columns = c("importe_neto", "gcias", "sellos",
                                             "iibb", "suss", "invico", "otras",

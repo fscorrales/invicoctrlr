@@ -180,6 +180,7 @@ mod_02_01_02_rec_vs_siif_server <- function(id){
           paste0("SELECT ejercicio, mes, fecha, cta_cte, ",
                  "monto FROM comprobantes_rec_rci02 ",
                  "WHERE remanente = 0 ",
+                 "AND verificado = 'S' ",
                  "AND ejercicio = ?"),
           params = list(ejercicio_vec)
         )$

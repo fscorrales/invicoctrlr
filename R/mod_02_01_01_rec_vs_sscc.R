@@ -169,6 +169,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                  "monto FROM comprobantes_rec_rci02 ",
                  "WHERE invico = 0 ",
                  "AND remanente = 0 ",
+                 "AND verificado = 'S' ",
                  "AND ejercicio = ?"),
           params = list(ejercicio_vec)
         )$

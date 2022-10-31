@@ -149,6 +149,7 @@ mod_02_02_01_obras_server <- function(id){
       r6_icaro <- MyData$new(sql_path("icaro_new"))
       r6_siif <- MyData$new(sql_path("siif"))
       r6_sgf <- MyData$new(sql_path("sgf"))
+      r6_slave <- MyData$new(sql_path("slave"))
       r6_sscc <- MyData$new(sql_path("sscc"))
 
       #Setting input default value
@@ -228,7 +229,6 @@ mod_02_02_01_obras_server <- function(id){
           dplyr::bind_rows(r6_icaro$data)
 
         #Ajustamos la Deuda Flotante Pagada
-
         r6_siif$data <- dplyr::tibble(
           fecha_hasta = unique(r6_siif$data$fecha_hasta),
           lead_fecha_hasta = dplyr::lead(unique(r6_siif$data$fecha_hasta))
@@ -268,6 +268,10 @@ mod_02_02_01_obras_server <- function(id){
                .data$cta_cte %in% cta_cte_vec)$
         select(-.data$ejercicio)
 
+      # print(dplyr::filter(r6_icaro$data, mes == "02/2022" &
+      #                       cta_cte == "130832-07" &
+      #                       tipo == "RDEU"))
+
       #Filtramos por fecha y ejercicio
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
         r6_icaro$filter(
@@ -284,10 +288,13 @@ mod_02_02_01_obras_server <- function(id){
         summarise(ejecutado_icaro = sum(.data$importe, na.rm = TRUE))
 
       #Filtering sgf
+      r6_slave$
+        get_query("SELECT DISTINCT beneficiario FROM honorarios")
+
       r6_sgf$
         get_query(
-          paste0("SELECT P.cuit, R.fecha, R.cta_cte, R.importe_bruto, ",
-                 "R.origen, R.destino, R.movimiento FROM ", sql_join, " ",
+          paste0("SELECT P.cuit, R.beneficiario, R.fecha, R.cta_cte, R.importe_bruto, ",
+                 "R.origen, R.movimiento FROM ", sql_join, " ",
                  "WHERE R.origen <> 'FUNCIONAMIENTO'")
         )$
         mutate(
@@ -301,9 +308,17 @@ mod_02_02_01_obras_server <- function(id){
           ejercicio = as.character(lubridate::year(.data$fecha))
         )$
         filter(.data$ejercicio %in% ejercicio_vec,
-               !(.data$origen == "EPAM" & stringr::str_detect(.data$destino, "HONORARIOS")),
+               # !(.data$origen == "EPAM" & stringr::str_detect(.data$destino, "HONORARIOS")),
                .data$cta_cte %in% cta_cte_vec)$
-        select(-.data$ejercicio, -.data$destino, -.data$origen)
+        select(-.data$ejercicio, -.data$origen)
+
+      #SISTEMAS eliminó el campo destino de Resumen de Rendiciones Prov
+      #por lo que tuve idear el siguiente mecanismo para filtrar los honorarios
+      r6_sgf$
+        anti_join(
+          r6_slave$data, by = c("beneficiario")
+      )$
+        select(-.data$beneficiario)
 
       #Filtramos por fecha y ejercicio
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
