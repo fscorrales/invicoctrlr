@@ -308,17 +308,17 @@ mod_02_02_01_obras_server <- function(id){
           ejercicio = as.character(lubridate::year(.data$fecha))
         )$
         filter(.data$ejercicio %in% ejercicio_vec,
-               # !(.data$origen == "EPAM" & stringr::str_detect(.data$destino, "HONORARIOS")),
+               !(.data$origen == "EPAM" & .data$beneficiario %in% r6_slave$data),
                .data$cta_cte %in% cta_cte_vec)$
-        select(-.data$ejercicio, -.data$origen)
+        select(-.data$ejercicio, -.data$origen, -.data$beneficiario)
 
       #SISTEMAS eliminó el campo destino de Resumen de Rendiciones Prov
       #por lo que tuve idear el siguiente mecanismo para filtrar los honorarios
-      r6_sgf$
-        anti_join(
-          r6_slave$data, by = c("beneficiario")
-      )$
-        select(-.data$beneficiario)
+      # r6_sgf$
+      #   anti_join(
+      #     r6_slave$data, by = c("beneficiario")
+      # )$
+      #   select(-.data$beneficiario)
 
       #Filtramos por fecha y ejercicio
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
