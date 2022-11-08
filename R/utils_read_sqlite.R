@@ -268,7 +268,7 @@ slave_honorarios <- shiny::reactive({
   Ans <- invicodatr::read_table_sqlite("slave",
                                        "honorarios")
   Ans <- Ans %>%
-    dplyr::mutate(fecha = as.Date(fecha, origin = "1970-01-01")) %>%
+    dplyr::mutate(fecha = lubridate::as_date(lubridate::as_datetime(fecha))) %>%
     dplyr::arrange(desc(ejercicio), fecha)
 
 
