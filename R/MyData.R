@@ -63,6 +63,10 @@ MyData <- R6::R6Class(
       self$data <- dplyr::summarise(self$data, ...)
       invisible(self)
     },
+    summarise_all = function(...) {
+      self$data <- dplyr::summarise_all(self$data, ...)
+      invisible(self)
+    },
     bind_cols = function(...) {
       self$data <- dplyr::bind_cols(self$data, ...)
       invisible(self)
@@ -70,8 +74,11 @@ MyData <- R6::R6Class(
     bind_rows = function(...) {
       self$data <- dplyr::bind_rows(self$data, ...)
       invisible(self)
+    },
+    pivot_wider = function(...) {
+      self$data <- tidyr::pivot_wider(self$data, ...)
+      invisible(self)
     }
-
 
   )
 )
