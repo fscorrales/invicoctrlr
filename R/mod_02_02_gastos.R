@@ -53,6 +53,9 @@ mod_02_02_gastos_ui <- function(id){
         tabPanel("fei",
                  htmltools::HTML("<strong>Fuente: Libro Mayor SIIF (rcocc31 - 2113-2-9) y ",
                                  "Rensumen de Rendiciones SGF</strong>")
+        ),
+        tabPanel("retenciones",
+                 htmltools::HTML("<strong>Fuente: R Icaro</strong>")
         )
         ),
       boxToolSize = "lg",
@@ -95,6 +98,11 @@ mod_02_02_gastos_ui <- function(id){
         value = "fei",
         mod_data_table_ui(ns("dt_fei"))
       ),
+      shiny::tabPanel(
+        title = "Retenciones",
+        value = "retenciones",
+        mod_data_table_ui(ns("dt_retenciones"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -118,6 +126,9 @@ mod_02_02_gastos_ui <- function(id){
           ),
           tabPanel("fei",
                    mod_02_02_06_fei_ui(ns("filter_fei"))
+          ),
+          tabPanel("retenciones",
+                   mod_02_02_07_retenciones_ui(ns("filter_retenciones"))
           )
         )
       )
@@ -290,6 +301,29 @@ mod_02_02_gastos_server <- function(id){
                             # container = sketch,
                             format_round = formatr_fei,
                             format_perc = formatp_fei,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    # Table Control Retenciones
+    retenciones <- mod_02_02_07_retenciones_server("filter_retenciones")
+
+    shiny::observeEvent(retenciones(), {
+
+      formatr_retenciones <- list(columns = c("bruto", "lp", "sellos",
+                                              "gcias", "suss", "iibb",
+                                              "invico", "neto"))
+      #formatp_obras <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_retenciones", retenciones,
+                            format_round = formatr_retenciones,
+                            #format_perc = formatp_obras,
                             buttons = list(
                               list(
                                 extend = 'collection',
