@@ -260,6 +260,14 @@ icaro_carga <- shiny::reactive({
     dplyr::arrange(desc(fecha), desc(nro_entrada))
 
 })
+icaro_retenciones <- shiny::reactive({
+  icaro_trigger$depend()
+  Ans <- invicodatr::read_table_sqlite("icaro_new",
+                                       "retenciones")
+  Ans <- Ans %>%
+    dplyr::arrange( desc(nro_entrada))
+
+})
 
 #Provisional Slave import
 slave_trigger <- make_reactive_trigger()
