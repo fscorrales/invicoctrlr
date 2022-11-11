@@ -37,7 +37,7 @@ mod_02_02_07_retenciones_ui <- function(id){
         6,
 
         shiny::checkboxGroupInput(ns("grupo"), "Agrupamiento del Reporte",
-                                     choices = c("mes", "fecha", "cta_cte", "cuit"),
+                                     choices = c("mes", "fecha", "cta_cte", "cuit", "nro_entrada"),
                                      selected = c("mes", "cta_cte"),
                                      inline = FALSE)
 
@@ -116,6 +116,7 @@ mod_02_02_07_retenciones_server <- function(id){
     table <- eventReactive(input$update, {
 
       r6_icaro <- MyData$new(sql_path("icaro_new"))
+      r6_retenciones <- MyData$new(sql_path("icaro_new"))
       r6_siif <- MyData$new(sql_path("siif"))
 
       #Setting input default value
@@ -140,22 +141,9 @@ mod_02_02_07_retenciones_server <- function(id){
       #Filtering icaro
       r6_icaro$
         get_query(
-          paste0("SELECT C.nro_entrada, fecha, cta_cte, cuit, C.tipo, ",
-                 "C.importe as bruto, R.cod_ret, R.importe as retencion ",
-                 "FROM carga C LEFT JOIN ",
-                 "(SELECT nro_entrada, tipo, importe, ",
-                 "CASE ",
-                 "WHEN (cod_ret = '106' OR cod_ret = '113') THEN 'gcias' ",
-                 "WHEN (cod_ret = '102' OR cod_ret = '111') THEN 'sellos' ",
-                 "WHEN (cod_ret = '104' OR cod_ret = '112') THEN 'lp' ",
-                 "WHEN (cod_ret = '101' OR cod_ret = '110') THEN 'iibb' ",
-                 "WHEN (cod_ret = '114' OR cod_ret = '117') THEN 'suss' ",
-                 "WHEN (cod_ret = '337') THEN 'invico' ",
-                 "ELSE 'Otros' ",
-                 "END cod_ret ",
-                 "FROM retenciones) R ",
-                 "ON (C.nro_entrada = R.nro_entrada AND C.Tipo = R.Tipo) ",
-                 "WHERE C.tipo <> 'REG'")
+          paste0("SELECT nro_entrada, fecha, cta_cte, cuit, tipo, ",
+                 "importe as bruto, nro_entrada || tipo AS id FROM carga ",
+                 "WHERE tipo <> 'REG'")
         )$
         mutate(
           cta_cte = map_values(.data$cta_cte,
@@ -192,7 +180,8 @@ mod_02_02_07_retenciones_server <- function(id){
             nro_entrada = sprintf("%05d", as.numeric(.data$nro_entrada)),
             nro_entrada = stringr::str_c(.data$nro_entrada,
                                          format(.data$fecha, format="%y"),
-                                         sep="/")
+                                         sep="/"),
+            id = stringr::str_c(.data$nro_entrada, "CYO", sep = "")
           )
 
         #Neteamos los comprobantes de gastos no pagados (Deuda Flotante)
@@ -236,21 +225,36 @@ mod_02_02_07_retenciones_server <- function(id){
             select(.data$ejercicio, fecha = .data$fecha_hasta,
                    mes = .data$mes_hasta, .data$nro_entrada,
                    .data$cuit, .data$cta_cte,
-                   .data$tipo, .data$bruto)
+                   .data$tipo, .data$bruto, .data$id)
 
           r6_icaro$
             bind_rows(r6_siif$data)
 
       }
 
+      #FILTRAMOS por EJERCICIO Y CTA_CTE seleccionado
       r6_icaro$
         filter(.data$ejercicio %in% ejercicio_vec,
                .data$cta_cte %in% cta_cte_vec)$
         select(-.data$ejercicio)
 
-      # print(dplyr::filter(r6_icaro$data, mes == "02/2022" &
-      #                       cta_cte == "130832-07" &
-      #                       tipo == "RDEU"))
+      #Agregamos las retenciones
+      r6_retenciones$
+        get_query(
+          paste0("SELECT nro_entrada || tipo AS id, importe AS retencion, ",
+                 "CASE ",
+                 "WHEN (cod_ret = '106' OR cod_ret = '113') THEN 'gcias' ",
+                 "WHEN (cod_ret = '102' OR cod_ret = '111') THEN 'sellos' ",
+                 "WHEN (cod_ret = '104' OR cod_ret = '112') THEN 'lp' ",
+                 "WHEN (cod_ret = '101' OR cod_ret = '110') THEN 'iibb' ",
+                 "WHEN (cod_ret = '114' OR cod_ret = '117') THEN 'suss' ",
+                 "WHEN (cod_ret = '337') THEN 'invico' ",
+                 "ELSE 'Otros' ",
+                 "END cod_ret ",
+                 "FROM retenciones")
+        )
+      r6_icaro$
+        left_join(r6_retenciones$data, .data, by = "id")
 
       #Filtramos por fecha y ejercicio
       if (not_na(input$fecha[[1]]) & not_na(input$fecha[[2]])) {
@@ -260,11 +264,6 @@ mod_02_02_07_retenciones_server <- function(id){
                          lubridate::ymd(input$fecha[[2]]))
         )
       }
-
-      #Convertimos en columnas los codigos de retenciones
-      # r6_icaro$
-      #   pivot_wider(names_from = cod_ret,
-      #               values_from = retencion, values_fn = sum)
 
       #Grouping and summarising icaro
       r6_icaro$
