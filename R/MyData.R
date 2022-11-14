@@ -78,6 +78,10 @@ MyData <- R6::R6Class(
     pivot_wider = function(...) {
       self$data <- tidyr::pivot_wider(self$data, ...)
       invisible(self)
+    },
+    remove_duplicates = function(...) {
+      self$data <- dplyr::distinct(self$data, ...)
+      invisible(self)
     }
 
   )
