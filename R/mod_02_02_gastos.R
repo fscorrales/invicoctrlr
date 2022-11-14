@@ -56,6 +56,10 @@ mod_02_02_gastos_ui <- function(id){
         ),
         tabPanel("retenciones",
                  htmltools::HTML("<strong>Fuente: R Icaro</strong>")
+        ),
+        tabPanel("sgf_vs_sscc",
+                 htmltools::HTML("<strong>Fuente: Resumen de Rendiciones por Prov. SGF y ",
+                                 "Sist. Seg. Ctas. Ctes. INVICO</strong>")
         )
         ),
       boxToolSize = "lg",
@@ -103,6 +107,11 @@ mod_02_02_gastos_ui <- function(id){
         value = "retenciones",
         mod_data_table_ui(ns("dt_retenciones"))
       ),
+      shiny::tabPanel(
+        title = "SGF vs SSCC",
+        value = "sgf_vs_sscc",
+        mod_data_table_ui(ns("dt_sgf_vs_sscc"))
+      ),
       sidebar = bs4Dash::boxSidebar(
         id = ns("sidebar"),
         startOpen = FALSE,
@@ -129,6 +138,9 @@ mod_02_02_gastos_ui <- function(id){
           ),
           tabPanel("retenciones",
                    mod_02_02_07_retenciones_ui(ns("filter_retenciones"))
+          ),
+          tabPanel("sgf_vs_sscc",
+                   mod_02_02_08_sgf_vs_sscc_ui(ns("filter_sgf_vs_sscc"))
           )
         )
       )
@@ -324,6 +336,29 @@ mod_02_02_gastos_server <- function(id){
       mod_data_table_server("dt_retenciones", retenciones,
                             format_round = formatr_retenciones,
                             #format_perc = formatp_obras,
+                            buttons = list(
+                              list(
+                                extend = 'collection',
+                                buttons = c('copy', 'print','csv', 'excel', 'pdf'),
+                                text = 'Download 100 primeras filas')
+                            )
+      )
+
+    })
+
+    # Table Control SGF VS SSCC
+    sgf_vs_sscc <- mod_02_02_08_sgf_vs_sscc_server("filter_sgf_vs_sscc")
+
+    shiny::observeEvent(sgf_vs_sscc(), {
+
+      formatr_sgf_vs_sscc <- list(columns = c("neto_sgf", "debitos_sscc",
+                                              "diferencia", "dif_acum"))
+
+      formatp_sgf_vs_sscc <- list(columns = c("prop_desv"))
+
+      mod_data_table_server("dt_sgf_vs_sscc", sgf_vs_sscc,
+                            format_round = formatr_sgf_vs_sscc,
+                            format_perc = formatp_sgf_vs_sscc,
                             buttons = list(
                               list(
                                 extend = 'collection',
