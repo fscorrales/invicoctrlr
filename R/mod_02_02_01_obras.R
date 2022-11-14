@@ -329,6 +329,9 @@ mod_02_02_01_obras_server <- function(id){
         )
       }
 
+      #Eliminamos registros duplicados de Gestión Financiera
+      r6_sgf$remove_duplicates()
+
       if (input$cheq) {
         r6_sscc$get_query(
           paste0(
