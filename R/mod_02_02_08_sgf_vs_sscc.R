@@ -169,7 +169,8 @@ mod_02_02_08_sgf_vs_sscc_server <- function(id){
         get_query(
           paste0("SELECT ejercicio, mes, fecha, cta_cte, ",
                  "importe_neto, beneficiario, movimiento, ",
-                 "libramiento_sgf as libramiento ",
+                 "libramiento_sgf as libramiento, ",
+                 "(importe_bruto - importe_neto) AS retenciones ",
                  "FROM resumen_rend_prov ",
                  "WHERE ejercicio = ?"),
           params = list(ejercicio_vec)
@@ -196,9 +197,10 @@ mod_02_02_08_sgf_vs_sscc_server <- function(id){
 
       #Grouping and summarising sgf
       r6_sgf$
-        select(input$grupo %||% "mes", .data$importe_neto)$
+        select(input$grupo %||% "mes", .data$importe_neto, .data$retenciones)$
         group_by(!!! rlang::syms(input$grupo %||% "mes"))$
-        summarise(neto_sgf = sum(.data$importe_neto, na.rm = TRUE))
+        summarise(neto_sgf = sum(.data$importe_neto, na.rm = TRUE),
+                  retenciones_sgf = sum(.data$retenciones, na.rm = TRUE))
 
       #Filtering sscc_banco_invico
       r6_sscc$
@@ -267,7 +269,7 @@ mod_02_02_08_sgf_vs_sscc_server <- function(id){
         full_join(r6_sscc$data, by = input$grupo %||% "mes")$
         mutate_if(is.numeric, replace_NA_0)$
         mutate(
-          diferencia = .data$neto_sgf - .data$debitos_sscc,
+          diferencia = .data$neto_sgf + .data$retenciones_sgf - .data$debitos_sscc,
           dif_acum = cumsum(.data$diferencia)
         )
 

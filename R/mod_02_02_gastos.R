@@ -351,7 +351,8 @@ mod_02_02_gastos_server <- function(id){
 
     shiny::observeEvent(sgf_vs_sscc(), {
 
-      formatr_sgf_vs_sscc <- list(columns = c("neto_sgf", "debitos_sscc",
+      formatr_sgf_vs_sscc <- list(columns = c("neto_sgf", "retenciones_sgf",
+                                              "debitos_sscc",
                                               "diferencia", "dif_acum"))
 
       formatp_sgf_vs_sscc <- list(columns = c("prop_desv"))
