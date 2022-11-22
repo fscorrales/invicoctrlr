@@ -192,8 +192,12 @@ mod_02_02_08_sgf_vs_sscc_server <- function(id){
         )
       }
 
-      #Eliminamos registros duplicados (Origen EPAM y OBRAS)
-      r6_sgf$remove_duplicates()
+      #Eliminamos registros duplicados de SGR en cta_cte 106
+      sgf_106 <- dplyr::filter(r6_sgf$data, cta_cte == '106') %>%
+        dplyr::distinct()
+      r6_sgf$
+        filter(cta_cte != '106')$
+        bind_rows(sgf_106)
 
       #Grouping and summarising sgf
       r6_sgf$
