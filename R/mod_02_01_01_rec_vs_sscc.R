@@ -166,7 +166,7 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
       r6_siif$
         get_query(
           paste0("SELECT ejercicio, mes, fecha, cta_cte, ",
-                 "monto FROM comprobantes_rec_rci02 ",
+                 "monto, glosa FROM comprobantes_rec_rci02 ",
                  "WHERE invico = 0 ",
                  "AND remanente = 0 ",
                  "AND verificado = 'S' ",
@@ -178,6 +178,8 @@ mod_02_01_01_rec_vs_sscc_server <- function(id){
                                from = primary_key_cta_cte()$siif_recursos_cta_cte,
                                to = primary_key_cta_cte()$map_to,
                                warn_missing = FALSE),
+          cta_cte = ifelse(stringr::str_detect(.data$glosa, "MACRO"),
+                           'Macro', .data$cta_cte),
           fecha = as.Date(.data$fecha, origin = "1970-01-01"),
           grupo = dplyr::case_when(
             cta_cte == "10270" ~ "FONAVI",
