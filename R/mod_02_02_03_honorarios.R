@@ -143,7 +143,7 @@ mod_02_02_03_honorarios_server <- function(id){
       cta_cte_vec <- input$cta_cte %||%
         c("130832-05", "130832-07")
 
-      #Filtering siif_rec
+      #Filtering slave
       r6_slave$
         get_query(
           paste0("SELECT ejercicio, mes, fecha, nro_entrada, ",
@@ -156,6 +156,7 @@ mod_02_02_03_honorarios_server <- function(id){
           fecha = as.Date(.data$fecha, origin = "1970-01-01")
         )
 
+      #Add cta_cte to slave
       r6_siif$get_query(
           paste0("SELECT nro_entrada, fecha, cta_cte ",
                  "FROM comprobantes_gtos_rcg01_uejp")
